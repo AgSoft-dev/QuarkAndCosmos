@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quark &amp; Cosmos — Maquette Stage 2</title>
+<style>
+  :root{
+    --bg:#05070c;
+    --panel:#0b0e17;
+    --border:#232a3d;
+    --text:#e2e8f0;
+    --muted:#8ea0bd;
+    --cyan:#7dd3fc;
+    --c-quantique:#f472b6;
+    --c-atomique:#facc15;
+    --c-macro:#4ade80;
+    --c-spatiale:#a78bfa;
+    --c-cosmo:#818cf8;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0; padding:0; height:100%;
+    background:#111726;
+    font-family:-apple-system,'Segoe UI',sans-serif;
+    display:flex; align-items:center; justify-content:center;
+  }
+  #page{ display:flex; flex-direction:column; align-items:center; gap:12px; padding:24px; }
+  #caption{ color:#64748b; font-size:12px; text-align:center; max-width:340px; }
+
+  /* Phone frame */
+  #frame{
+    width:360px; height:740px;
+    background:#000;
+    border-radius:44px;
+    padding:14px;
+    box-shadow:0 30px 60px rgba(0,0,0,0.5), inset 0 0 0 2px #1a1a1a;
+    position:relative;
+  }
+  #frame::before{
+    content:''; position:absolute; top:14px; left:50%; transform:translateX(-50%);
+    width:120px; height:22px; background:#000; border-radius:0 0 16px 16px; z-index:5;
+  }
+  #screen{
+    width:100%; height:100%;
+    border-radius:30px;
+    overflow:hidden;
+    position:relative;
+    background:var(--bg);
+  }
+  canvas{ position:absolute; top:0; left:0; width:100%; height:100%; touch-action:none; }
+
+  /* HTML overlay UI (menu, popup) sits above canvas */
+  .overlay{ position:absolute; inset:0; z-index:10; display:flex; flex-direction:column; }
+  .hidden{ display:none !important; }
+
+  /* World map screen */
+  #mapScreen{ padding:20px 16px; color:var(--text); }
+  #mapScreen h1{ font-size:16px; margin:6px 0 2px; letter-spacing:.02em; }
+  #mapScreen .sub{ font-size:10px; color:var(--muted); margin-bottom:14px; }
+
+  .toggle-row{
+    display:flex; align-items:center; gap:8px; background:var(--panel);
+    border:1px solid var(--border); border-radius:999px; padding:4px; margin-bottom:18px;
+  }
+  .toggle-opt{
+    flex:1; text-align:center; font-size:10px; padding:8px 6px; border-radius:999px;
+    color:var(--muted); cursor:pointer; user-select:none; transition:background .15s,color .15s;
+  }
+  .toggle-opt.active{ background:#16233a; color:var(--cyan); font-weight:600; }
+
+  #worldMap{ position:relative; flex:1; }
+  .node{
+    position:absolute; width:64px; height:64px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; flex-direction:column;
+    border:2px solid; cursor:pointer; transition:transform .2s, left .35s, top .35s;
+    background:var(--panel);
+  }
+  .node:active{ transform:scale(0.94); }
+  .node .label{ font-size:8px; margin-top:2px; letter-spacing:.03em; }
+  .node.locked{ opacity:0.35; cursor:default; }
+  .node.locked:active{ transform:none; }
+  #mapLines{ position:absolute; inset:0; z-index:0; }
+
+  .footnote{ font-size:9px; color:var(--muted); text-align:center; margin-top:auto; padding-top:10px; }
+
+  /* Level HUD */
+  #hudTop{
+    position:absolute; top:16px; left:16px; right:16px; z-index:10;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .pill{
+    background:rgba(15,21,36,0.9); border:1px solid var(--border);
+    border-radius:999px; padding:6px 12px; display:flex; align-items:center; gap:6px;
+    color:var(--text); font-size:12px;
+  }
+  .iconBtn{
+    width:34px; height:34px; border-radius:50%; background:rgba(15,21,36,0.9);
+    border:1px solid var(--border); display:flex; align-items:center; justify-content:center;
+    cursor:pointer; color:var(--cyan);
+  }
+  .iconBtn:active{ transform:scale(0.92); }
+  .star{ color:#facc15; }
+
+  #hudBottom{
+    position:absolute; bottom:16px; left:16px; right:16px; z-index:10;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .toolSlot{
+    width:44px; height:36px; border-radius:10px; background:rgba(15,21,36,0.9);
+    border:1px solid var(--border); display:flex; align-items:center; justify-content:center;
+    cursor:pointer; position:relative;
+  }
+  .toolSlot.selected{ border-color:var(--c-macro); box-shadow:0 0 0 1px var(--c-macro); }
+
+  /* Codex popup */
+  #codexPopup{
+    position:absolute; inset:0; z-index:20; display:flex; align-items:center; justify-content:center;
+    background:rgba(2,4,9,0.65); backdrop-filter:blur(1px);
+  }
+  #codexCard{
+    width:280px; background:var(--panel); border:1px solid var(--border); border-radius:18px;
+    padding:18px; color:var(--text); text-align:center;
+  }
+  #codexCard .starsRow{ font-size:20px; margin-bottom:8px; letter-spacing:4px; }
+  #codexCard h2{ font-size:14px; margin:0 0 10px; color:var(--cyan); }
+  #codexCard .quote{ font-size:11px; line-height:1.6; color:#c3d1e6; margin-bottom:14px; }
+  #codexCard .quote b{ color:var(--text); }
+  #codexCard button{
+    background:var(--c-macro); border:none; border-radius:999px; padding:10px 22px;
+    font-size:12px; font-weight:600; color:#052e13; cursor:pointer;
+  }
+  #codexCard button:active{ transform:scale(0.97); }
+
+  .backBtn{ position:absolute; top:16px; left:16px; z-index:11; }
+</style>
+</head>
+<body>
+<div id="page">
+  <div id="frame">
+    <div id="screen">
+      <canvas id="canvas"></canvas>
+
+      <!-- WORLD MAP -->
+      <div id="mapScreen" class="overlay">
+        <h1>Quark &amp; Cosmos</h1>
+        <div class="sub">Progression Quarky : de l'infiniment petit à l'infiniment grand</div>
+
+        <div id="worldMap">
+          <svg id="mapLines" width="100%" height="100%"></svg>
+          <!-- nodes injected by JS -->
+        </div>
+
+        <div class="footnote">Quantique &amp; Macro sont jouables dans cette maquette.</div>
+      </div>
+
+      <!-- LEVEL HUD (shown only in level screen) -->
+      <div id="hudTop" class="hidden">
+        <div class="pill"><span class="star">★</span><span id="starCount">0/3</span></div>
+        <div style="display:flex; gap:8px;">
+          <div class="iconBtn" id="resetBtn" title="Reset">⟲</div>
+          <div class="iconBtn" id="backBtn" title="Retour">←</div>
+        </div>
+      </div>
+      <div id="hudBottom" class="hidden">
+        <div class="toolSlot selected" title="Quarky (lancer)">●</div>
+        <div class="toolSlot" title="Miroir (bientôt)">◇</div>
+        <div class="toolSlot" title="Ressort (bientôt)">Ϟ</div>
+      </div>
+
+      <!-- CODEX POPUP -->
+      <div id="codexPopup" class="overlay hidden">
+        <div id="codexCard">
+          <div class="starsRow">★ ★ ☆</div>
+          <h2>Le saviez-vous ?</h2>
+          <div class="quote">
+            « Regarde-toi filer comme ça ! Tu viens d'utiliser l'<b>énergie cinétique</b> emmagasinée dans le lancer — exactement le principe derrière une fronde... même si, avoue, c'était plus amusant avec toi qu'avec une pierre. »
+            <br><br>— notes du labo
+          </div>
+          <button id="continueBtn">Continuer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="caption">Stage 2 — maquette interactive : carte des mondes (toggle Sablier/Linéaire), niveau Macro jouable (glisser Quarky puis relâcher), pop-up Codex à la victoire.</div>
+</div>
+
+<script>
+(function(){
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const screenEl = document.getElementById('screen');
+  const DPR = Math.min(window.devicePixelRatio || 1, 2);
+  let W, H;
+
+  function resize(){
+    const rect = screenEl.getBoundingClientRect();
+    W = rect.width; H = rect.height;
+    canvas.width = W * DPR; canvas.height = H * DPR;
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+  }
+  window.addEventListener('resize', resize);
+
+  const SCALES = {
+    quantique:  {label:'QUANTIQUE',  color:'#f472b6'},
+    atomique:   {label:'ATOMIQUE',   color:'#facc15'},
+    macro:      {label:'MACRO',      color:'#4ade80'},
+    spatiale:   {label:'SPATIALE',   color:'#a78bfa'},
+    cosmo:      {label:'COSMOLOGIQUE', color:'#818cf8'}
+  };
+
+  let screenState = 'map'; // 'map' | 'level'
+
+  /* ---------------- WORLD MAP ---------------- */
+  const mapScreenEl = document.getElementById('mapScreen');
+  const worldMapEl = document.getElementById('worldMap');
+  const mapLinesEl = document.getElementById('mapLines');
+
+  // Ordre narratif figé : Quantique (naissance de Quarky) -> Cosmologique (climax)
+  const nodeOrder = ['quantique','atomique','macro','spatiale','cosmo'];
+  const nodeEls = {};
+
+  const PLAYABLE = ['quantique', 'macro'];
+  nodeOrder.forEach(key => {
+    const el = document.createElement('div');
+    el.className = 'node' + (PLAYABLE.includes(key) ? '' : ' locked');
+    el.style.borderColor = SCALES[key].color;
+    el.innerHTML = `<div style="color:${SCALES[key].color}; font-size:16px;">●</div><div class="label" style="color:${SCALES[key].color}">${SCALES[key].label}</div>`;
+    el.addEventListener('click', () => {
+      if (PLAYABLE.includes(key)) enterLevel(key);
+    });
+    worldMapEl.appendChild(el);
+    nodeEls[key] = el;
+  });
+
+  function layoutNodes(){
+    const w = worldMapEl.clientWidth, h = worldMapEl.clientHeight;
+    const cx = w/2;
+    const positions = {};
+    nodeOrder.forEach((k,i)=>{ positions[k] = {x:cx, y:20 + i*(h-60)/(nodeOrder.length-1)}; });
+    nodeOrder.forEach(key=>{
+      const p = positions[key];
+      nodeEls[key].style.left = (p.x - 32) + 'px';
+      nodeEls[key].style.top = (p.y - 32) + 'px';
+    });
+    // draw connecting lines, dans l'ordre narratif
+    mapLinesEl.innerHTML = '';
+    for(let i=0;i<nodeOrder.length-1;i++){
+      const pa = positions[nodeOrder[i]], pb = positions[nodeOrder[i+1]];
+      const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1', pa.x); line.setAttribute('y1', pa.y);
+      line.setAttribute('x2', pb.x); line.setAttribute('y2', pb.y);
+      line.setAttribute('stroke', '#1e2536');
+      line.setAttribute('stroke-width', '2');
+      line.setAttribute('stroke-dasharray', '4 5');
+      mapLinesEl.appendChild(line);
+    }
+  }
+
+  /* ---------------- LEVEL: MACRO ---------------- */
+  const hudTop = document.getElementById('hudTop');
+  const hudBottom = document.getElementById('hudBottom');
+  const codexPopup = document.getElementById('codexPopup');
+  const backBtn = document.getElementById('backBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const continueBtn = document.getElementById('continueBtn');
+
+  let level = null;
+
+  function makeMacroLevel(){
+    return {
+      scale: 'macro',
+      gravity: 520,
+      launcherPos: {x:0.16, y:0.82}, // fractions of W/H
+      target: {x:0.78, y:0.24, r:0.045},
+      obstacles: [
+        {x:0.5, y:0.48, w:0.1, h:0.11} // electro-aimant, illustrated matiere
+      ],
+      // Photons a collecter (placement arbitraire pour la preuve de concept -
+      // le placement definitif sera valide par le moteur physique du Stage 3)
+      photons: [
+        {x:0.32, y:0.64, r:0.022, collected:false},
+        {x:0.54, y:0.40, r:0.022, collected:false},
+        {x:0.70, y:0.20, r:0.022, collected:false}
+      ],
+      ball: null,
+      dragging: false,
+      dragStart: null,
+      dragCur: null,
+      launched: false,
+      won: false,
+      trail: []
+    };
+  }
+
+  // Niveau Quantique — donnees reprises telles qu'exportees par le moteur
+  // physique du Stage 3 (stage3-physics-engine/levels/quantique_superposition_1.json),
+  // concept "superposition d'etats". Boite fermee, SANS gravite (cf. art-direction),
+  // trajectoire en ligne droite, rebond mural limite a 1 (au-dela, la particule est
+  // "perdue" — cf. simulate.py), separateur qui redirige selon la moitie touchee.
+  function makeQuantiqueLevel(){
+    return {
+      scale: 'quantique',
+      concept: 'superposition',
+      launcherPos: {x:0.12, y:0.5},
+      target: {x:0.85, y:0.15, r:0.05},
+      splitter: {x:0.35, y:0.5, r:0.075, armA:-35, armB:35},
+      // Repris tel quel de quantique_superposition_1.json (Stage 3). Le
+      // "goulot" (murs pres du lanceur, x=0.22) force une visee dans un cone
+      // etroit AVANT le separateur ; comme son cone est plus etroit que celui
+      // du separateur, tout ce qui passe le goulot touche forcement le
+      // separateur ensuite (corrige le bypass constate en test manuel :
+      // avant, une ligne droite lanceur -> cible ne touchait jamais rien).
+      // Le goulot est a distance du separateur (pas colle dessus), sinon ses
+      // murs bloquent le bras de sortie du separateur juste apres la
+      // redirection (2e bug constate : une visee correcte restait piegee).
+      walls: [
+        {x:0.22, y:0.3513, r:0.12}, {x:0.22, y:0.2513, r:0.12}, {x:0.22, y:0.1513, r:0.12},
+        {x:0.22, y:0.0513, r:0.12}, {x:0.22, y:-0.0487, r:0.12},
+        {x:0.22, y:0.6487, r:0.12}, {x:0.22, y:0.7487, r:0.12}, {x:0.22, y:0.8487, r:0.12},
+        {x:0.22, y:0.9487, r:0.12}, {x:0.22, y:1.0487, r:0.12}
+      ],
+      codexText: "« Tu as suivi les deux chemins à la fois, jusqu'à ce que je regarde... et que l'un des deux devienne réel. »",
+      photons: [
+        {x:0.6, y:0.283, r:0.03, collected:false}
+      ],
+      // ball en coordonnees FRACTION (0..1), pas pixels, pour rester aligne
+      // sur le moteur Python (vitesse constante, pas de gravite)
+      ballF: null,
+      velF: {x:0, y:0},
+      dragging: false,
+      dragStart: null,
+      dragCur: null,
+      launched: false,
+      won: false,
+      lost: false,
+      splitterHit: false,
+      wallBounces: 0,
+      trail: []
+    };
+  }
+
+  function enterLevel(key){
+    screenState = 'level';
+    mapScreenEl.classList.add('hidden');
+    hudTop.classList.remove('hidden');
+    hudBottom.classList.remove('hidden');
+    level = key === 'quantique' ? makeQuantiqueLevel() : makeMacroLevel();
+    document.querySelectorAll('.toolSlot')[0].style.borderColor = SCALES[key === 'quantique' ? 'quantique' : 'macro'].color;
+    resetBall();
+  }
+
+  function exitLevel(){
+    screenState = 'map';
+    mapScreenEl.classList.remove('hidden');
+    hudTop.classList.add('hidden');
+    hudBottom.classList.add('hidden');
+    codexPopup.classList.add('hidden');
+    level = null;
+  }
+
+  function resetBall(){
+    if(!level) return;
+    level.launched = false;
+    level.won = false;
+    level.trail = [];
+    level.photons.forEach(ph => ph.collected = false);
+    codexPopup.classList.add('hidden');
+    document.getElementById('starCount').textContent = '0/3';
+    if (level.scale === 'quantique'){
+      level.ballF = {x: level.launcherPos.x, y: level.launcherPos.y};
+      level.velF = {x:0, y:0};
+      level.lost = false;
+      level.splitterHit = false;
+      level.wallBounces = 0;
+    } else {
+      const p = toPx(level.launcherPos);
+      level.ball = {x:p.x, y:p.y, vx:0, vy:0};
+    }
+  }
+
+  function toPx(f){ return {x: f.x*W, y: f.y*H}; }
+
+  backBtn.addEventListener('click', exitLevel);
+  resetBtn.addEventListener('click', resetBall);
+  continueBtn.addEventListener('click', exitLevel);
+
+  /* input: drag to launch, slingshot style */
+  function getPointer(e){
+    const rect = canvas.getBoundingClientRect();
+    const t = e.touches ? e.touches[0] : e;
+    return { x: t.clientX - rect.left, y: t.clientY - rect.top };
+  }
+  function ballPx(){
+    if (!level) return {x:0,y:0};
+    return level.scale === 'quantique' ? toPx(level.ballF) : level.ball;
+  }
+
+  canvas.addEventListener('pointerdown', (e)=>{
+    if (screenState !== 'level' || !level || level.launched) return;
+    const p = getPointer(e);
+    const bp = ballPx();
+    const d = Math.hypot(p.x-bp.x, p.y-bp.y);
+    if (d < 40){
+      level.dragging = true; level.dragStart = {x:bp.x,y:bp.y}; level.dragCur = p;
+      // nouvelle tentative : les Photons ne comptent que s'ils sont ramassés dans le meme vol
+      level.photons.forEach(ph => ph.collected = false);
+    }
+  });
+  window.addEventListener('pointermove', (e)=>{
+    if (level && level.dragging){ level.dragCur = getPointer(e); }
+  });
+  window.addEventListener('pointerup', ()=>{
+    if (level && level.dragging){
+      level.dragging = false;
+      const dx = level.dragStart.x - level.dragCur.x;
+      const dy = level.dragStart.y - level.dragCur.y;
+      if (level.scale === 'quantique'){
+        // param_space du niveau (cf. JSON exporte) : puissance ~0.4-0.8,
+        // vitesse constante en coordonnees fraction (pas de gravite)
+        const angle = Math.atan2(dy, dx);
+        const power = Math.min(0.85, Math.max(0.35, Math.hypot(dx,dy) / 90));
+        level.velF = {x: Math.cos(angle)*power, y: Math.sin(angle)*power};
+        level.wallBounces = 0;
+        level.splitterHit = false;
+      } else {
+        level.ball.vx = dx * 3.2;
+        level.ball.vy = dy * 3.2;
+      }
+      level.launched = true;
+    }
+  });
+
+  // Système d'étoiles (cf. skill gameplay-mechanics) : 1 étoile par Photon
+  // collecté pendant le vol qui atteint la cible (modèle Cut the Rope).
+  function renderStars(n){
+    return '★'.repeat(n) + '☆'.repeat(3-n);
+  }
+
+  /* ---------------- DRAWING ---------------- */
+  function drawGrid(color){
+    ctx.strokeStyle = color; ctx.lineWidth = 1; ctx.globalAlpha = 0.5;
+    for(let y=H*0.2; y<H; y+=H*0.28){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+    ctx.globalAlpha = 1;
+  }
+
+  function drawQuarky(x, y, color, rimColor){
+    ctx.save();
+    ctx.translate(x,y);
+    // shadow
+    ctx.beginPath(); ctx.ellipse(0, 22, 16, 4.5, 0, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.fill();
+    // body gradient
+    const grad = ctx.createRadialGradient(-6,-10,2, 0,0,26);
+    grad.addColorStop(0, '#ffffff');
+    grad.addColorStop(0.18, lighten(color, 0.5));
+    grad.addColorStop(0.6, color);
+    grad.addColorStop(1, darken(color, 0.35));
+    ctx.beginPath();
+    ctx.moveTo(0,-24);
+    ctx.bezierCurveTo(13,-24, 17,-9, 15,3);
+    ctx.bezierCurveTo(13,17, 7,24, 0,24);
+    ctx.bezierCurveTo(-7,24, -13,17, -15,3);
+    ctx.bezierCurveTo(-17,-9, -13,-24, 0,-24);
+    ctx.closePath();
+    ctx.fillStyle = grad;
+    ctx.fill();
+    ctx.lineWidth = 1.5; ctx.strokeStyle = rimColor; ctx.stroke();
+    // eyes
+    ctx.fillStyle = darken(color, 0.75);
+    ctx.beginPath(); ctx.arc(-6,-2,5,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(6,-2,5,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(-4.5,-3.5,1.4,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(7.5,-3.5,1.4,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+  }
+
+  function drawMagnet(cx, cy, size){
+    ctx.save();
+    ctx.translate(cx, cy);
+    const r = size*0.32, legW = size*0.18, legH = size*0.42;
+    // shadow
+    ctx.beginPath(); ctx.ellipse(0, legH*0.6, size*0.4, 6, 0, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fill();
+    // U body gradient (pink pole)
+    const bodyGrad = ctx.createLinearGradient(-r, -r, r, legH);
+    bodyGrad.addColorStop(0,'#fecaca'); bodyGrad.addColorStop(0.5,'#f472b6'); bodyGrad.addColorStop(1,'#9d174d');
+    ctx.strokeStyle = bodyGrad; ctx.lineWidth = legW; ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(-r, legH*0.45);
+    ctx.lineTo(-r, -r*0.2);
+    ctx.arc(0, -r*0.2, r, Math.PI, 0, false);
+    ctx.lineTo(r, legH*0.45);
+    ctx.stroke();
+    // pole caps (N blue / S pink)
+    ctx.fillStyle = '#38bdf8';
+    ctx.beginPath(); ctx.roundRect(-r-legW/2, legH*0.4, legW, legH*0.22, 3); ctx.fill();
+    ctx.fillStyle = '#f472b6';
+    ctx.beginPath(); ctx.roundRect(r-legW/2, legH*0.4, legW, legH*0.22, 3); ctx.fill();
+    // rim light
+    ctx.strokeStyle = 'rgba(255,255,255,0.35)'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(0, -r*0.2, r-legW/2-0.5, Math.PI*0.9, Math.PI*1.5); ctx.stroke();
+    ctx.restore();
+  }
+
+  // Etincelle : petite croix qui clignote (scintillement), cf. art-direction
+  // — "le Photon doit se lire comme une recompense au premier coup d'oeil".
+  function drawSparkle(x, y, size, alpha){
+    if (size <= 0.15) return;
+    ctx.save();
+    ctx.translate(x,y);
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = Math.max(0.6, size*0.35);
+    ctx.beginPath();
+    ctx.moveTo(-size,0); ctx.lineTo(size,0);
+    ctx.moveTo(0,-size); ctx.lineTo(0,size);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawPhoton(cx, cy, r, collected, color){
+    if (collected) return; // disparait une fois ramasse
+    color = color || SCALES.macro.color;
+    ctx.save();
+    ctx.translate(cx,cy);
+    const t = performance.now()/1000;
+    const pulse = 1 + 0.15*Math.sin(t*4.5 + cx);
+    // halo
+    ctx.beginPath(); ctx.arc(0,0,r*2.2*pulse,0,Math.PI*2);
+    ctx.fillStyle = hexToRgba(color, 0.12); ctx.fill();
+    // corps (couche matiere : degrade, pas un point plat)
+    const g = ctx.createRadialGradient(-r*0.3,-r*0.3,r*0.1, 0,0,r);
+    g.addColorStop(0,'#ffffff'); g.addColorStop(0.5,lighten(color,0.4)); g.addColorStop(1,color);
+    ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2);
+    ctx.fillStyle = g; ctx.fill();
+    ctx.strokeStyle = color; ctx.lineWidth = 1; ctx.stroke();
+    // scintillement : 3 etincelles autour du corps, position stable par
+    // Photon (seed derive de sa position), clignotement independant
+    const seed = cx*13.37 + cy*7.77;
+    for (let i=0; i<3; i++){
+      const ang = seed + i*2.4 + t*0.6;
+      const dist = r*(1.7 + 0.5*Math.sin(seed+i));
+      const twinkle = Math.max(0, Math.sin(t*3.2 + seed + i*2.1));
+      drawSparkle(Math.cos(ang)*dist, Math.sin(ang)*dist, r*0.55*twinkle, twinkle);
+    }
+    ctx.restore();
+  }
+  function hexToRgba(hex, a){ const c = hexToRgb(hex); return `rgba(${c.r},${c.g},${c.b},${a})`; }
+
+  function lighten(hex, amt){ return mix(hex, '#ffffff', amt); }
+  function darken(hex, amt){ return mix(hex, '#000000', amt); }
+  function mix(hexA, hexB, t){
+    const a = hexToRgb(hexA), b = hexToRgb(hexB);
+    const r = Math.round(a.r + (b.r-a.r)*t);
+    const g = Math.round(a.g + (b.g-a.g)*t);
+    const bl = Math.round(a.b + (b.b-a.b)*t);
+    return `rgb(${r},${g},${bl})`;
+  }
+  function hexToRgb(hex){
+    hex = hex.replace('#','');
+    return { r:parseInt(hex.substring(0,2),16), g:parseInt(hex.substring(2,4),16), b:parseInt(hex.substring(4,6),16) };
+  }
+
+  // Cible = portail (cf. art-direction) : halo + deux anneaux contra-rotatifs
+  // + coeur en degrade INVERSE (sombre au centre, lumineux au bord) pour lire
+  // "trou/téléportation" plutôt qu'une bille pleine.
+  function drawPortalTarget(cx, cy, r, color){
+    const t = performance.now()/1000;
+    ctx.save();
+    ctx.translate(cx, cy);
+
+    // halo large
+    const haloR = r*2.6;
+    const haloGrad = ctx.createRadialGradient(0,0,r*0.5, 0,0,haloR);
+    haloGrad.addColorStop(0, hexToRgba(color,0.35));
+    haloGrad.addColorStop(1, hexToRgba(color,0));
+    ctx.beginPath(); ctx.arc(0,0,haloR,0,Math.PI*2); ctx.fillStyle = haloGrad; ctx.fill();
+
+    // anneau externe, pointille, rotation lente (couche physique)
+    ctx.save();
+    ctx.rotate(t*0.6);
+    ctx.beginPath(); ctx.arc(0,0,r*1.35,0,Math.PI*2);
+    ctx.strokeStyle = hexToRgba(color,0.5); ctx.lineWidth = 1.3; ctx.setLineDash([4,5]);
+    ctx.stroke(); ctx.setLineDash([]);
+    ctx.restore();
+
+    // anneau interne, plein degrade, rotation inverse (couche matiere)
+    ctx.save();
+    ctx.rotate(-t*0.9);
+    const ringGrad = ctx.createLinearGradient(-r,0,r,0);
+    ringGrad.addColorStop(0, lighten(color,0.5));
+    ringGrad.addColorStop(0.5, color);
+    ringGrad.addColorStop(1, lighten(color,0.5));
+    ctx.beginPath(); ctx.arc(0,0,r*1.05,0,Math.PI*2);
+    ctx.strokeStyle = ringGrad; ctx.lineWidth = 2.5; ctx.stroke();
+    ctx.restore();
+
+    // coeur du portail : degrade inverse (sombre -> bord lumineux)
+    const pulse = 1 + 0.08*Math.sin(t*3);
+    const coreR = r*0.85*pulse;
+    const coreGrad = ctx.createRadialGradient(0,0,0, 0,0,coreR);
+    coreGrad.addColorStop(0, darken(color,0.75));
+    coreGrad.addColorStop(0.55, darken(color,0.3));
+    coreGrad.addColorStop(0.85, color);
+    coreGrad.addColorStop(1, lighten(color,0.6));
+    ctx.beginPath(); ctx.arc(0,0,coreR,0,Math.PI*2);
+    ctx.fillStyle = coreGrad; ctx.fill();
+    ctx.strokeStyle = lighten(color,0.7); ctx.lineWidth = 1.2; ctx.globalAlpha = 0.8;
+    ctx.beginPath(); ctx.arc(0,0,coreR,0,Math.PI*2); ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    ctx.restore();
+  }
+
+  function drawMacroScene(){
+    ctx.fillStyle = '#090d17'; ctx.fillRect(0,0,W,H);
+    drawGrid('#131a2a');
+    // ground
+    ctx.fillStyle = '#0d1420'; ctx.fillRect(0, H*0.88, W, H*0.12);
+    ctx.fillStyle = '#4ade80'; ctx.globalAlpha=0.6; ctx.fillRect(0, H*0.88-2, W, 2); ctx.globalAlpha=1;
+
+    // obstacle: electro-aimant en U, rendu illustre (matiere), pas un simple trait
+    drawMagnet(level.obstacles[0].x*W, level.obstacles[0].y*H, level.obstacles[0].w*W);
+
+    // Photons a collecter
+    level.photons.forEach(ph => drawPhoton(ph.x*W, ph.y*H, ph.r*W, ph.collected));
+
+    // target = portail (cf. art-direction)
+    const tp = toPx(level.target);
+    drawPortalTarget(tp.x, tp.y, level.target.r*W, SCALES.macro.color);
+
+    // launcher post
+    const lp = toPx(level.launcherPos);
+    ctx.strokeStyle = '#1a2436'; ctx.lineWidth = 7; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(lp.x, lp.y+30); ctx.lineTo(lp.x, H*0.88); ctx.stroke();
+    ctx.strokeStyle = 'rgba(56,189,248,0.5)'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(lp.x, lp.y+30); ctx.lineTo(lp.x, H*0.88); ctx.stroke();
+
+    // trajectory drag prediction (physics overlay layer: thin dashed)
+    if (level.dragging){
+      const dx = level.dragStart.x - level.dragCur.x;
+      const dy = level.dragStart.y - level.dragCur.y;
+      ctx.strokeStyle = '#4ade80'; ctx.lineWidth = 1.5; ctx.setLineDash([2,6]); ctx.globalAlpha=0.85;
+      ctx.beginPath();
+      let px=level.dragStart.x, py=level.dragStart.y, vx=dx*3.2, vy=dy*3.2;
+      ctx.moveTo(px,py);
+      for(let i=0;i<26;i++){
+        const dt=0.045;
+        vy += level.gravity*dt;
+        px += vx*dt; py += vy*dt;
+        ctx.lineTo(px,py);
+        if (py > H*0.88) break;
+      }
+      ctx.stroke();
+      ctx.setLineDash([]); ctx.globalAlpha=1;
+      // pull line to quarky (slingshot)
+      ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2; ctx.globalAlpha=0.5;
+      ctx.beginPath(); ctx.moveTo(lp.x, lp.y); ctx.lineTo(level.dragCur.x, level.dragCur.y); ctx.stroke();
+      ctx.globalAlpha=1;
+    }
+
+    // real trail once launched
+    if (level.trail.length > 1){
+      ctx.strokeStyle = '#4ade80'; ctx.lineWidth = 1.5; ctx.setLineDash([1,6]); ctx.globalAlpha=0.7;
+      ctx.beginPath();
+      level.trail.forEach((p,i)=>{ i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y); });
+      ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha=1;
+    }
+
+    // Quarky (draggable if not launched, else follows physics)
+    const bx = level.dragging ? level.dragCur.x : level.ball.x;
+    const by = level.dragging ? level.dragCur.y : level.ball.y;
+    drawQuarky(bx, by, SCALES.macro.color, '#4ade80');
+
+    if (level.won){
+      // nothing extra; popup handles it
+    }
+  }
+
+  // Quarky en mode quantique : dedoublement translucide clignotant tant que
+  // la superposition n'a pas ete "mesuree" (contact avec le separateur),
+  // puis effondrement en une seule silhouette solide (cf. skill art-direction,
+  // evolution "Quantique" de Quarky).
+  function drawQuantiqueQuarky(x, y, collapsed){
+    if (!collapsed){
+      const blink = 0.4 + 0.25*Math.sin(performance.now()/300);
+      ctx.globalAlpha = blink;
+      drawQuarky(x-7, y-5, SCALES.quantique.color, '#f9a8d4');
+      ctx.globalAlpha = 1 - blink*0.5;
+      drawQuarky(x+7, y+5, SCALES.quantique.color, '#f9a8d4');
+      ctx.globalAlpha = 1;
+    } else {
+      drawQuarky(x, y, SCALES.quantique.color, '#f9a8d4');
+    }
+  }
+
+  function drawQuantiqueScene(){
+    // boite fermee quasi-noire, AUCUNE grille a cette echelle (cf. art-direction)
+    ctx.fillStyle = '#05070c'; ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle = '#1e2536'; ctx.lineWidth = 1;
+    ctx.strokeRect(1,1,W-2,H-2);
+
+    // "Dedoubleur" repense en PRISME EN Y (couche matiere, illustree, pas un
+    // simple rond) : une bouche large pres du lanceur se resserre en un col
+    // etroit (le goulot physique), s'ouvre a nouveau sur le corps du
+    // separateur, puis se divise en DEUX TUBES visibles vers les deux bras
+    // de sortie. La forme meme de l'objet montre qu'il n'y a qu'un seul
+    // chemin d'entree et deux chemins de sortie — plus besoin de deviner une
+    // regle invisible (cf. retour : "je ne comprends pas le concept du
+    // dedoubleur"). Les murs du goulot bloquent tout tir direct de fait,
+    // puisqu'ils SONT les parois du prisme.
+    const sp = level.splitter;
+    const spx = sp.x*W, spy = sp.y*H, spr = sp.r*W;
+    const neckX = 0.22*W, neckHalf = 0.0287*H;
+    const mouthX = 0.06*W, mouthHalf = 0.46*H;
+
+    function prismWing(sign){
+      ctx.beginPath();
+      ctx.moveTo(mouthX, spy + sign*mouthHalf);
+      ctx.quadraticCurveTo(neckX - 0.02*W, spy + sign*mouthHalf*0.55, neckX, spy + sign*neckHalf);
+      ctx.lineTo(spx, spy + sign*spr*0.92);
+      ctx.quadraticCurveTo(neckX, spy + sign*mouthHalf*0.7, mouthX, spy + sign*mouthHalf*1.35);
+      ctx.closePath();
+    }
+    const wingGrad = ctx.createLinearGradient(mouthX, 0, spx, 0);
+    wingGrad.addColorStop(0, 'rgba(244,114,182,0.05)');
+    wingGrad.addColorStop(0.7, 'rgba(244,114,182,0.28)');
+    wingGrad.addColorStop(1, 'rgba(244,114,182,0.42)');
+    [-1, 1].forEach(sign => {
+      prismWing(sign);
+      ctx.fillStyle = wingGrad; ctx.fill();
+      ctx.strokeStyle = 'rgba(251,207,232,0.4)'; ctx.lineWidth = 1; ctx.stroke();
+    });
+
+    // corps du separateur : coeur du prisme, meme rendu "cristal" qu'avant
+    const spGrad = ctx.createRadialGradient(spx-6,spy-6,2, spx,spy,spr);
+    spGrad.addColorStop(0,'#fbcfe8'); spGrad.addColorStop(0.55,'#f472b6'); spGrad.addColorStop(1,'#9d174d');
+    ctx.globalAlpha = 0.9;
+    ctx.beginPath(); ctx.arc(spx,spy,spr,0,Math.PI*2); ctx.fillStyle = spGrad; ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = '#f472b6'; ctx.lineWidth = 1.5; ctx.stroke();
+
+    // deux tubes de sortie visibles (couche matiere : degrade, pas un trait
+    // fin) vers armA / armB — montrent concretement ou mene chaque bras
+    [sp.armA, sp.armB].forEach(deg=>{
+      const rad = deg*Math.PI/180;
+      const ex = spx + Math.cos(rad)*W*0.26, ey = spy + Math.sin(rad)*W*0.26;
+      const tubeGrad = ctx.createLinearGradient(spx, spy, ex, ey);
+      tubeGrad.addColorStop(0, 'rgba(244,114,182,0.7)');
+      tubeGrad.addColorStop(1, 'rgba(244,114,182,0)');
+      ctx.strokeStyle = tubeGrad; ctx.lineWidth = 12; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(spx, spy); ctx.lineTo(ex, ey); ctx.stroke();
+    });
+
+    // Photons
+    level.photons.forEach(ph => drawPhoton(ph.x*W, ph.y*H, ph.r*W, ph.collected, SCALES.quantique.color));
+
+    // cible = portail (cf. art-direction)
+    const tp = toPx(level.target);
+    drawPortalTarget(tp.x, tp.y, level.target.r*W, SCALES.quantique.color);
+
+    // ligne de visee pendant le drag (slingshot inverse, comme en Macro)
+    const lp = toPx(level.launcherPos);
+    if (level.dragging){
+      ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2; ctx.globalAlpha=0.5;
+      ctx.beginPath(); ctx.moveTo(lp.x, lp.y); ctx.lineTo(level.dragCur.x, level.dragCur.y); ctx.stroke();
+      ctx.globalAlpha=1;
+      // trajectoire predite : ligne droite, SANS gravite
+      const dx = level.dragStart.x - level.dragCur.x, dy = level.dragStart.y - level.dragCur.y;
+      const ang = Math.atan2(dy,dx);
+      ctx.strokeStyle = SCALES.quantique.color; ctx.lineWidth = 1.5; ctx.setLineDash([2,6]); ctx.globalAlpha=0.75;
+      ctx.beginPath(); ctx.moveTo(lp.x,lp.y);
+      ctx.lineTo(lp.x+Math.cos(ang)*W*0.9, lp.y+Math.sin(ang)*W*0.9);
+      ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha=1;
+    }
+
+    // trace reelle une fois lance
+    if (level.trail.length > 1){
+      ctx.strokeStyle = SCALES.quantique.color; ctx.lineWidth = 1.5; ctx.setLineDash([1,6]); ctx.globalAlpha=0.7;
+      ctx.beginPath();
+      level.trail.forEach((p,i)=>{ i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y); });
+      ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha=1;
+    }
+
+    // Quarky
+    const bpx = level.dragging ? level.dragCur : toPx(level.ballF);
+    drawQuantiqueQuarky(bpx.x, bpx.y, level.splitterHit || level.dragging);
+
+    if (level.lost){
+      ctx.fillStyle = 'rgba(5,7,12,0.55)'; ctx.fillRect(0,0,W,H);
+      ctx.fillStyle = '#8ea0bd'; ctx.font = '12px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('Perdue dans la boîte... réessaie.', W/2, H/2);
+      ctx.textAlign = 'left';
+    }
+  }
+
+  function onWin(){
+    level.won = true;
+    level.launched = false;
+    const stars = level.photons.filter(ph => ph.collected).length;
+    document.getElementById('starCount').textContent = stars + '/3';
+    document.querySelector('#codexCard .starsRow').textContent = renderStars(stars).split('').join(' ');
+    if (level.codexText){
+      document.querySelector('#codexCard .quote').innerHTML = level.codexText + '<br><br>— notes du labo';
+    }
+    setTimeout(()=>{ codexPopup.classList.remove('hidden'); }, 250);
+  }
+
+  function stepPhysics(dt){
+    if (!level || !level.launched || level.won) return;
+    const b = level.ball;
+    b.vy += level.gravity * dt;
+    b.x += b.vx * dt;
+    b.y += b.vy * dt;
+    level.trail.push({x:b.x, y:b.y});
+    if (level.trail.length > 60) level.trail.shift();
+
+    // collecte des Photons au contact pendant le vol
+    level.photons.forEach(ph => {
+      if (ph.collected) return;
+      const pp = toPx(ph);
+      if (Math.hypot(b.x-pp.x, b.y-pp.y) < ph.r*W + 12) ph.collected = true;
+    });
+
+    const tp = toPx(level.target);
+    const dist = Math.hypot(b.x-tp.x, b.y-tp.y);
+    if (dist < level.target.r*W + 14){
+      onWin();
+      return;
+    }
+    if (b.y > H*0.88 - 14 || b.x < 0 || b.x > W){
+      // missed: settle on ground / stop
+      level.launched = false;
+      b.vx = 0; b.vy = 0;
+      b.y = Math.min(b.y, H*0.88 - 14);
+    }
+  }
+
+  // ---- Quantique : boite fermee, SANS gravite, vitesse constante,
+  // rebond mural limite a 1, separateur (superposition) qui redirige la
+  // trajectoire selon la moitie touchee. Miroir de stage3-physics-engine/engine/simulate.py.
+  //
+  // Sous-pas fixe (SIM_DT, identique au DT du moteur Python) : un pas de
+  // simulation cale sur le framerate (jusqu'a ~33ms) peut "traverser" un mur
+  // fin en un seul saut sans jamais passer par un point ou la distance de
+  // collision est testee — bug constate en test (un tir a l'angle exploite
+  // a l'origine du correctif passait quand meme, alors que le moteur Python,
+  // en pas fixe de 0.01, le bloquait correctement).
+  const SIM_DT = 0.01;
+
+  function stepPhysicsQuantique(dt){
+    if (!level || !level.launched || level.won || level.lost) return;
+    let remaining = dt;
+    while (remaining > 0){
+      const sub = Math.min(SIM_DT, remaining);
+      remaining -= sub;
+      if (!quantiqueSubstep(sub)) return;
+    }
+  }
+
+  // Retourne false si le niveau s'est termine (gagne/perdu) pendant ce sous-pas.
+  function quantiqueSubstep(dt){
+    const b = level.ballF;
+    b.x += level.velF.x * dt;
+    b.y += level.velF.y * dt;
+    level.trail.push(toPx(b));
+    if (level.trail.length > 90) level.trail.shift();
+
+    // parois de la boite fermee (rebond, max 1 — au-dela, particule "perdue")
+    let bounced = false;
+    if (b.x <= 0){ b.x = 0; level.velF.x = Math.abs(level.velF.x); bounced = true; }
+    else if (b.x >= 1){ b.x = 1; level.velF.x = -Math.abs(level.velF.x); bounced = true; }
+    if (b.y <= 0){ b.y = 0; level.velF.y = Math.abs(level.velF.y); bounced = true; }
+    else if (b.y >= 1){ b.y = 1; level.velF.y = -Math.abs(level.velF.y); bounced = true; }
+    if (bounced){
+      level.wallBounces += 1;
+      if (level.wallBounces > 1){ level.lost = true; level.launched = false; return false; }
+    }
+
+    // cloison (murs internes) : rebond simple, comme une paroi de boite —
+    // compte dans le meme plafond que les parois (sinon un tir raté peut
+    // ricocher indefiniment et retomber "par hasard" sur la cible, cf.
+    // MAX_WALL_BOUNCES cote moteur Python)
+    for (const w of (level.walls || [])){
+      if (Math.hypot(b.x - w.x, b.y - w.y) < w.r + 0.004){
+        const nx = b.x - w.x, ny = b.y - w.y;
+        const nlen = Math.hypot(nx, ny) || 1;
+        const ux = nx / nlen, uy = ny / nlen;
+        const dot = level.velF.x * ux + level.velF.y * uy;
+        level.velF = {x: level.velF.x - 2*dot*ux, y: level.velF.y - 2*dot*uy};
+        level.wallBounces += 1;
+        if (level.wallBounces > 1){ level.lost = true; level.launched = false; return false; }
+      }
+    }
+
+    // separateur de superposition
+    const sp = level.splitter;
+    if (!level.splitterHit && Math.hypot(b.x-sp.x, b.y-sp.y) < sp.r + 0.004){
+      const chosenDeg = (b.y - sp.y) <= 0 ? sp.armA : sp.armB;
+      const rad = chosenDeg * Math.PI/180;
+      const mag = Math.hypot(level.velF.x, level.velF.y);
+      level.velF = {x: Math.cos(rad)*mag, y: Math.sin(rad)*mag};
+      level.splitterHit = true;
+    }
+
+    // Photons
+    level.photons.forEach(ph => {
+      if (ph.collected) return;
+      if (Math.hypot(b.x-ph.x, b.y-ph.y) < ph.r + 0.012) ph.collected = true;
+    });
+
+    // cible
+    if (Math.hypot(b.x-level.target.x, b.y-level.target.y) < level.target.r + 0.012){
+      onWin();
+      return false;
+    }
+    return true;
+  }
+
+  let lastT = performance.now();
+  function loop(t){
+    const dt = Math.min((t-lastT)/1000, 0.033);
+    lastT = t;
+    ctx.clearRect(0,0,W,H);
+    if (screenState === 'level' && level){
+      if (level.scale === 'quantique'){
+        stepPhysicsQuantique(dt);
+        drawQuantiqueScene();
+      } else {
+        stepPhysics(dt);
+        drawMacroScene();
+      }
+    } else {
+      ctx.fillStyle = '#05070c'; ctx.fillRect(0,0,W,H);
+    }
+    requestAnimationFrame(loop);
+  }
+
+  window.addEventListener('DOMContentLoaded', ()=>{
+    resize();
+    layoutNodes();
+    requestAnimationFrame(loop);
+  });
+  // roundRect polyfill for older canvas
+  if (!CanvasRenderingContext2D.prototype.roundRect){
+    CanvasRenderingContext2D.prototype.roundRect = function(x,y,w,h,r){
+      this.moveTo(x+r,y);
+      this.arcTo(x+w,y,x+w,y+h,r);
+      this.arcTo(x+w,y+h,x,y+h,r);
+      this.arcTo(x,y+h,x,y,r);
+      this.arcTo(x,y,x+w,y,r);
+      this.closePath();
+      return this;
+    };
+  }
+})();
+</script>
+</body>
+</html>

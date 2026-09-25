@@ -1,0 +1,69 @@
+{
+  "launcher": {
+    "x": 0.1,
+    "y": 0.5
+  },
+  "target": {
+    "x": 0.85,
+    "y": 0.5,
+    "r": 0.05
+  },
+  "obstacles": [
+    {
+      "id": "barrier",
+      "type": "barrier",
+      "x": 0.45,
+      "y": 0.5,
+      "r": 0.05,
+      "energy_threshold": 0.65,
+      "threshold_motion": {
+        "amplitude": 0.45,
+        "period": 0.2,
+        "phase": 1.2
+      }
+    }
+  ],
+  "photons": [
+    {
+      "id": "p1",
+      "x": 0.65,
+      "y": 0.5,
+      "r": 0.03
+    }
+  ],
+  "param_space": {
+    "angle_deg": {
+      "type": "range",
+      "min": -3,
+      "max": 3,
+      "step": 1
+    },
+    "power": {
+      "type": "choice",
+      "values": [
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1.0
+      ]
+    }
+  },
+  "id": "quantique-quantification-1",
+  "scale": "quantique",
+  "concept": "quantification",
+  "difficulty": 1,
+  "codex_text": "« Pas de réglage continu ici : seulement quelques crans d'énergie possibles, ni plus ni moins. »",
+  "solvable": true,
+  "reference_solution": {
+    "params": {
+      "angle_deg": -2,
+      "power": 0.6
+    },
+    "photons_collected": 1,
+    "photon_ids": [
+      "p1"
+    ]
+  },
+  "max_photons_reachable": 1
+}

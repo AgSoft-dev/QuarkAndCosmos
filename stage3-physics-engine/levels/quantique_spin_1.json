@@ -1,0 +1,77 @@
+{
+  "launcher": {
+    "x": 0.1,
+    "y": 0.5
+  },
+  "target": {
+    "x": 0.867,
+    "y": 0.69,
+    "r": 0.04
+  },
+  "obstacles": [
+    {
+      "id": "pole",
+      "type": "pole",
+      "x": 0.4,
+      "y": 0.42,
+      "r": 0.06,
+      "pole": "+",
+      "kick_deg": -60
+    }
+  ],
+  "photons": [
+    {
+      "id": "p1",
+      "x": 0.6,
+      "y": 0.641,
+      "r": 0.03
+    }
+  ],
+  "param_space": {
+    "angle_deg": {
+      "type": "range",
+      "min": -12,
+      "max": -11,
+      "step": 1
+    },
+    "power": {
+      "type": "choice",
+      "values": [
+        0.5,
+        0.7
+      ]
+    },
+    "spin_up": {
+      "type": "choice",
+      "values": [
+        true,
+        false
+      ]
+    },
+    "tap_time": {
+      "type": "range",
+      "min": 0.0,
+      "max": 0.8,
+      "step": 0.05
+    }
+  },
+  "id": "quantique-spin-1",
+  "scale": "quantique",
+  "concept": "spin",
+  "difficulty": 1,
+  "codex_text": "« Ton spin détermine qui t'attire et qui te repousse — une boussole invisible. »",
+  "solvable": true,
+  "reference_solution": {
+    "params": {
+      "angle_deg": -12,
+      "power": 0.5,
+      "spin_up": true,
+      "tap_time": 0.55
+    },
+    "photons_collected": 1,
+    "photon_ids": [
+      "p1"
+    ]
+  },
+  "max_photons_reachable": 1
+}

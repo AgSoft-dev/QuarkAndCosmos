@@ -1,0 +1,138 @@
+{
+  "launcher": {
+    "x": 0.12,
+    "y": 0.5
+  },
+  "target": {
+    "x": 0.85,
+    "y": 0.15,
+    "r": 0.05
+  },
+  "obstacles": [
+    {
+      "id": "chuteTop0",
+      "type": "wall",
+      "x": 0.22,
+      "y": 0.3513,
+      "r": 0.12
+    },
+    {
+      "id": "chuteTop1",
+      "type": "wall",
+      "x": 0.22,
+      "y": 0.2513,
+      "r": 0.12
+    },
+    {
+      "id": "chuteTop2",
+      "type": "wall",
+      "x": 0.22,
+      "y": 0.1513,
+      "r": 0.12
+    },
+    {
+      "id": "chuteTop3",
+      "type": "wall",
+      "x": 0.22,
+      "y": 0.0513,
+      "r": 0.12
+    },
+    {
+      "id": "chuteTop4",
+      "type": "wall",
+      "x": 0.22,
+      "y": -0.0487,
+      "r": 0.12
+    },
+    {
+      "id": "chuteBot0",
+      "type": "wall",
+      "x": 0.22,
+      "y": 0.6487,
+      "r": 0.12
+    },
+    {
+      "id": "chuteBot1",
+      "type": "wall",
+      "x": 0.22,
+      "y": 0.7487,
+      "r": 0.12
+    },
+    {
+      "id": "chuteBot2",
+      "type": "wall",
+      "x": 0.22,
+      "y": 0.8487,
+      "r": 0.12
+    },
+    {
+      "id": "chuteBot3",
+      "type": "wall",
+      "x": 0.22,
+      "y": 0.9487,
+      "r": 0.12
+    },
+    {
+      "id": "chuteBot4",
+      "type": "wall",
+      "x": 0.22,
+      "y": 1.0487,
+      "r": 0.12
+    },
+    {
+      "id": "splitter",
+      "type": "splitter",
+      "x": 0.35,
+      "y": 0.5,
+      "r": 0.075,
+      "arm_a_deg": -35,
+      "arm_b_deg": 35,
+      "motion": {
+        "axis": "y",
+        "amplitude": 0.015,
+        "period": 0.6
+      }
+    }
+  ],
+  "photons": [
+    {
+      "id": "p1",
+      "x": 0.6,
+      "y": 0.283,
+      "r": 0.03
+    }
+  ],
+  "param_space": {
+    "angle_deg": {
+      "type": "range",
+      "min": -15,
+      "max": 15,
+      "step": 1
+    },
+    "power": {
+      "type": "choice",
+      "values": [
+        0.4,
+        0.6,
+        0.8
+      ]
+    }
+  },
+  "id": "quantique-superposition-1",
+  "scale": "quantique",
+  "concept": "superposition",
+  "difficulty": 1,
+  "codex_text": "« Tu as suivi les deux chemins à la fois, jusqu'à ce que je regarde... et que l'un des deux devienne réel. »",
+  "solvable": true,
+  "reference_solution": {
+    "params": {
+      "angle_deg": -15,
+      "power": 0.6
+    },
+    "photons_collected": 1,
+    "photon_ids": [
+      "p1"
+    ]
+  },
+  "max_photons_reachable": 1
+}
