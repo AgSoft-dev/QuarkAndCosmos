@@ -14,10 +14,11 @@ Open `index.html` in a browser (a single file with no build step; the only exter
 3. **Diegetic objects catalogue** (Quantum beta only): launcher, mirror, prism/splitter, potential barrier, entangled pair, Stern–Gerlach magnet, portal, Photon. Each is shown at rest and active.
 4. **Colour contract**: key `#f472b6`, accent `#67e8f9`, background `#0a0612`, threshold `#fb923c`. WCAG contrast is computed in JS (all HUD pairs ≥ 4.5:1). There's a deuteranopia/protanopia simulation (Machado 2009) of frame A captured live, plus a ΔE table between pairs.
 
-## Decisions requested
+## Decisions (validated)
 
-- **Gate §1.1**: pick **A**, **B**, **C** or a mix (e.g. "C's background + A's matter").
-- **§1.2**: **Quarky v2** (glowing core + jelly membrane, eyes kept): **yes / no**.
+- **Gate §1.1**: **mostly B** (flat lab, the most readable) **with C's background** (3-layer parallax, soft light rays, grain/vignette ≤ 3%). Portrait kept.
+- **§1.2**: **Quarky v2: yes.**
+- Written into `.claude/skills/art-direction/SKILL.md` (DA v2 + v1 → v2 log). This page stays as the reference board; a combined "B + C background" frame is the next sheet to produce.
 
 ## Data source and compromises
 

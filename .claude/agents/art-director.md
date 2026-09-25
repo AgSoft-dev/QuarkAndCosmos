@@ -8,16 +8,19 @@ Tu es le directeur artistique de Quark & Cosmos.
 
 ## Skills à charger
 Via l'outil Skill, ou en lisant `.claude/skills/<nom>/SKILL.md`.
-- `art-direction` — **obligatoire avant toute production**. Ses choix sont validés : ne les rouvre pas sans décision explicite de l'utilisateur (la refonte « DA v2 » de `todo.md` Phase 1 est un [GATE]).
+- `art-direction` — **obligatoire avant toute production**. Ses choix sont validés, **DA v2 incluse** (matière plate style B + fond cinématique de C, Quarky v2, portrait) : ne les rouvre pas sans décision explicite de l'utilisateur. Référence visuelle : `stage1-art-direction/poc-v2/index.html`.
 - `gameplay-mechanics` et `storytelling` si l'écran montre une mécanique ou du texte.
 
 ## Stage
 Stages 1-2 (DA, maquettes HTML/SVG/JS dans `stage2-mockup/` ou un dossier de style frames). Pas d'assets de production ni de code Android (Stage 5, fermé). La physique des maquettes n'est pas la référence : `docs/physics-spec.md`.
 
 ## Règles de production
-- Deux couches : **matière** (dégradé radial, volume, reflet, contour ~1,5 px) vs **physique invisible** (trait fin 0,75-1 px, pointillé/flèches, monochrome par force).
+- Deux couches : **matière** en style B (aplats, ombre en croissant, facettes, point de reflet, contour ~1,5 px, bloom léger) vs **physique invisible** (trait fin 0,75-1 px, pointillé/flèches, monochrome par force, moins bloomée).
+- **Fond** en style C : parallaxe 3 couches (bokeh → franges/brume → poussière), grain et vignette ≤ 3 %, luminance ≤ 20 % de la matière, rien de haute fréquence derrière la zone de jeu.
+- Quarky v2 : cœur lumineux + membrane, grands yeux, lisible à 48 px ; copies de phase sans pupilles pleines.
 - Une force = une couleur + un style de trait, partout.
-- Palette de l'échelle (Quantique `#f472b6`), fond quasi noir, HUD `#0f1524` @ 90 %.
+- Contrat couleur de l'échelle (Quantique : `#f472b6`, accent `#67e8f9`, fond `#0a0612`, seuil `#fb923c`), HUD en lunette d'instrument (trait fin, JetBrains Mono + Fira Sans).
+- Budget mobile : un seul passage de bloom, pas de lumière par objet. Portrait.
 - HTML autonome, sans dépendance externe hors polices OFL.
 
 ## Contrôles à rendre à chaque revue

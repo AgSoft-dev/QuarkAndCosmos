@@ -47,31 +47,32 @@ Problems found in the current engine and levels (checked by running `cli.py vali
 > Note: `art-direction` is marked validated and says not to reopen it without an explicit user decision. This request *is* that decision, but only for the rendering style. The palette per scale, the two-layer rule and Quarky's DNA are **kept**. The change is illustrated/Cut-the-Rope-style matter → **luminous neon vector + volumetric glow**.
 
 ### 1.1 Style bible ⇄
-- [ ] Write a 1-page style thesis: **"a retro-futuristic physics lab seen through an instrument"**. Every scale is what a lab instrument would show at that magnification: particle-detector bubble chamber → electron microscope → the lab bench itself → orbital telescope → deep-field cosmology. The *instrument* is the diegetic frame and the HUD is its bezel.
-- [ ] Reference board with specific traits to borrow:
+- [x] Write a 1-page style thesis: **"a retro-futuristic physics lab seen through an instrument"**. Every scale is what a lab instrument would show at that magnification: particle-detector bubble chamber → electron microscope → the lab bench itself → orbital telescope → deep-field cosmology. The *instrument* is the diegetic frame and the HUD is its bezel. *Done: in `art-direction` (DA v2).*
+- [x] Reference board with specific traits to borrow:
   - *Monument Valley*: flat-shaded geometry, a strict palette of 3–4 colours per scene, negative space.
   - *God of Light*: additive glow beams, light as the main actor, dark backgrounds.
   - *Alto's Odyssey*: layered parallax silhouettes, a colour grade that shifts with time/scale, calm ambient motion.
   - *Osmos / Lumino City*: a sense of scale, soft depth of field.
-- [ ] Rendering recipe (must be cheap on mobile):
+- [x] Rendering recipe (must be cheap on mobile):
   - Vector shapes + one **additive bloom** pass (downsampled, 2 blur iterations).
   - A **single colour-grade LUT per scale**.
   - Film grain / vignette at ≤ 3% opacity.
   - No per-object real-time lights.
-- [ ] Update the two-layer rule for glow: **matter** = solid core + soft rim glow and specular highlight (volume stays readable). **Invisible physics** = thin additive lines that pulse along their direction of flow, never bloomed as strongly as the matter layer.
-- [ ] Colour contract per scale: the existing key colour (`#f472b6`, `#facc15`, `#4ade80`, `#a78bfa`, `#818cf8`) plus 1 complementary accent, 1 deep background, 1 "danger/threshold" colour. Check contrast ≥ 4.5:1 for HUD text and do a colour-blind pass (deuteranopia and protanopia). Force colours must also differ by **line style**, which the existing rule already requires.
-- [ ] **[GATE]** User picks between 2–3 style frames (same Quantum level, 3 treatments) before any asset production.
+- [x] Update the two-layer rule for glow: **matter** = solid core + soft rim glow and specular highlight (volume stays readable). **Invisible physics** = thin additive lines that pulse along their direction of flow, never bloomed as strongly as the matter layer. *Done: in `art-direction` (DA v2).*
+- [x] Colour contract per scale: the existing key colour (`#f472b6`, `#facc15`, `#4ade80`, `#a78bfa`, `#818cf8`) plus 1 complementary accent, 1 deep background, 1 "danger/threshold" colour. Check contrast ≥ 4.5:1 for HUD text and do a colour-blind pass (deuteranopia and protanopia). Force colours must also differ by **line style**, which the existing rule already requires. *Done for Quantum (key `#f472b6`, accent `#67e8f9`, background `#0a0612`, threshold `#fb923c`, all HUD pairs ≥ 4.5:1); the other scales get theirs when their world is designed.*
+- [x] **[GATE]** User picks between 2–3 style frames (same Quantum level, 3 treatments) before any asset production. *Decided: mostly **B** (flat lab, most readable) with **C's background** (3-layer parallax, grain/vignette ≤ 3%); portrait kept. POC: `stage1-art-direction/poc-v2/`.*
+- [ ] Produce the combined "B + C background" style frame (and the object states idle / hover / dragged / active / disabled) as the reference sheet for assets.
 
 ### 1.2 Quarky v2 ⇄
-- [ ] Redesign as a **luminous particle-creature**: a glowing core with a jelly outer membrane, big expressive eyes kept (the emotional anchor). Silhouette readable at 48 px.
+- [x] Redesign as a **luminous particle-creature**: a glowing core with a jelly outer membrane, big expressive eyes kept (the emotional anchor). Silhouette readable at 48 px. *Approved by the user (Quarky v2: yes); spec in `art-direction`.*
 - [ ] Per-scale mutation sheet with the existing mutations kept but rendered with light:
   - Quantum: 2–3 ghosted phase-copies, flickering.
   - Atomic: electron ring plus a charge satellite that glows + / −.
   - Macro: canonical form with a real specular highlight.
   - Orbital: solar-sail fins and a light trail.
   - Cosmic: a lensed/skewed silhouette.
-- [ ] Expression set (8 states): idle, aim-tension, launch, in-flight, collect, near-miss, success-warp, fail-fizzle. Each is ≤ 12 frames or procedural (squash/stretch driven by velocity).
-- [ ] Wave mode vs particle mode (Dualité): particle = sharp body. Wave = body dissolves into concentric ripples that travel along the trajectory.
+- [x] Expression set (8 states): idle, aim-tension, launch, in-flight, collect, near-miss, success-warp, fail-fizzle. Each is ≤ 12 frames or procedural (squash/stretch driven by velocity). *Procedural, shown in the POC.*
+- [x] Wave mode vs particle mode (Dualité): particle = sharp body. Wave = body dissolves into concentric ripples that travel along the trajectory.
 
 ### 1.3 Diegetic objects — "lab instruments" catalogue ⇄
 Each object gets a design sheet with: idle / hover / dragged / active / disabled states, the adjustment handle (rotation ring, intensity dial), the force-line style, and its sound cue.
@@ -100,8 +101,8 @@ Each object gets a design sheet with: idle / hover / dragged / active / disabled
 - [ ] Rule: **the background must never compete with the trajectory**. Keep background luminance ≤ 20% of the matter layer, with no high-frequency detail behind the play area.
 - [ ] Rule: **the environment reacts to the result.** On success the background briefly "resolves" (fringes lock into a clean pattern). On failure it decoheres (noise). This is cheap, feels good and teaches something.
 - [ ] Scale-transition cinematic (5–8 s, skippable): zoom out through the portal. Quantum cavity → atom → the apparatus on the bench → the lab window → Earth → the cosmic web. This is the game's signature moment and should be shown in the store trailer.
-- [ ] HUD skin as the **instrument bezel**: a thin line frame, readout typography (one monospaced display font + one humanist UI font, both OFL-licensed), and star counter / reset / object tray kept in their current positions.
-- [ ] Update the `art-direction` skill with v2 once validated (keep a short "v1 → v2 decisions" changelog).
+- [x] HUD skin as the **instrument bezel**: a thin line frame, readout typography (one monospaced display font + one humanist UI font, both OFL-licensed), and star counter / reset / object tray kept in their current positions. *Done in `art-direction` (JetBrains Mono + Fira Sans).*
+- [x] Update the `art-direction` skill with v2 once validated (keep a short "v1 → v2 decisions" changelog).
 
 ### 1.5 Narrative polish ⇄
 - [ ] **[GATE]** Name the scientist. Proposal: gender-neutral and short (e.g. "Dr. Lume"). Also lock Quarky's final name.
@@ -327,7 +328,7 @@ Options, ranked for *this* game (2D, vector/glow, deterministic custom physics, 
 
 1. [ ] **S1** Repo hygiene: restructure (§5.1), fix stale docs, CLAUDE.md status table, pyproject, CI skeleton. *(no design change)*
 2. [ ] **S2** ⇄ Physics-core fixes + tests + golden files (§4.1 physics core).
-3. [ ] **S3** ⇄ Art direction v2 style frames, 3 options (§1.1–1.2) → **[GATE] user picks**.
+3. [x] **S3** ⇄ Art direction v2 style frames, 3 options (§1.1–1.2) → **[GATE] user picks**. *B + C background, Quarky v2, portrait.*
 4. [ ] **S4** ⇄ Physics pedagogy skill + Quantum concept fixes proposal (§2.2) → **[GATE] user approves**.
 5. [ ] **S5** → Validator upgrades (t_min, tolerance, concept-usage, 3-Photon proof) + regenerate the 7 beta levels with 3 Photons each.
 6. [ ] **S6** → Level viewer (HTML, reads `content/levels`), which replaces the hard-coded mockup levels; playtest the 7 levels. → **[GATE] Stage 3 validated**.
