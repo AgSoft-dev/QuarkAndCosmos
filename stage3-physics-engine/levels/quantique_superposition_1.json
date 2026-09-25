@@ -1,4 +1,5 @@
 {
+  "schema_version": 1,
   "launcher": {
     "x": 0.12,
     "y": 0.5
@@ -94,14 +95,6 @@
       }
     }
   ],
-  "photons": [
-    {
-      "id": "p1",
-      "x": 0.6,
-      "y": 0.283,
-      "r": 0.03
-    }
-  ],
   "param_space": {
     "angle_deg": {
       "type": "range",
@@ -123,16 +116,40 @@
   "concept": "superposition",
   "difficulty": 1,
   "codex_text": "« Tu as suivi les deux chemins à la fois, jusqu'à ce que je regarde... et que l'un des deux devienne réel. »",
+  "photons": [
+    {
+      "id": "p1",
+      "x": 0.423,
+      "y": 0.389,
+      "r": 0.03
+    },
+    {
+      "id": "p2",
+      "x": 0.512,
+      "y": 0.327,
+      "r": 0.03
+    },
+    {
+      "id": "p3",
+      "x": 0.674,
+      "y": 0.213,
+      "r": 0.03
+    }
+  ],
   "solvable": true,
   "reference_solution": {
     "params": {
       "angle_deg": -15,
       "power": 0.6
     },
-    "photons_collected": 1,
+    "photons_collected": 3,
     "photon_ids": [
-      "p1"
+      "p1",
+      "p2",
+      "p3"
     ]
   },
-  "max_photons_reachable": 1
+  "max_photons_reachable": 3,
+  "tolerance": 0.2473,
+  "three_star_tolerance": 0.2473
 }

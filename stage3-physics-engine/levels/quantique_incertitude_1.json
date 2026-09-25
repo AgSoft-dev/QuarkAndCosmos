@@ -1,4 +1,5 @@
 {
+  "schema_version": 1,
   "launcher": {
     "x": 0.1,
     "y": 0.6
@@ -14,14 +15,6 @@
     }
   },
   "obstacles": [],
-  "photons": [
-    {
-      "id": "p1",
-      "x": 0.45,
-      "y": 0.553,
-      "r": 0.03
-    }
-  ],
   "param_space": {
     "angle_deg": {
       "type": "range",
@@ -46,16 +39,40 @@
   "concept": "incertitude",
   "difficulty": 1,
   "codex_text": "« Plus tu vises pile, moins tu sais à quelle vitesse tu iras. C'est le prix à payer pour être précis·e. »",
+  "photons": [
+    {
+      "id": "p1",
+      "x": 0.318,
+      "y": 0.571,
+      "r": 0.03
+    },
+    {
+      "id": "p2",
+      "x": 0.496,
+      "y": 0.547,
+      "r": 0.03
+    },
+    {
+      "id": "p3",
+      "x": 0.675,
+      "y": 0.523,
+      "r": 0.03
+    }
+  ],
   "solvable": true,
   "reference_solution": {
     "params": {
       "angle_deg": -15,
       "precision": 0.7
     },
-    "photons_collected": 1,
+    "photons_collected": 3,
     "photon_ids": [
-      "p1"
+      "p1",
+      "p2",
+      "p3"
     ]
   },
-  "max_photons_reachable": 1
+  "max_photons_reachable": 3,
+  "tolerance": 0.1829,
+  "three_star_tolerance": 0.1829
 }

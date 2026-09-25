@@ -1,4 +1,5 @@
 {
+  "schema_version": 1,
   "launcher": {
     "x": 0.1,
     "y": 0.85
@@ -23,14 +24,6 @@
       }
     }
   ],
-  "photons": [
-    {
-      "id": "p1",
-      "x": 0.835,
-      "y": 0.288,
-      "r": 0.03
-    }
-  ],
   "param_space": {
     "angle_deg": {
       "type": "range",
@@ -39,13 +32,10 @@
       "step": 1
     },
     "power": {
-      "type": "choice",
-      "values": [
-        0.3,
-        0.5,
-        0.7,
-        0.9
-      ]
+      "type": "range",
+      "min": 0.3,
+      "max": 0.9,
+      "step": 0.05
     }
   },
   "id": "quantique-tunnel-1",
@@ -53,16 +43,40 @@
   "concept": "tunnel",
   "difficulty": 1,
   "codex_text": "« Assez d'énergie, et même un mur n'est plus vraiment un mur. »",
+  "photons": [
+    {
+      "id": "p1",
+      "x": 0.309,
+      "y": 0.641,
+      "r": 0.03
+    },
+    {
+      "id": "p2",
+      "x": 0.411,
+      "y": 0.539,
+      "r": 0.03
+    },
+    {
+      "id": "p3",
+      "x": 0.66,
+      "y": 0.29,
+      "r": 0.03
+    }
+  ],
   "solvable": true,
   "reference_solution": {
     "params": {
-      "angle_deg": -40,
-      "power": 0.7
+      "angle_deg": -46,
+      "power": 0.55
     },
-    "photons_collected": 1,
+    "photons_collected": 3,
     "photon_ids": [
-      "p1"
+      "p1",
+      "p2",
+      "p3"
     ]
   },
-  "max_photons_reachable": 1
+  "max_photons_reachable": 3,
+  "tolerance": 0.2051,
+  "three_star_tolerance": 0.1218
 }

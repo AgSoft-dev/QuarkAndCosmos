@@ -1,14 +1,16 @@
 """
 Règles de collision « vulgarisées » par concept quantique (cf. skill
-gameplay-mechanics et CLAUDE.md pour la liste des 8 concepts du premier monde).
+gameplay-mechanics et CLAUDE.md pour la liste des 7 concepts de la beta).
 
 Chaque handler a la signature :
     handler(obstacle: dict, pos: Vec2, vel: Vec2, params: dict, state: dict) -> (Vec2, str)
 
 L'événement retourné est l'un de :
     'continue' — l'obstacle a dévié/réfléchi la trajectoire, la simulation continue
-    'pass'     — l'obstacle est ignoré ce pas-ci (la particule le traverse)
-    'trap'     — échec immédiat du niveau (ex : décohérence prématurée)
+    'pass'     — l'obstacle est ignoré (la particule le traverse)
+
+Un handler n'est appelé qu'une fois par contact (à l'entrée dans le rayon de
+l'obstacle), cf. simulate.py.
 """
 from . import vec
 

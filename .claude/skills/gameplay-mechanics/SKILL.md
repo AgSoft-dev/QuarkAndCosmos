@@ -32,7 +32,7 @@ Les réglages pré-tir (dials façon labo, cf. section suivante) restent valides
 
 Trois phases, dans cet ordre, pour l'organisation des niveaux au sein d'un même monde (échelle) :
 
-1. **Introduction séquentielle** — chaque concept physique du monde (cf. liste dans `CLAUDE.md`, ex. 8 concepts pour le Quantique) est présenté un par un, dans son propre niveau d'intro, jamais deux concepts nouveaux en même temps.
+1. **Introduction séquentielle** — chaque concept physique du monde (cf. liste dans `CLAUDE.md`, 7 concepts pour le Quantique en beta) est présenté un par un, dans son propre niveau d'intro, jamais deux concepts nouveaux en même temps.
 2. **Progression de difficulté intra-concept** — plusieurs niveaux qui font monter la difficulté sur un même concept avant de passer au suivant (cf. règle déjà posée dans `art-direction` : même vocabulaire visuel, on ajoute des contraintes plutôt que de changer le style).
 3. **Mix inter-concepts** — des niveaux combinant 2+ concepts déjà appris du même monde, pour des puzzles plus riches/complexes.
 

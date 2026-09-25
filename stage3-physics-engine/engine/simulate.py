@@ -28,6 +28,14 @@ DT = 0.01
 # rebonds, donc une vraie résolution du puzzle.
 MAX_STEPS = 300
 COLLISION_EPS = 0.004
+# Instant minimal d'un tap en vol (secondes simulées). En dessous, taper
+# reviendrait à un réglage pré-tir déguisé (constat d'audit : les meilleures
+# solutions de dualite/intrication tapaient à t=0), ce qui contredit la règle
+# "action en vol" du skill gameplay-mechanics. Le validateur écarte ces tirs.
+TAP_MIN_TIME = 0.1
+# Rebonds "subis" (parois de la boîte + murs internes) tolérés avant de
+# considérer la particule perdue, cf. commentaire dans simulate().
+MAX_WALL_BOUNCES = 1
 
 
 def _oscillate(base_x, base_y, motion, t):
@@ -81,12 +89,18 @@ def simulate(level: dict, params: dict, record_trail: bool = False) -> SimResult
     trail = []
     state = {}
     wall_bounces = 0
-    # Un rebond mural max autorisé : au-delà, on considère la particule
-    # "perdue" (pas de vraie table de pinball) — sans cette limite, un rebond
-    # mural chaotique finit presque toujours par retrouver la cible "par
-    # hasard", ce qui validerait des tirs n'utilisant pas la mécanique du
-    # concept (cf. essais Stage 3).
-    MAX_WALL_BOUNCES = 1
+    # MAX_WALL_BOUNCES : au-delà, on considère la particule "perdue" (pas de
+    # vraie table de pinball) — sans cette limite, un rebond mural chaotique
+    # finit presque toujours par retrouver la cible "par hasard", ce qui
+    # validerait des tirs n'utilisant pas la mécanique du concept.
+    #
+    # Obstacles actuellement en contact : un handler ne se déclenche qu'à
+    # l'ENTRÉE dans le rayon d'un obstacle, pas à chaque pas passé dedans.
+    # Avant, un pôle de spin ré-appliquait sa déviation à chaque pas de
+    # contact (déviation totale = N * kick_deg, N dépendant de la vitesse),
+    # et le franchissement d'une barrière était ré-évalué à chaque pas contre
+    # un seuil qui oscille. Une interaction = un contact = un événement.
+    in_contact = set()
 
     tap_time = params.get("tap_time")
 
@@ -124,25 +138,29 @@ def simulate(level: dict, params: dict, record_trail: bool = False) -> SimResult
         # oscillant" - skill gameplay-mechanics)
         for obs in level.get("obstacles", []):
             ox, oy = _oscillate(obs["x"], obs["y"], obs.get("motion"), elapsed)
-            if vec.dist(pos, (ox, oy)) < obs.get("r", 0.03) + COLLISION_EPS:
-                obs_eff = obs
-                if obs.get("motion") or obs.get("threshold_motion"):
-                    obs_eff = dict(obs)
-                    obs_eff["x"], obs_eff["y"] = ox, oy
-                    obs_eff["energy_threshold"] = _effective_threshold(obs, elapsed)
-                handler = handler_for(level["concept"], obs.get("type", ""))
-                vel, event = handler(obs_eff, pos, vel, params, state)
-                if obs.get("type") == "wall":
-                    # Un mur interne (ex : goulot d'entree) est un rebond "subi",
-                    # comme une paroi de la boite — compte dans le meme plafond,
-                    # sinon un tir raté peut ricocher indefiniment sur ces murs
-                    # et retomber "par hasard" sur la cible (cf. essais Stage 3
-                    # ayant motive MAX_WALL_BOUNCES a l'origine).
-                    wall_bounces += 1
-                    if wall_bounces > MAX_WALL_BOUNCES:
-                        return SimResult(success=False, reason="lost:too_many_wall_bounces", steps=step, trail=trail)
-                if event == "trap":
-                    return SimResult(success=False, reason=f"trap:{obs.get('id')}", steps=step, trail=trail)
+            touching = vec.dist(pos, (ox, oy)) < obs.get("r", 0.03) + COLLISION_EPS
+            if not touching:
+                in_contact.discard(obs["id"])
+                continue
+            if obs["id"] in in_contact:
+                continue
+            in_contact.add(obs["id"])
+            obs_eff = obs
+            if obs.get("motion") or obs.get("threshold_motion"):
+                obs_eff = dict(obs)
+                obs_eff["x"], obs_eff["y"] = ox, oy
+                obs_eff["energy_threshold"] = _effective_threshold(obs, elapsed)
+            handler = handler_for(level["concept"], obs.get("type", ""))
+            vel, event = handler(obs_eff, pos, vel, params, state)
+            if obs.get("type") == "wall":
+                # Un mur interne (ex : goulot d'entree) est un rebond "subi",
+                # comme une paroi de la boite — compte dans le meme plafond,
+                # sinon un tir raté peut ricocher indefiniment sur ces murs
+                # et retomber "par hasard" sur la cible (cf. essais Stage 3
+                # ayant motive MAX_WALL_BOUNCES a l'origine).
+                wall_bounces += 1
+                if wall_bounces > MAX_WALL_BOUNCES:
+                    return SimResult(success=False, reason="lost:too_many_wall_bounces", steps=step, trail=trail)
 
         # photons (collecte pendant le vol, cf. gameplay-mechanics)
         for pid, ph in photons.items():

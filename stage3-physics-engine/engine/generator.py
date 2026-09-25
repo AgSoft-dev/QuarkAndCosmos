@@ -1,10 +1,13 @@
 """
 Génère un niveau « gabarit » (difficulté 1) par concept du premier monde
-(échelle Quantique, cf. CLAUDE.md pour la liste des 8 concepts). Placement
+(échelle Quantique, cf. CLAUDE.md pour la liste des 7 concepts de la beta). Placement
 volontairement simple/lisible — la difficulté 2/3 (progression intra-concept,
 cf. gameplay-mechanics) sera dérivée de ces gabarits plus tard, une fois
 validés.
 """
+
+from .simulate import TAP_MIN_TIME
+from .validator import place_photons
 
 CODEX_PLACEHOLDER = {
     "superposition": "« Tu as suivi les deux chemins à la fois, jusqu'à ce que je regarde... et que l'un des deux devienne réel. »",
@@ -15,10 +18,6 @@ CODEX_PLACEHOLDER = {
     "spin": "« Ton spin détermine qui t'attire et qui te repousse — une boussole invisible. »",
     "dualite": "« Onde ou particule ? Aujourd'hui, tu as choisi de te faufiler comme une onde. »",
 }
-
-
-def _photon(id_, x, y, r=0.025):
-    return {"id": id_, "x": x, "y": y, "r": r}
 
 
 def _wall_column(id_prefix, x, edge_y, direction, far_limit, r=0.05, spacing=0.06):
@@ -54,7 +53,9 @@ def make_level(concept: str, difficulty: int = 1) -> dict:
     level["concept"] = concept
     level["difficulty"] = difficulty
     level.setdefault("codex_text", CODEX_PLACEHOLDER.get(concept, ""))
-    return level
+    # Photons posés par le validateur sur la trajectoire la plus robuste
+    # (cf. gameplay-mechanics : 3 Photons par niveau, placement non manuel).
+    return place_photons(level)
 
 
 def _superposition(difficulty):
@@ -93,7 +94,6 @@ def _superposition(difficulty):
              "arm_a_deg": -35, "arm_b_deg": 35,
              "motion": {"axis": "y", "amplitude": 0.015, "period": 0.6}},
         ],
-        "photons": [_photon("p1", 0.6, 0.283, 0.03)],
         "param_space": {
             "angle_deg": {"type": "range", "min": -15, "max": 15, "step": 1},
             "power": {"type": "choice", "values": [0.4, 0.6, 0.8]},
@@ -115,10 +115,12 @@ def _tunnel(difficulty):
              "energy_threshold": 0.65,
              "threshold_motion": {"amplitude": 0.45, "period": 0.15, "phase": 4.0}},
         ],
-        "photons": [_photon("p1", 0.835, 0.288, 0.03)],
         "param_space": {
             "angle_deg": {"type": "range", "min": -49, "max": -38, "step": 1},
-            "power": {"type": "choice", "values": [0.3, 0.5, 0.7, 0.9]},
+            # Puissance continue (fronde) échantillonnée finement : avec 4
+            # crans seulement, 2 combinaisons sur 48 réussissaient — niveau
+            # jugé fragile à l'audit alors qu'en continu ~20% passent.
+            "power": {"type": "range", "min": 0.3, "max": 0.9, "step": 0.05},
         },
     }
 
@@ -135,15 +137,10 @@ def _intrication(difficulty):
         "obstacles": [
             {"id": "gate", "type": "gate", "x": 0.5, "y": 0.5, "r": 0.05},
         ],
-        "photons": [
-            _photon("p1", 0.22, 0.5, 0.025),
-            _photon("p2", 0.35, 0.5, 0.025),
-            _photon("p3", 0.7, 0.5, 0.025),
-        ],
         "param_space": {
             "angle_deg": {"type": "range", "min": -3, "max": 3, "step": 1},
             "power": {"type": "choice", "values": [0.5, 0.7]},
-            "tap_time": {"type": "range", "min": 0.0, "max": 1.0, "step": 0.05},
+            "tap_time": {"type": "range", "min": TAP_MIN_TIME, "max": 1.0, "step": 0.05},
         },
     }
 
@@ -156,7 +153,6 @@ def _incertitude(difficulty):
         "launcher": {"x": 0.1, "y": 0.6},
         "target": {"x": 0.85, "y": 0.5, "r": 0.03, "motion": {"axis": "y", "amplitude": 0.02, "period": 0.8}},
         "obstacles": [],
-        "photons": [_photon("p1", 0.45, 0.553, 0.03)],
         "param_space": {
             "angle_deg": {"type": "range", "min": -15, "max": 5, "step": 0.5},
             "precision": {"type": "choice", "values": [0.3, 0.5, 0.7, 0.8, 0.9, 1.0]},
@@ -176,7 +172,6 @@ def _quantification(difficulty):
              "energy_threshold": 0.65,
              "threshold_motion": {"amplitude": 0.45, "period": 0.2, "phase": 1.2}},
         ],
-        "photons": [_photon("p1", 0.65, 0.5, 0.03)],
         "param_space": {
             "angle_deg": {"type": "range", "min": -3, "max": 3, "step": 1},
             "power": {"type": "choice", "values": [0.2, 0.4, 0.6, 0.8, 1.0]},
@@ -188,19 +183,24 @@ def _spin(difficulty):
     # Se combine au reglage pre-tir (spin_up = polarite de depart) : un tap
     # pendant le vol (cf. gameplay-mechanics) inverse la polarite une fois —
     # deux variables au lieu d'une pour viser le bon contact.
+    # Cible placée sur la branche "repoussée" (déviation vers le bas) : il
+    # faut soit partir spin bas, soit partir spin haut et taper AVANT le
+    # contact avec le pôle. La déviation ne s'applique qu'une fois par
+    # contact (cf. simulate.py) — l'ancienne cible (0.867, 0.69) n'était
+    # atteinte que grâce à une déviation ré-appliquée à chaque pas, et
+    # seulement sur 1° de visée.
     return {
         "launcher": {"x": 0.1, "y": 0.5},
-        "target": {"x": 0.867, "y": 0.69, "r": 0.04},
+        "target": {"x": 0.72, "y": 0.84, "r": 0.05},
         "obstacles": [
             {"id": "pole", "type": "pole", "x": 0.4, "y": 0.42, "r": 0.06,
              "pole": "+", "kick_deg": -60},
         ],
-        "photons": [_photon("p1", 0.6, 0.641, 0.03)],
         "param_space": {
-            "angle_deg": {"type": "range", "min": -12, "max": -11, "step": 1},
+            "angle_deg": {"type": "range", "min": -20, "max": 0, "step": 1},
             "power": {"type": "choice", "values": [0.5, 0.7]},
             "spin_up": {"type": "choice", "values": [True, False]},
-            "tap_time": {"type": "range", "min": 0.0, "max": 0.8, "step": 0.05},
+            "tap_time": {"type": "range", "min": TAP_MIN_TIME, "max": 0.8, "step": 0.05},
         },
     }
 
@@ -216,11 +216,10 @@ def _dualite(difficulty):
             {"id": "surface", "type": "surface", "x": 0.35, "y": 0.3, "r": 0.05,
              "interference_offset_deg": 180},
         ],
-        "photons": [_photon("p1", 0.6, 0.3, 0.03)],
         "param_space": {
             "angle_deg": {"type": "range", "min": -3, "max": 3, "step": 1},
             "power": {"type": "choice", "values": [0.5, 0.7]},
-            "tap_time": {"type": "range", "min": 0.0, "max": 0.7, "step": 0.05},
+            "tap_time": {"type": "range", "min": TAP_MIN_TIME, "max": 0.7, "step": 0.05},
         },
     }
 
