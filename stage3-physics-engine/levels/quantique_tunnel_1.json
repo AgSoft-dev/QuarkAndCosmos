@@ -46,20 +46,26 @@
   "photons": [
     {
       "id": "p1",
-      "x": 0.309,
-      "y": 0.641,
+      "x": 0.377,
+      "y": 0.566,
       "r": 0.03
     },
     {
       "id": "p2",
-      "x": 0.411,
-      "y": 0.539,
-      "r": 0.03
+      "x": 0.636,
+      "y": 0.301,
+      "r": 0.03,
+      "motion": {
+        "axis": "x",
+        "amplitude": 0.08,
+        "period": 0.5,
+        "phase": 4.0212
+      }
     },
     {
       "id": "p3",
-      "x": 0.66,
-      "y": 0.29,
+      "x": 0.731,
+      "y": 0.204,
       "r": 0.03
     }
   ],
@@ -78,5 +84,20 @@
   },
   "max_photons_reachable": 3,
   "tolerance": 0.2051,
-  "three_star_tolerance": 0.1218
+  "three_star_tolerance": 0.0897,
+  "star_profile": {
+    "rays": 1258,
+    "valid_rays": 307,
+    "distinct_paths": 307,
+    "shares": {
+      "1": 0.9023,
+      "2": 0.6612,
+      "3": 0.3974
+    },
+    "target_shares": {
+      "1": 0.9019,
+      "2": 0.6615,
+      "3": 0.3947
+    }
+  }
 }

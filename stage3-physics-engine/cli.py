@@ -8,6 +8,7 @@ Usage :
   python3 cli.py generate-all [--out-dir levels/]
   python3 cli.py validate <path.json>
   python3 cli.py solve <path.json> [--max N]
+  python3 cli.py report [--difficulties 1 2 3] [--concepts ...] [--out-dir reports/]
 """
 import argparse
 import json
@@ -16,6 +17,18 @@ import sys
 from engine.generator import make_level, ALL_CONCEPTS
 from engine.validator import validate, solve
 from engine.export import write_level, read_level
+from engine.report import build_report, write_report
+
+
+def _stars_line(payload):
+    """Part des lancers valides à >=1/>=2/3 étoiles, mesurée vs cible."""
+    sp = payload.get("star_profile")
+    if not sp:
+        return ""
+    got, tgt = sp["shares"], sp["target_shares"]
+    return "  étoiles " + " ".join(
+        f"{k}★ {got[k]:.0%}/{tgt[k]:.0%}" for k in ("1", "2", "3")
+    ) + f"  ({sp['distinct_paths']} chemins)"
 
 
 def cmd_list(args):
@@ -29,7 +42,8 @@ def cmd_generate(args):
     out = args.out or f"levels/quantique_{args.concept}_{args.difficulty}.json"
     payload = write_level(level, out)
     status = "SOLVABLE" if payload["solvable"] else "NON SOLVABLE"
-    print(f"[{status}] {out} (max Photons atteignables: {payload['max_photons_reachable']}/{len(level.get('photons', []))})")
+    print(f"[{status}] {out} (max Photons atteignables: {payload['max_photons_reachable']}/{len(level.get('photons', []))})"
+          + _stars_line(payload))
 
 
 def cmd_generate_all(args):
@@ -44,7 +58,8 @@ def cmd_generate_all(args):
         status = "OK" if payload["solvable"] else "ECHEC"
         if not payload["solvable"]:
             all_ok = False
-        print(f"[{status:5}] {concept:15} -> {out}  (Photons max: {payload['max_photons_reachable']}/{len(level.get('photons', []))})")
+        print(f"[{status:5}] {concept:15} -> {out}  (Photons max: {payload['max_photons_reachable']}/{len(level.get('photons', []))})"
+              + _stars_line(payload))
     sys.exit(0 if all_ok else 1)
 
 
@@ -65,6 +80,21 @@ def cmd_solve(args):
     best = solutions[0]
     print(f"  params = {best.params}")
     print(f"  Photons collectés = {best.photons} {best.photon_ids}")
+
+
+def cmd_report(args):
+    def progress(e):
+        s, t = e["shares"], e["target_shares"]
+        flag = "  ⚠ plancher 3★" if e["ceiling"] else ""
+        print(f"  {e['concept']:15} diff {e['difficulty']}  "
+              + " ".join(f"{k}★ {s[k]:.0%}/{t[k]:.0%}" for k in ("1", "2", "3"))
+              + f"  ({e['distinct_paths']} chemins){flag}", flush=True)
+
+    print("Mesuré / cible (part des lancers valides à >= k étoiles) :")
+    data = build_report(args.concepts or ALL_CONCEPTS, args.difficulties, progress)
+    paths = write_report(data, args.out_dir)
+    for kind, path in paths.items():
+        print(f"{kind:4} -> {path}")
 
 
 def main():
@@ -92,6 +122,12 @@ def main():
     p_solve.add_argument("path")
     p_solve.add_argument("--max", type=int, default=200)
     p_solve.set_defaults(func=cmd_solve)
+
+    p_rep = sub.add_parser("report", help="stats de progression des étoiles + rapport HTML")
+    p_rep.add_argument("--difficulties", type=int, nargs="+", default=[1, 2, 3])
+    p_rep.add_argument("--concepts", nargs="+", choices=ALL_CONCEPTS, default=None)
+    p_rep.add_argument("--out-dir", type=str, default="reports")
+    p_rep.set_defaults(func=cmd_report)
 
     args = parser.parse_args()
     args.func(args)

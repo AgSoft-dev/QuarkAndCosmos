@@ -119,21 +119,39 @@
   "photons": [
     {
       "id": "p1",
-      "x": 0.423,
-      "y": 0.389,
-      "r": 0.03
+      "x": 0.433,
+      "y": 0.384,
+      "r": 0.03,
+      "motion": {
+        "axis": "y",
+        "amplitude": 0.08,
+        "period": 0.5,
+        "phase": 5.2779
+      }
     },
     {
       "id": "p2",
-      "x": 0.512,
-      "y": 0.327,
-      "r": 0.03
+      "x": 0.507,
+      "y": 0.333,
+      "r": 0.03,
+      "motion": {
+        "axis": "y",
+        "amplitude": 0.04,
+        "period": 0.5,
+        "phase": 3.3929
+      }
     },
     {
       "id": "p3",
-      "x": 0.674,
-      "y": 0.213,
-      "r": 0.03
+      "x": 0.566,
+      "y": 0.292,
+      "r": 0.03,
+      "motion": {
+        "axis": "y",
+        "amplitude": 0.04,
+        "period": 0.5,
+        "phase": 1.885
+      }
     }
   ],
   "solvable": true,
@@ -151,5 +169,20 @@
   },
   "max_photons_reachable": 3,
   "tolerance": 0.2473,
-  "three_star_tolerance": 0.2473
+  "three_star_tolerance": 0.086,
+  "star_profile": {
+    "rays": 273,
+    "valid_rays": 65,
+    "distinct_paths": 65,
+    "shares": {
+      "1": 0.9231,
+      "2": 0.6769,
+      "3": 0.3692
+    },
+    "target_shares": {
+      "1": 0.9019,
+      "2": 0.6615,
+      "3": 0.3947
+    }
+  }
 }

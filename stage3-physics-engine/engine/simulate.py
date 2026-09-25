@@ -162,9 +162,14 @@ def simulate(level: dict, params: dict, record_trail: bool = False) -> SimResult
                 if wall_bounces > MAX_WALL_BOUNCES:
                     return SimResult(success=False, reason="lost:too_many_wall_bounces", steps=step, trail=trail)
 
-        # photons (collecte pendant le vol, cf. gameplay-mechanics)
+        # photons (collecte pendant le vol, cf. gameplay-mechanics) ; un
+        # Photon peut osciller (cf. stars.py : c'est ce qui rend le 3 étoiles
+        # dépendant du timing quand tous les chemins valides se superposent)
         for pid, ph in photons.items():
-            if pid not in collected and vec.dist(pos, (ph["x"], ph["y"])) < ph.get("r", 0.02) + COLLISION_EPS:
+            if pid in collected:
+                continue
+            px, py = _oscillate(ph["x"], ph["y"], ph.get("motion"), elapsed)
+            if vec.dist(pos, (px, py)) < ph.get("r", 0.02) + COLLISION_EPS:
                 collected.add(pid)
 
         # cible (position effective si oscillante)

@@ -7,7 +7,8 @@ import pytest
 from engine.export import SCHEMA_VERSION, build_export_payload
 from engine.generator import ALL_CONCEPTS, make_level
 from engine.simulate import TAP_MIN_TIME
-from engine.validator import PHOTONS_PER_LEVEL, validate
+from engine.stars import PHOTONS_PER_LEVEL
+from engine.validator import validate
 
 LEVELS_DIR = os.path.join(os.path.dirname(__file__), "..", "levels")
 # Part minimale de la grille de paramètres qui doit atteindre la cible : en

@@ -56,27 +56,33 @@
   "photons": [
     {
       "id": "p1",
-      "x": 0.294,
-      "y": 0.452,
+      "x": 0.461,
+      "y": 0.593,
       "r": 0.03
     },
     {
       "id": "p2",
-      "x": 0.454,
-      "y": 0.555,
-      "r": 0.03
+      "x": 0.513,
+      "y": 0.659,
+      "r": 0.03,
+      "motion": {
+        "axis": "x",
+        "amplitude": 0.12,
+        "period": 0.15,
+        "phase": 0.8378
+      }
     },
     {
       "id": "p3",
-      "x": 0.586,
-      "y": 0.691,
+      "x": 0.605,
+      "y": 0.774,
       "r": 0.03
     }
   ],
   "solvable": true,
   "reference_solution": {
     "params": {
-      "angle_deg": -17,
+      "angle_deg": -12,
       "power": 0.5,
       "spin_up": true,
       "tap_time": 0.1
@@ -90,5 +96,20 @@
   },
   "max_photons_reachable": 3,
   "tolerance": 0.2619,
-  "three_star_tolerance": 0.2024
+  "three_star_tolerance": 0.0952,
+  "star_profile": {
+    "rays": 4756,
+    "valid_rays": 1334,
+    "distinct_paths": 46,
+    "shares": {
+      "1": 0.913,
+      "2": 0.6739,
+      "3": 0.3913
+    },
+    "target_shares": {
+      "1": 0.9019,
+      "2": 0.6615,
+      "3": 0.3947
+    }
+  }
 }

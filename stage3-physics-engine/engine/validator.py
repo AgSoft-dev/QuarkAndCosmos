@@ -5,25 +5,14 @@ pour vérifier qu'au moins une combinaison atteint la cible, et calculer la
 meilleure solution de référence (nombre de Photons collectés) utilisée pour
 la notation à 3 étoiles (cf. skill gameplay-mechanics).
 
-Il place aussi les Photons (cf. gameplay-mechanics — "c'est lui qui
-déterminera leur position définitive, pas un placement à la main") : le long
-de la trajectoire de la solution la plus robuste du niveau.
+Le placement des Photons et la distribution 1-2-3 étoiles vivent dans
+stars.py (lancer de rayons).
 """
-import copy
 import itertools
 from dataclasses import dataclass, field
 
-from . import vec
 from .simulate import TAP_MIN_TIME, simulate
-
-PHOTONS_PER_LEVEL = 3
-PHOTON_RADIUS = 0.03
-# Positions des Photons le long de la trajectoire de référence (fraction du
-# trajet lanceur -> cible). Les deux derniers tombent en général après
-# l'obstacle du concept, donc sur la partie du trajet qui l'utilise.
-PHOTON_FRACTIONS = (0.3, 0.55, 0.8)
-# Marge libre minimale entre un Photon et un obstacle/la cible/le lanceur.
-PHOTON_CLEARANCE = 0.02
+from .stars import star_profile
 
 
 @dataclass
@@ -116,69 +105,5 @@ def validate(level: dict) -> dict:
             "photon_ids": best.photon_ids,
         },
         "max_photons_reachable": max((s.photons for s in solutions), default=0),
+        "star_profile": star_profile(level) if solutions else None,
     }
-
-
-def _most_robust(level, solutions):
-    """Solution qui a le plus de voisines solvables dans la grille (écart
-    d'au plus un cran sur chaque paramètre) : la plus éloignée des bords de
-    la fenêtre de réussite, donc la plus sûre pour y poser des Photons."""
-    keys, grids = _grids(level)
-    index = [{v: i for i, v in enumerate(g)} for g in grids]
-    points = [tuple(index[k][s.params[key]] for k, key in enumerate(keys)) for s in solutions]
-
-    def neighbours(p):
-        return sum(1 for q in points if max(abs(a - b) for a, b in zip(p, q)) <= 1)
-
-    scores = [neighbours(p) for p in points]
-    return solutions[scores.index(max(scores))]
-
-
-def _clear_of_objects(level, pos, t, r):
-    from .simulate import _oscillate
-    for obs in level.get("obstacles", []):
-        ox, oy = _oscillate(obs["x"], obs["y"], obs.get("motion"), t)
-        if vec.dist(pos, (ox, oy)) < obs.get("r", 0.03) + r + PHOTON_CLEARANCE:
-            return False
-    tgt = level["target"]
-    if vec.dist(pos, (tgt["x"], tgt["y"])) < tgt.get("r", 0.045) + r + PHOTON_CLEARANCE:
-        return False
-    lau = level["launcher"]
-    return vec.dist(pos, (lau["x"], lau["y"])) >= 0.05 + r
-
-
-def place_photons(level: dict) -> dict:
-    """
-    Retourne une copie du niveau avec PHOTONS_PER_LEVEL Photons posés sur la
-    trajectoire de la solution la plus robuste, aux fractions
-    PHOTON_FRACTIONS du trajet (décalées si elles tombent sur un objet).
-    Lève ValueError si le niveau n'est pas solvable.
-    """
-    bare = copy.deepcopy(level)
-    bare["photons"] = []
-    solutions = solve(bare, max_solutions=None)
-    if not solutions:
-        raise ValueError(f"Niveau non solvable, impossible de placer les Photons: {level.get('id')}")
-    anchor = _most_robust(bare, solutions)
-    trail = simulate(bare, anchor.params, record_trail=True).trail
-
-    from .simulate import DT
-    photons = []
-    used = set()
-    for n, frac in enumerate(PHOTON_FRACTIONS, start=1):
-        base = int(frac * (len(trail) - 1))
-        # cherche l'indice libre le plus proche de la fraction visée
-        for delta in sorted(range(-len(trail), len(trail)), key=abs):
-            i = base + delta
-            if 0 <= i < len(trail) and i not in used and all(abs(i - u) > 10 for u in used):
-                if _clear_of_objects(bare, trail[i], (i + 1) * DT, PHOTON_RADIUS):
-                    used.add(i)
-                    x, y = trail[i]
-                    photons.append({"id": f"p{n}", "x": round(x, 3), "y": round(y, 3), "r": PHOTON_RADIUS})
-                    break
-        else:
-            raise ValueError(f"Aucune position libre pour le Photon p{n}: {level.get('id')}")
-
-    placed = copy.deepcopy(level)
-    placed["photons"] = photons
-    return placed

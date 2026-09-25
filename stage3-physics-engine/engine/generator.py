@@ -7,7 +7,7 @@ validés.
 """
 
 from .simulate import TAP_MIN_TIME
-from .validator import place_photons
+from .stars import place_photons
 
 CODEX_PLACEHOLDER = {
     "superposition": "« Tu as suivi les deux chemins à la fois, jusqu'à ce que je regarde... et que l'un des deux devienne réel. »",
@@ -53,8 +53,9 @@ def make_level(concept: str, difficulty: int = 1) -> dict:
     level["concept"] = concept
     level["difficulty"] = difficulty
     level.setdefault("codex_text", CODEX_PLACEHOLDER.get(concept, ""))
-    # Photons posés par le validateur sur la trajectoire la plus robuste
-    # (cf. gameplay-mechanics : 3 Photons par niveau, placement non manuel).
+    # Photons posés par lancer de rayons (cf. stars.py) : la part des
+    # chemins valides à 1/2/3 étoiles suit une gaussienne tronquée dont σ
+    # diminue avec la difficulté.
     return place_photons(level)
 
 
