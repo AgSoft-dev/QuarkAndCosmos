@@ -20,29 +20,6 @@ CODEX_PLACEHOLDER = {
 }
 
 
-def _wall_column(id_prefix, x, edge_y, direction, far_limit, r=0.05, spacing=0.06):
-    """
-    Chaîne de cercles « mur » (type obstacle générique, cf. concepts.HANDLERS
-    — rebond simple façon paroi) formant une barrière pleine à partir d'un
-    bord précis (edge_y — p.ex. la limite d'une ouverture) et s'étendant vers
-    l'extérieur (direction = -1 vers le haut de l'écran / +1 vers le bas)
-    jusqu'à far_limit. Le premier cercle est ancré EXACTEMENT sur edge_y (son
-    bord touche edge_y pile), pas seulement "environ" comme le ferait un
-    espacement régulier depuis un point de départ arbitraire — un mauvais
-    calage ici a laissé passer une visée à travers un vrai trou lors des
-    tests (cf. commentaire dans _superposition). Le spacing < 2*r garantit
-    ensuite un recouvrement sans trou pour tout le reste de la colonne.
-    """
-    obstacles = []
-    center = edge_y + direction * r
-    i = 0
-    while (center <= far_limit if direction > 0 else center >= far_limit):
-        obstacles.append({"id": f"{id_prefix}{i}", "type": "wall", "x": x, "y": round(center, 4), "r": r})
-        center += direction * spacing
-        i += 1
-    return obstacles
-
-
 def _seg(id_, type_, x1, y1, x2, y2, **extra):
     """Obstacle plat (cf. shapes.py) défini par ses deux extrémités."""
     import math
@@ -74,93 +51,82 @@ def _superposition(difficulty):
     return {1: _superposition_1, 2: _superposition_2, 3: _superposition_3}[difficulty]()
 
 
-def _chute(y, half=0.03, x=0.22):
-    """Goulot d'entrée (parois planes) : force le passage par le premier
-    séparateur, cf. commentaire de _superposition_1."""
-    return _door_wall("chute", x, y - half, y + half)
+def _superposition_1():
+    # Découverte : la lame S coupe Quarky en deux copies fantômes — l'une
+    # continue tout droit vers le plafond (et s'y écrase), l'autre part en
+    # réflexion vers la cible. Taper = mesurer : Quarky devient la copie la
+    # plus proche du détecteur D, posé du côté de la cible. Fenêtre : entre la
+    # séparation et le moment où la copie réfléchie dépasse la cible (la cible
+    # n'accepte qu'un Quarky mesuré). La cloison bloque le tir direct.
+    return {
+        "launcher": {"x": 0.4, "y": 0.9},
+        "target": {"x": 0.85, "y": 0.55, "r": 0.05},
+        "obstacles": [
+            _seg("S", "splitter", 0.28, 0.67, 0.52, 0.43),
+            _seg("D", "detector", 0.72, 0.3, 0.72, 0.36),
+            _seg("cloison", "wall", 0.58, 0.64, 0.58, 1.0),
+        ],
+        "must_contact": [["S", "reflect"], ["D", "measure"]],
+        "max_wall_bounces": 0,
+        "param_space": {
+            "angle_deg": {"type": "range", "min": -100, "max": -80, "step": 1},
+            "power": {"type": "range", "min": 0.4, "max": 0.9, "step": 0.1},
+            "tap_time": {"type": "range", "min": 0.1, "max": 1.6, "step": 0.1},
+        },
+    }
 
 
 def _superposition_2():
-    # Mesures en cascade : le séparateur S1 envoie le bras haut vers S2, qui
-    # à son tour choisit un bras selon la moitié touchée. Seul le chemin
-    # "haut à S1, bas à S2" mène à la cible : deux mesures à réussir.
+    # Boucle à deux miroirs (interféromètre) : la copie transmise monte puis
+    # M1 la renvoie à droite, la copie réfléchie part à droite puis M2 la
+    # renvoie en haut. Les deux copies se croisent près de la cible, donc
+    # chacune peut l'atteindre : deux routes, garder l'une ou l'autre. Le
+    # détecteur D balaie de haut en bas : c'est sa position à l'instant du tap
+    # qui décide quelle copie devient réelle.
     return {
-        "launcher": {"x": 0.12, "y": 0.7},
-        "target": {"x": 0.866, "y": 0.528, "r": 0.05},
-        "obstacles": _chute(0.7) + [
-            {"id": "S1", "type": "splitter", "x": 0.35, "y": 0.7, "r": 0.06, "arm_a_deg": -35, "arm_b_deg": 35},
-            {"id": "S2", "type": "splitter", "x": 0.585, "y": 0.494, "r": 0.06, "arm_a_deg": -60, "arm_b_deg": 0},
+        "launcher": {"x": 0.2, "y": 0.92},
+        "target": {"x": 0.8, "y": 0.1, "r": 0.05},
+        "obstacles": [
+            _seg("S", "splitter", 0.1, 0.7, 0.3, 0.5),
+            _seg("M1", "mirror", 0.1, 0.3, 0.3, 0.1),
+            _seg("M2", "mirror", 0.7, 0.7, 0.9, 0.5),
+            dict(_seg("D", "detector", 0.47, 0.45, 0.53, 0.45),
+                 motion={"axis": "y", "amplitude": 0.15, "period": 1.2, "phase": 3.14}),
+            _seg("cloison", "wall", 0.36, 0.62, 0.36, 1.0),
         ],
-        "must_contact": [["S1", "deflect"], ["S2", "deflect"]],
+        "must_contact": [["D", "measure"]],
         "max_wall_bounces": 0,
         "param_space": {
-            "angle_deg": {"type": "range", "min": -15, "max": 15, "step": 0.5},
-            "power": {"type": "range", "min": 0.4, "max": 0.9, "step": 0.1},
+            "angle_deg": {"type": "range", "min": -94, "max": -84, "step": 1},
+            "power": {"type": "range", "min": 0.4, "max": 0.8, "step": 0.1},
+            "tap_time": {"type": "range", "min": 0.3, "max": 3.0, "step": 0.1},
         },
     }
 
 
 def _superposition_3():
-    # Trois mesures en cascade (haut, bas, haut) et S2 dérive : l'instant
-    # d'arrivée (donc la puissance) décide aussi quelle moitié est touchée.
+    # Deux mesures en un vol : S1 sépare, garder la copie réfléchie (la
+    # transmise s'écrase vite sur le couvercle : fenêtre courte), puis S2
+    # sépare à nouveau, garder cette fois la copie qui monte vers la cible
+    # avant que l'autre ne s'écrase à droite. Deux taps, chacun dans une
+    # fenêtre entre deux contacts.
     return {
-        "launcher": {"x": 0.12, "y": 0.8},
-        "target": {"x": 0.895, "y": 0.405, "r": 0.05},
-        "obstacles": _chute(0.8) + [
-            {"id": "S1", "type": "splitter", "x": 0.35, "y": 0.8, "r": 0.06, "arm_a_deg": -35, "arm_b_deg": 35},
-            {"id": "S2", "type": "splitter", "x": 0.552, "y": 0.616, "r": 0.06, "arm_a_deg": -60, "arm_b_deg": 0,
-             "motion": {"axis": "y", "amplitude": 0.045, "period": 0.8}},
-            {"id": "S3", "type": "splitter", "x": 0.783, "y": 0.651, "r": 0.06, "arm_a_deg": -55, "arm_b_deg": 40},
+        "launcher": {"x": 0.3, "y": 0.9},
+        "target": {"x": 0.62, "y": 0.12, "r": 0.05},
+        "obstacles": [
+            _seg("S1", "splitter", 0.2, 0.65, 0.4, 0.45),
+            _seg("couvercle", "wall", 0.15, 0.35, 0.42, 0.35),
+            _seg("S2", "splitter", 0.52, 0.65, 0.72, 0.45),
+            _seg("D", "detector", 0.55, 0.39, 0.55, 0.45),
+            _seg("cloison", "wall", 0.46, 0.62, 0.46, 1.0),
         ],
-        "must_contact": [["S1", "deflect"], ["S2", "deflect"], ["S3", "deflect"]],
+        "must_contact": [["S1", "reflect"], ["D", "measure"], ["S2", "reflect"], ["D", "measure"]],
         "max_wall_bounces": 0,
         "param_space": {
-            "angle_deg": {"type": "range", "min": -15, "max": 15, "step": 0.5},
-            "power": {"type": "range", "min": 0.4, "max": 0.9, "step": 0.1},
-        },
-    }
-
-
-def _superposition_1():
-    # Un "chute d'entrée" (goulot) proche du lanceur oblige le joueur à viser
-    # dans un cône étroit avant même d'atteindre le séparateur — c'est ce qui
-    # rend le séparateur obligatoire (avant, une visée directe en ligne droite
-    # pouvait atteindre le Photon puis la cible sans jamais le toucher, cf.
-    # retour test manuel). Le goulot est placé À DISTANCE du séparateur (x=0.22
-    # vs séparateur x=0.35) plutôt que collé dessus : sinon les murs du goulot
-    # bloquent le bras de sortie du séparateur lui-même juste après la
-    # redirection, et la particule reste piégée à ricocher sur place (bug
-    # constaté en test : un tir parfaitement droit se bloquait juste après
-    # avoir été redirigé). Le cône du goulot (~16°) est volontairement plus
-    # étroit que le cône du séparateur (~18°, rayon 0.075) : tout ce qui passe
-    # le goulot est donc garanti de toucher le séparateur ensuite.
-    # Cône du goulot (16°) volontairement plus étroit que le cône du séparateur
-    # (~18°, rayon 0.075 à distance 0.23) : tan(16°)*0.10 = 0.0287 -> le bord
-    # de l'ouverture est ancré à 0.5 ± 0.0287 pile (cf. _wall_column, qui
-    # calle le premier cercle exactement dessus plutôt qu'"à peu près").
-    CHUTE_X = 0.22
-    CHUTE_HALF = 0.0287
-    chute = (
-        _wall_column("chuteTop", x=CHUTE_X, edge_y=0.5 - CHUTE_HALF, direction=-1, far_limit=-0.05, r=0.12, spacing=0.10)
-        + _wall_column("chuteBot", x=CHUTE_X, edge_y=0.5 + CHUTE_HALF, direction=1, far_limit=1.05, r=0.12, spacing=0.10)
-    )
-    # Element oscillant (cf. gameplay-mechanics) : le separateur derive
-    # legerement de haut en bas — amplitude volontairement petite (niveau
-    # d'entree du monde, doit rester approchable), juste assez pour que le
-    # moment ou l'on tire influence quel bras on obtient, pas seulement
-    # l'angle vise.
-    return {
-        "launcher": {"x": 0.12, "y": 0.5},
-        "target": {"x": 0.85, "y": 0.15, "r": 0.05},
-        "obstacles": chute + [
-            {"id": "splitter", "type": "splitter", "x": 0.35, "y": 0.5, "r": 0.075,
-             "arm_a_deg": -35, "arm_b_deg": 35,
-             "motion": {"axis": "y", "amplitude": 0.015, "period": 0.6}},
-        ],
-        "must_contact": [["splitter", "deflect"]],
-        "param_space": {
-            "angle_deg": {"type": "range", "min": -15, "max": 15, "step": 1},
-            "power": {"type": "choice", "values": [0.4, 0.6, 0.8]},
+            "angle_deg": {"type": "range", "min": -94, "max": -84, "step": 1},
+            "power": {"type": "range", "min": 0.4, "max": 0.8, "step": 0.1},
+            "tap_time": {"type": "range", "min": 0.3, "max": 1.4, "step": 0.1},
+            "tap_time_2": {"type": "range", "min": 0.8, "max": 2.6, "step": 0.1},
         },
     }
 

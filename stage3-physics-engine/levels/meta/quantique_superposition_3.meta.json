@@ -4,22 +4,28 @@
   "must_contact": [
     [
       "S1",
-      "deflect"
+      "reflect"
+    ],
+    [
+      "D",
+      "measure"
     ],
     [
       "S2",
-      "deflect"
+      "reflect"
     ],
     [
-      "S3",
-      "deflect"
+      "D",
+      "measure"
     ]
   ],
   "solvable": true,
   "reference_solution": {
     "params": {
-      "angle_deg": -7.5,
-      "power": 0.6
+      "angle_deg": -91,
+      "power": 0.8,
+      "tap_time": 0.5,
+      "tap_time_2": 0.8
     },
     "photons_collected": 3,
     "photon_ids": [
@@ -29,17 +35,17 @@
     ]
   },
   "max_photons_reachable": 3,
-  "tolerance": 0.2104,
-  "three_star_tolerance": 0.0464,
+  "tolerance": 0.063,
+  "three_star_tolerance": 0.0056,
   "bypass_solutions": 0,
   "star_profile": {
-    "rays": 2896,
-    "valid_rays": 628,
-    "distinct_paths": 628,
+    "rays": 11000,
+    "valid_rays": 693,
+    "distinct_paths": 34,
     "shares": {
-      "1": 0.8487,
-      "2": 0.4952,
-      "3": 0.0812
+      "1": 0.759,
+      "2": 0.3478,
+      "3": 0.0895
     },
     "target_shares": {
       "1": 0.7066,

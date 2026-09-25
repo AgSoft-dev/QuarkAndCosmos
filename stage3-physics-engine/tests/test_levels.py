@@ -78,8 +78,8 @@ def test_level_is_not_brittle(concept, difficulty):
 @pytest.mark.parametrize("concept,difficulty", CASES)
 def test_reference_solution_taps_in_flight(concept, difficulty):
     params = _meta(concept, difficulty)["reference_solution"]["params"]
-    tap = params.get("tap_time")
-    assert tap is None or tap >= TAP_MIN_TIME
+    taps = [v for k, v in params.items() if k.startswith("tap_time")]
+    assert all(t >= TAP_MIN_TIME for t in taps)
     # l'indice livré au jeu est exactement la solution de référence
     assert _shipped(concept, difficulty)["hint"] == {"params": params}
 

@@ -235,7 +235,8 @@ function mapFigure(e) {
       const a = (o.angle_deg || 0) * Math.PI / 180, h = o.length / 2;
       const x0 = o.x - Math.cos(a) * h, y0 = o.y - Math.sin(a) * h, x1 = o.x + Math.cos(a) * h, y1 = o.y + Math.sin(a) * h;
       shapes.push({ type: "line", xref: "x", yref: "y", x0, y0, x1, y1, layer: "above",
-                    line: { color: isWall ? css("--obstacle") : css("--text-primary"), width: isWall ? 2 : 4 } });
+                    line: { color: isWall ? css("--obstacle") : css("--text-primary"), width: isWall ? 2 : 4,
+                            dash: o.type === "detector" ? "dot" : "solid" } });
       if (!isWall) for (let i = 0; i <= 4; i++) { hx.push(x0 + (x1 - x0) * i / 4); hy.push(y0 + (y1 - y0) * i / 4); htext.push(info); }
     } else {
       shapes.push(circle(o.x, o.y, o.r, isWall ? css("--obstacle") : css("--text-primary"),
@@ -284,7 +285,9 @@ function obstacleInfo(o) {
     const m = o.threshold_motion;
     bits.push(m ? `seuil ${o.energy_threshold} ± ${m.amplitude} (période ${m.period}s)` : `seuil ${o.energy_threshold}`);
   }
-  if (o.arm_a_deg !== undefined) bits.push(`bras ${o.arm_a_deg}° / ${o.arm_b_deg}°`);
+  if (o.type === "splitter") bits.push("lame : une copie transmise + une copie réfléchie");
+  if (o.type === "detector") bits.push("détecteur : au tap, Quarky devient la copie la plus proche");
+  if (o.type === "mirror") bits.push("miroir");
   if (o.type === "gate") bits.push("fermée avant le tap, ouverte après");
   if (o.type === "gate_anti") bits.push("ouverte avant le tap, fermée après");
   if (o.type === "surface") bits.push("particule : rebond · onde : traverse");

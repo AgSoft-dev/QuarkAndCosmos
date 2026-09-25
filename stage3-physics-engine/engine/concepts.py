@@ -12,6 +12,8 @@ solution utilise bien la mécanique voulue, cf. `must_contact`) :
     'deflect' — déviation (séparateur, pôle de spin)
     'pass'    — la particule traverse l'obstacle
     'wave'    — réflexion en mode onde (dualité)
+    'split'   — passage en superposition (consigné comme 'transmit' /
+                'reflect' selon la copie ; la mesure ajoute 'measure')
 
 Un handler n'est appelé qu'une fois par contact (à l'entrée dans le rayon de
 l'obstacle), cf. simulate.py.
@@ -30,15 +32,22 @@ def wall_reflect(obstacle, pos, vel, params, state):
 
 def superposition_splitter(obstacle, pos, vel, params, state):
     """
-    Le « séparateur » représente la mesure qui effondre la superposition :
-    selon le point d'impact (moitié haute/basse de l'obstacle, donc selon
-    l'angle de visée du joueur), la trajectoire est redirigée vers l'un des
-    deux bras prédéfinis (arm_a_deg / arm_b_deg). Vulgarisation assumée : la
-    vraie superposition est probabiliste, ici rendue déterministe et lisible.
+    Lame séparatrice (plate) : au contact, Quarky passe en superposition. Il
+    continue tout droit (copie transmise) ET repart en réflexion (copie
+    réfléchie) — deux copies fantômes qui volent en même temps (cf.
+    simulate._Body). Le tap est la mesure : Quarky se fixe sur la copie la
+    plus proche d'un détecteur, l'autre s'efface avec ses Photons. La cible
+    n'accepte qu'un Quarky mesuré, et une copie qui s'écrase avant la mesure
+    brise la superposition (décohérence : le lancer échoue).
+    Vulgarisation assumée : la vraie mesure est aléatoire, ici le moment et
+    le détecteur la rendent déterministe et jouable (cf. page Codex).
     """
-    offset_y = pos[1] - obstacle["y"]
-    chosen = obstacle["arm_a_deg"] if offset_y <= 0 else obstacle["arm_b_deg"]
-    return vec.from_angle(chosen, vec.mag(vel)), "deflect"
+    return vel, "split"
+
+
+def reflect_velocity(obstacle, pos, vel):
+    """Vitesse de la copie réfléchie par une lame séparatrice."""
+    return vec.reflect(vel, shapes.normal(obstacle, pos))
 
 
 def tunnel_barrier(obstacle, pos, vel, params, state):

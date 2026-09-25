@@ -30,7 +30,7 @@ import json
 import math
 
 from . import shapes, vec
-from .simulate import COLLISION_EPS, DT, TAP_MIN_TIME, _oscillate, simulate
+from .simulate import COLLISION_EPS, DT, TAP_MIN_TIME, _oscillate, simulate, taps_ordered
 
 PHOTONS_PER_LEVEL = 3
 PHOTON_RADIUS = 0.03
@@ -99,9 +99,9 @@ def _ray_grid(level):
     refine = REFINE
     while True:
         grids = [_ray_values(space[k], refine) for k in keys]
-        if "tap_time" in space:
-            i = keys.index("tap_time")
-            grids[i] = [t for t in grids[i] if t >= TAP_MIN_TIME]
+        for i, key in enumerate(keys):
+            if key.startswith("tap_time"):
+                grids[i] = [t for t in grids[i] if t >= TAP_MIN_TIME]
         size = math.prod(len(g) for g in grids)
         if size <= MAX_RAYS or refine == 1:
             return keys, grids
@@ -166,8 +166,10 @@ def _trace(bare):
     paths = {}
     total = 0
     for combo in itertools.product(*grids):
-        total += 1
         params = dict(zip(keys, combo))
+        if not taps_ordered(params):
+            continue
+        total += 1
         res = simulate(bare, params, record_trail=True)
         if res.success:
             signature = tuple((round(x, 4), round(y, 4)) for x, y in res.trail)

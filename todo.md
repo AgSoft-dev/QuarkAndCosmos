@@ -23,7 +23,7 @@ Problems found in the current engine and levels (checked by running `cli.py vali
   - [ ] Difficulty ceilings (see the report's ⚠ flags): superposition (from diff. 2), intrication (diff. 2), incertitude (3 distinct paths only), dualité, quantification and spin (diff. 3) can't narrow the 3-star window to target, because their valid paths are too alike. Fix in level geometry (difficulty-2/3 templates with more path diversity), not in placement.
   - [x] The generator used to vary only Photon placement with difficulty. *Done: 3 distinct layouts per concept (1 discover → 2 sequence → 3 chain), 21 levels, 0 bypasses (`must_contact`), and the 3rd star favours richer alternative routes. See the table in `gameplay-mechanics`.*
   - [ ] **[GATE] Beta scope:** `CLAUDE.md` says ~1 level per concept (7). Ship 7 (difficulty 1 only), 14, or all 21 in the closed test?
-  - [ ] Superposition barely gets harder (25% → 26% → 21% winning shots): a splitter snaps every shot onto the same arm, so there's little to scale. It needs the two-ghost redesign (§2.2).
+  - [x] Superposition barely gets harder (25% → 26% → 21% winning shots): a splitter snaps every shot onto the same arm, so there's little to scale. It needs the two-ghost redesign (§2.2). *Done (user decision): two-ghost superposition. Now 17% → 10% → 6% winning shots, 0 bypasses.*
   - [ ] Remaining 3★ ceilings at difficulty 3: quantification (a single notch works, so few distinct paths) and spin (fixed deflections). See the report.
   - [ ] Oscillations are phase-locked to the launch (the apparatus "starts" with the shot). Confirm this in the game design, or add a launch-timing parameter to the solver.
   - [ ] Full release: stars unlock the next levels/worlds (threshold ≈ 2★ average on the previous world, never 3★ everywhere); calibrate on closed-test data.
@@ -31,7 +31,7 @@ Problems found in the current engine and levels (checked by running `cli.py vali
   - [x] Follow-up: in `dualite`, any tap before contact worked (a window, not a timing). *Done: difficulties 2–3 put the tap window between two contacts (particle bounce, then wave crossing).*
 - [x] **Brittle / over-tight levels:** `tunnel` had 2 solutions in the whole grid, `quantification` had 9 and `dualite` had 7. `spin` restricted the angle to `[-12, -11]` (the solution was effectively hard-coded). *Done: `tolerance` and `three_star_tolerance` are in the report and the JSON, and a test requires ≥ 5%. Tunnel went from 4% to 21% with continuous power sampling, spin's angle range is now `[-20, 0]`, and all 7 levels are between 14% and 62%.*
 - [ ] **Physics mis-vulgarisation (tunnel):** the code and the Codex line ("Assez d'énergie, et même un mur n'est plus vraiment un mur" — "with enough energy, even a wall isn't really a wall") describe *classically going over* a barrier. Quantum tunnelling is the opposite: the particle gets through **without** enough energy, with a probability that drops fast as the barrier gets thicker. See §2.
-- [ ] **Superposition modelled as a deterministic splitter** chosen by impact point. That reads as "a deflector", not as "two paths at once". See §2 for a mechanic that shows both branches.
+- [x] **Superposition modelled as a deterministic splitter** chosen by impact point. That reads as "a deflector", not as "two paths at once". See §2 for a mechanic that shows both branches. *Done: a flat beam splitter makes a transmitted and a reflected ghost; a tap measures (nearest copy to a detector wins, its Photons only); target needs a measured Quarky; a copy crashing before the measure = decoherence fail. Spec: `docs/physics-spec.md` §7 bis.*
 - [ ] **`quantification` isn't distinct:** discrete power "notches" (`choice` values) are already used by every other level, so the concept has no mechanic of its own.
 - [x] **Handlers re-applied on every step of contact:** a spin pole deflected N × `kick_deg` (N depending on speed), and a barrier re-checked its oscillating threshold on every step. Handlers now fire once per contact. The old `spin` level was only solvable because of this bug, so its target was moved and its angle range widened.
 - [x] **Stale references:** `concepts.py` / `generator.py` still say "8 concepts", `concepts.py` documents a `trap` event left over from the removed Décohérence concept, and `gameplay-mechanics` says "ex. 8 concepts pour le Quantique".
@@ -150,7 +150,7 @@ Each object gets a design sheet with: idle / hover / dragged / active / disabled
 | Cosmic | **Expansion of the universe / redshift** | Photons redden as the level "expands" over time; collect them before they fade | Timer through redshift |
 | Cosmic | **Dark matter** (enrichment) | An invisible mass you infer from how visible objects move | — |
 
-- [ ] **[GATE]** User approves the fixed Quantum mechanics (tunnel thickness, 2-ghost superposition, rung-lock quantisation, slit diffraction) before the Stage 3 rewrite.
+- [ ] **[GATE]** User approves the fixed Quantum mechanics (tunnel thickness, 2-ghost superposition, rung-lock quantisation, slit diffraction) before the Stage 3 rewrite. *2-ghost superposition: approved and implemented.*
 - [ ] Rule: **every Codex fact must be scientifically correct, even when the mechanic is a simplification.** Each Codex page has a one-line "Dans la vraie physique…" ("In real physics…") note that says where the game simplified.
 
 ### 2.3 Educational feedback loop
@@ -210,7 +210,7 @@ Each object gets a design sheet with: idle / hover / dragged / active / disabled
   - [ ] Reflect only when approaching (`dot(v, n) < 0`); push the particle out of the penetration.
   - [ ] Swept circle-vs-circle collision (continuous) or sub-stepping so that a fast Quarky never goes through thin objects.
   - [ ] Fixed timestep + a documented integration method (semi-implicit Euler) so the port can match it bit-for-bit (see §4.3).
-  - [ ] Obstacles as **shapes** (circle, capsule, segment, polygon), not chains of circles (the superposition "chute" walls are made of 20 circles right now).
+  - [ ] Obstacles as **shapes** (circle, capsule, segment, polygon), not chains of circles (segments now exist in the engine; the old superposition "chute" circles are gone).
   - [ ] A plugin registry per concept: `concepts/<name>.py` exports `handler`, `builder`, `codex_key`, `param_space`. No hard-coded dicts in 3 places.
   - [ ] Remove the `trap` / Décohérence leftovers and fix the "8 concepts" comments.
 - [ ] Validator upgrades:

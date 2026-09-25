@@ -49,12 +49,14 @@ Monde Quantique (générateur `stage3-physics-engine/engine/generator.py`, une f
 | Concept | 1 — découverte | 2 — séquence | 3 — enchaînement |
 |---|---|---|---|
 | Effet tunnel | une barrière (fenêtre dans une paroi), seuil oscillant | deux barrières en série : une vitesse qui tombe dans un creux aux deux (« résonance ») | barrière → miroir → barrière |
-| Superposition | un séparateur | deux mesures en cascade (bras haut puis bas) | trois mesures, le 2e séparateur dérive |
+| Superposition | une lame : deux copies fantômes (transmise / réfléchie), taper = mesurer, Quarky devient la copie la plus proche du détecteur ; mesurer avant que l'autre copie s'écrase | boucle à deux miroirs, les copies se croisent : garder l'une **ou** l'autre (deux routes), le détecteur balaie donc l'instant du tap choisit | deux lames, **deux mesures** dans le même vol, chacune dans sa fenêtre |
 | Intrication | une porte ouverte par le tap | paire **anti-corrélée** : franchir A (ouverte avant le tap), taper, franchir B | la porte M sert de **miroir** tant qu'elle est fermée, puis le même tap ouvre B |
 | Incertitude | précision vs vitesse, cible mobile | une fente étroite (précision → lenteur) devant une cible qui dérive | deux fentes alignées, cible plus rapide |
 | Quantification | crans d'énergie, une barrière | deux barrières : seuls 2 crans passent | trois barrières + miroir : un seul cran passe |
 | Spin | un pôle | deux pôles + : attiré en A, inverser le spin **entre** A et B | pôles +, −, + : lire le signe de chaque pôle pour savoir où inverser |
 | Dualité | une surface traversée en onde | rebond en **particule** sur s1, puis traversée en **onde** de s2 | deux rebonds en particule puis traversée en onde, cible mobile |
+
+**Superposition à deux fantômes (décision utilisateur, remplace le séparateur-déflecteur)** : les Photons ramassés par une copie ne comptent que si elle survit à la mesure ; la cible n'accepte qu'un Quarky mesuré ; une copie qui s'écrase avant la mesure brise la superposition (décohérence, le lancer échoue). La page Codex « Dans la vraie physique… » précise que le résultat d'une vraie mesure est aléatoire.
 
 Chaque niveau déclare `must_contact` (la séquence d'interactions attendue). Le validateur rejette tout niveau où un lancer gagnant contourne la mécanique (`bypass_solutions` doit valoir 0).
 

@@ -4,7 +4,7 @@ Contrat déterministe que **toute** implémentation de la physique du jeu (runti
 
 La maquette Stage 2 (`stage2-mockup/index.html`) a sa propre physique JS écrite à la main : elle **n'est pas** une implémentation de cette spec (cf. § « Écarts connus »).
 
-Ce document décrit le comportement **actuel** du moteur, y compris ses simplifications. Les corrections prévues (effet tunnel, superposition à deux fantômes, quantification à crans, rebond seulement en approche, collision continue) sont des décisions [GATE] de `todo.md` : elles modifieront cette spec quand elles seront validées.
+Ce document décrit le comportement **actuel** du moteur, y compris ses simplifications. Les corrections prévues (effet tunnel, quantification à crans, rebond seulement en approche, collision continue) sont des décisions [GATE] de `todo.md` : elles modifieront cette spec quand elles seront validées.
 
 ## 1. Repère et unités
 
@@ -47,7 +47,9 @@ Le rendu peut tourner à n'importe quel framerate : il accumule le temps réel e
 Pour `step = 0 … MAX_STEPS − 1`, avec `t = (step + 1) · DT` :
 
 1. **Déplacement** (Euler explicite, vitesse constante entre deux contacts) : `pos += vel · DT`.
-2. **Tap** : si `tap_time` est défini, que `tapped` est faux et que `t ≥ tap_time`, alors `tapped = true`. Le tap prend donc effet au premier pas dont la fin atteint l'instant du geste, **avant** les collisions de ce pas.
+2. **Tap(s)** : les instants `tap_time`, `tap_time_2`… sont traités dans l'ordre ; chaque tap dont l'instant est atteint (`t ≥ tap_time_k`) met `tapped = true` et, si Quarky est en superposition, **mesure** (§7 bis). Un tap prend donc effet au premier pas dont la fin atteint l'instant du geste, **avant** les collisions de ce pas.
+
+Les étapes 3 à 6 s'appliquent à **chaque copie** de Quarky (une seule hors superposition), dans l'ordre de création des copies.
 3. **Parois de la boîte** : pour chaque axe, si `x ≤ 0` → `x = 0`, `vel.x = |vel.x|` ; si `x ≥ 1` → `x = 1`, `vel.x = −|vel.x|` (idem en `y`). Un pas qui touche une ou deux parois compte **un** rebond. Si `wall_bounces > max_wall_bounces` → échec `lost:too_many_wall_bounces`, fin immédiate.
 4. **Obstacles**, dans l'ordre du tableau `obstacles` (la vitesse sortant d'un handler est l'entrée du suivant) :
    1. position effective `(ox, oy)` = oscillation de `motion` à l'instant `t` (§6) ;
@@ -85,7 +87,8 @@ Choix du handler : d'abord par `type` d'obstacle, sinon handler par défaut du c
 | `type` | Handler | Effet | Événement |
 |---|---|---|---|
 | `wall`, `mirror` | `wall_reflect` | réflexion (§5) | `bounce` |
-| `splitter` | `superposition_splitter` | si `pos.y − obs.y ≤ 0` → direction `arm_a_deg`, sinon `arm_b_deg` ; norme de la vitesse conservée | `deflect` |
+| `splitter` | `superposition_splitter` | lame plate : la copie courante garde sa vitesse (transmise), une nouvelle copie part avec la vitesse réfléchie (§5), cf. §7 bis | `transmit` (copie courante) / `reflect` (nouvelle copie) |
+| `detector` | — | aucun contact (Quarky le traverse) ; sert seulement à la mesure, §7 bis | — |
 | `barrier` | `tunnel_barrier` | si `‖v‖ ≥ energy_threshold(t)` : vitesse inchangée ; sinon réflexion | `pass` / `bounce` |
 | `gate` | `intrication_gate` | `tapped` : traverse ; sinon réflexion | `pass` / `bounce` |
 | `gate_anti` | `intrication_gate_anti` | `tapped` : réflexion ; sinon traverse | `bounce` / `pass` |
@@ -94,11 +97,18 @@ Choix du handler : d'abord par `type` d'obstacle, sinon handler par défaut du c
 
 Handlers par défaut des concepts (obstacle d'un type non listé) : `superposition` → splitter, `tunnel` → barrier, `intrication` → gate, `spin` → pole, `dualite` → surface, `incertitude` / `quantification` → `wall_reflect`.
 
+### 7 bis. Superposition (copies fantômes)
+
+- Au contact d'une lame `splitter`, Quarky devient deux copies. Chaque copie a sa position, sa vitesse, ses `in_contact`, `contacts`, `wall_bounces` et Photons (copiés au moment de la séparation). Une copie qui touche une autre lame se sépare à son tour.
+- **Mesure** = un tap pendant que plusieurs copies existent : on garde la copie la plus proche d'un `detector` (distance au squelette du détecteur, à sa position oscillée ; égalité → la première créée). Les autres disparaissent **avec leurs Photons**. On ajoute `(id du détecteur, "measure")` aux contacts de la survivante. Un tap sans superposition ne mesure rien.
+- La **cible** n'accepte qu'un Quarky mesuré : tant qu'il y a plusieurs copies, l'étape 6 est sautée.
+- **Décohérence** : si une copie dépasse `max_wall_bounces` pendant la superposition, tout le lancer échoue (`lost:decoherence`).
+
 Le jeu n'a pas besoin de `must_contact` ni du journal `contacts` pour jouer : ils ne servent qu'au validateur (anti-contournement). Les événements restent utiles côté jeu pour déclencher les effets visuels/sonores.
 
 ## 8. Tap et paramètres
 
-- **Un seul tap par vol.** `tap_time` est un paramètre comme l'angle : le solveur le cherche sur la grille de `param_space.tap_time`, **sans jamais descendre sous `TAP_MIN_TIME`** (un tap au lancer = réglage pré-tir déguisé). **Décision game design (validée) :** côté jeu, un tap avant `TAP_MIN_TIME` est ignoré (le geste reste disponible pour la suite du vol), ce qui garantit que tout lancer jouable est un lancer que le validateur a vérifié.
+- **Un tap par vol**, sauf en superposition où chaque lame peut demander sa mesure (`tap_time_2`, strictement après `tap_time`). Chaque instant de tap est un paramètre comme l'angle : le solveur le cherche sur la grille de `param_space`, **sans jamais descendre sous `TAP_MIN_TIME`** (un tap au lancer = réglage pré-tir déguisé). **Décision game design (validée) :** côté jeu, un tap avant `TAP_MIN_TIME` est ignoré (le geste reste disponible pour la suite du vol), ce qui garantit que tout lancer jouable est un lancer que le validateur a vérifié.
 - En jeu, l'instant du tap est le temps simulé écoulé depuis le lâcher au moment où l'entrée est traitée ; il est quantifié au pas (§4.2).
 - La solvabilité, les tolérances et les étoiles sont **mesurées sur la grille** `param_space` (`range` : de `min` à `max` par `step`, valeurs arrondies à 4 décimales ; `choice` : liste). Des dials continus restent jouables, mais seuls les points de grille sont garantis.
 

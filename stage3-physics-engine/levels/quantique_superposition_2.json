@@ -6,85 +6,91 @@
   "difficulty": 2,
   "codex_text": "« Tu as suivi les deux chemins à la fois, jusqu'à ce que je regarde... et que l'un des deux devienne réel. »",
   "launcher": {
-    "x": 0.12,
-    "y": 0.7
+    "x": 0.2,
+    "y": 0.92
   },
   "target": {
-    "x": 0.866,
-    "y": 0.528,
+    "x": 0.8,
+    "y": 0.1,
     "r": 0.05
   },
   "obstacles": [
     {
-      "id": "chuteTop",
-      "type": "wall",
-      "x": 0.22,
-      "y": 0.31,
-      "length": 0.72,
-      "angle_deg": 90.0
-    },
-    {
-      "id": "chuteBot",
-      "type": "wall",
-      "x": 0.22,
-      "y": 0.89,
-      "length": 0.32,
-      "angle_deg": 90.0
-    },
-    {
-      "id": "S1",
+      "id": "S",
       "type": "splitter",
-      "x": 0.35,
-      "y": 0.7,
-      "r": 0.06,
-      "arm_a_deg": -35,
-      "arm_b_deg": 35
+      "x": 0.2,
+      "y": 0.6,
+      "length": 0.2828,
+      "angle_deg": -45.0
     },
     {
-      "id": "S2",
-      "type": "splitter",
-      "x": 0.585,
-      "y": 0.494,
-      "r": 0.06,
-      "arm_a_deg": -60,
-      "arm_b_deg": 0
+      "id": "M1",
+      "type": "mirror",
+      "x": 0.2,
+      "y": 0.2,
+      "length": 0.2828,
+      "angle_deg": -45.0
+    },
+    {
+      "id": "M2",
+      "type": "mirror",
+      "x": 0.8,
+      "y": 0.6,
+      "length": 0.2828,
+      "angle_deg": -45.0
+    },
+    {
+      "id": "D",
+      "type": "detector",
+      "x": 0.5,
+      "y": 0.45,
+      "length": 0.06,
+      "angle_deg": 0.0,
+      "motion": {
+        "axis": "y",
+        "amplitude": 0.15,
+        "period": 1.2,
+        "phase": 3.14
+      }
+    },
+    {
+      "id": "cloison",
+      "type": "wall",
+      "x": 0.36,
+      "y": 0.81,
+      "length": 0.38,
+      "angle_deg": 90.0
     }
   ],
   "photons": [
     {
       "id": "p1",
-      "x": 0.468,
-      "y": 0.561,
+      "x": 0.205,
+      "y": 0.816,
       "r": 0.03,
       "motion": {
-        "axis": "y",
+        "axis": "x",
         "amplitude": 0.08,
         "period": 0.5,
-        "phase": 0.377
+        "phase": 4.6496
       }
     },
     {
       "id": "p2",
-      "x": 0.695,
-      "y": 0.519,
-      "r": 0.03,
-      "motion": {
-        "axis": "y",
-        "amplitude": 0.08,
-        "period": 0.5,
-        "phase": 5.4035
-      }
+      "x": 0.432,
+      "y": 0.589,
+      "r": 0.03
     },
     {
       "id": "p3",
-      "x": 0.743,
-      "y": 0.519,
+      "x": 0.648,
+      "y": 0.578,
       "r": 0.03,
       "motion": {
         "axis": "y",
         "amplitude": 0.08,
         "period": 0.5,
-        "phase": 3.8956
+        "phase": 0.754
       }
     }
   ],
@@ -92,21 +98,28 @@
   "param_space": {
     "angle_deg": {
       "type": "range",
-      "min": -15,
-      "max": 15,
-      "step": 0.5
+      "min": -94,
+      "max": -84,
+      "step": 1
     },
     "power": {
       "type": "range",
       "min": 0.4,
-      "max": 0.9,
+      "max": 0.8,
+      "step": 0.1
+    },
+    "tap_time": {
+      "type": "range",
+      "min": 0.3,
+      "max": 3.0,
       "step": 0.1
     }
   },
   "hint": {
     "params": {
-      "angle_deg": -7.5,
-      "power": 0.4
+      "angle_deg": -88,
+      "power": 0.8,
+      "tap_time": 0.5
     }
   }
 }

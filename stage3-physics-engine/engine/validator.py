@@ -11,7 +11,7 @@ stars.py (lancer de rayons).
 import itertools
 from dataclasses import dataclass, field
 
-from .simulate import TAP_MIN_TIME, simulate
+from .simulate import TAP_MIN_TIME, simulate, taps_ordered
 from .stars import star_profile
 
 
@@ -53,19 +53,24 @@ def _grids(level):
     param_space = level["param_space"]
     keys = list(param_space.keys())
     grids = [_grid_values(param_space[k]) for k in keys]
-    if "tap_time" in param_space:
-        # Un tap avant TAP_MIN_TIME est un réglage pré-tir déguisé (cf.
-        # simulate.TAP_MIN_TIME) : il ne fait pas partie de l'espace jouable.
-        i = keys.index("tap_time")
-        grids[i] = [t for t in grids[i] if t >= TAP_MIN_TIME]
+    for i, key in enumerate(keys):
+        if key.startswith("tap_time"):
+            # Un tap avant TAP_MIN_TIME est un réglage pré-tir déguisé (cf.
+            # simulate.TAP_MIN_TIME) : il ne fait pas partie de l'espace jouable.
+            grids[i] = [t for t in grids[i] if t >= TAP_MIN_TIME]
     return keys, grids
 
 
+def param_combos(keys, grids):
+    """Lancers de la grille (taps successifs dans l'ordre, cf. taps_ordered)."""
+    for combo in itertools.product(*grids):
+        params = dict(zip(keys, combo))
+        if taps_ordered(params):
+            yield params
+
+
 def grid_size(level: dict) -> int:
-    size = 1
-    for g in _grids(level)[1]:
-        size *= len(g)
-    return size
+    return sum(1 for _ in param_combos(*_grids(level)))
 
 
 def solve(level: dict, max_solutions=200):
@@ -75,8 +80,7 @@ def solve(level: dict, max_solutions=200):
     solutions = []
     total_photons = len(level.get("photons", []))
 
-    for combo in itertools.product(*grids):
-        params = dict(zip(keys, combo))
+    for params in param_combos(keys, grids):
         result = simulate(level, params)
         if result.success:
             solutions.append(Solution(

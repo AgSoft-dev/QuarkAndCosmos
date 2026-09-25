@@ -13,7 +13,7 @@ Le premier build jouable (test fermé) se limite au **premier monde uniquement (
 Ordre d'introduction (numéros = ordre de jeu, pas de découverte physique) : on ouvre sur le concept le plus immédiat à lire (un seuil à franchir ou non) pour habituer le joueur au lancer en boîte fermée sans gravité, avant de lui demander de comprendre un choix de chemin.
 
 1. Effet tunnel (barrière franchie sous condition de timing/jauge)
-2. Superposition d'états (chemins parallèles — le passage direct vers la cible est physiquement bloqué par une cloison ; seule l'ouverture alignée sur le séparateur laisse passer, donc l'interaction n'est jamais optionnelle)
+2. Superposition d'états (une lame sépare Quarky en deux copies fantômes qui volent en même temps ; le tap « mesure » et Quarky devient la copie la plus proche du détecteur — la cible n'accepte qu'un Quarky mesuré, donc l'interaction n'est jamais optionnelle)
 3. Intrication quantique (paire liée à distance : agir sur l'un modifie l'autre instantanément)
 4. Principe d'incertitude de Heisenberg (précision de visée vs contrôle de vitesse)
 5. Quantification de l'énergie (lanceur à crans fixes, pas de réglage continu)
