@@ -1,4 +1,10 @@
 {
+  "schema_version": 2,
+  "id": "quantique-incertitude-1",
+  "scale": "quantique",
+  "concept": "incertitude",
+  "difficulty": 1,
+  "codex_text": "« Plus tu vises pile, moins tu sais à quelle vitesse tu iras. C'est le prix à payer pour être précis·e. »",
   "launcher": {
     "x": 0.1,
     "y": 0.6
@@ -17,11 +23,36 @@
   "photons": [
     {
       "id": "p1",
-      "x": 0.45,
-      "y": 0.553,
+      "x": 0.179,
+      "y": 0.586,
       "r": 0.03
+    },
+    {
+      "id": "p2",
+      "x": 0.326,
+      "y": 0.558,
+      "r": 0.03,
+      "motion": {
+        "axis": "y",
+        "amplitude": 0.08,
+        "period": 0.5,
+        "phase": 0.5027
+      }
+    },
+    {
+      "id": "p3",
+      "x": 0.385,
+      "y": 0.548,
+      "r": 0.03,
+      "motion": {
+        "axis": "y",
+        "amplitude": 0.08,
+        "period": 0.5,
+        "phase": 5.2779
+      }
     }
   ],
+  "max_wall_bounces": 1,
   "param_space": {
     "angle_deg": {
       "type": "range",
@@ -41,21 +72,10 @@
       ]
     }
   },
-  "id": "quantique-incertitude-1",
-  "scale": "quantique",
-  "concept": "incertitude",
-  "difficulty": 1,
-  "codex_text": "« Plus tu vises pile, moins tu sais à quelle vitesse tu iras. C'est le prix à payer pour être précis·e. »",
-  "solvable": true,
-  "reference_solution": {
+  "hint": {
     "params": {
       "angle_deg": -15,
       "precision": 0.7
-    },
-    "photons_collected": 1,
-    "photon_ids": [
-      "p1"
-    ]
-  },
-  "max_photons_reachable": 1
+    }
+  }
 }

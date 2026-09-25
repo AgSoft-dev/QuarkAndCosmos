@@ -1,0 +1,125 @@
+{
+  "schema_version": 2,
+  "id": "quantique-superposition-2",
+  "scale": "quantique",
+  "concept": "superposition",
+  "difficulty": 2,
+  "codex_text": "« Tu as suivi les deux chemins à la fois, jusqu'à ce que je regarde... et que l'un des deux devienne réel. »",
+  "launcher": {
+    "x": 0.2,
+    "y": 0.92
+  },
+  "target": {
+    "x": 0.8,
+    "y": 0.1,
+    "r": 0.05
+  },
+  "obstacles": [
+    {
+      "id": "S",
+      "type": "splitter",
+      "x": 0.2,
+      "y": 0.6,
+      "length": 0.2828,
+      "angle_deg": -45.0
+    },
+    {
+      "id": "M1",
+      "type": "mirror",
+      "x": 0.2,
+      "y": 0.2,
+      "length": 0.2828,
+      "angle_deg": -45.0
+    },
+    {
+      "id": "M2",
+      "type": "mirror",
+      "x": 0.8,
+      "y": 0.6,
+      "length": 0.2828,
+      "angle_deg": -45.0
+    },
+    {
+      "id": "D",
+      "type": "detector",
+      "x": 0.5,
+      "y": 0.45,
+      "length": 0.06,
+      "angle_deg": 0.0,
+      "motion": {
+        "axis": "y",
+        "amplitude": 0.15,
+        "period": 1.2,
+        "phase": 3.14
+      }
+    },
+    {
+      "id": "cloison",
+      "type": "wall",
+      "x": 0.36,
+      "y": 0.81,
+      "length": 0.38,
+      "angle_deg": 90.0
+    }
+  ],
+  "photons": [
+    {
+      "id": "p1",
+      "x": 0.205,
+      "y": 0.816,
+      "r": 0.03,
+      "motion": {
+        "axis": "x",
+        "amplitude": 0.08,
+        "period": 0.5,
+        "phase": 4.6496
+      }
+    },
+    {
+      "id": "p2",
+      "x": 0.432,
+      "y": 0.589,
+      "r": 0.03
+    },
+    {
+      "id": "p3",
+      "x": 0.648,
+      "y": 0.578,
+      "r": 0.03,
+      "motion": {
+        "axis": "y",
+        "amplitude": 0.08,
+        "period": 0.5,
+        "phase": 0.754
+      }
+    }
+  ],
+  "max_wall_bounces": 0,
+  "param_space": {
+    "angle_deg": {
+      "type": "range",
+      "min": -94,
+      "max": -84,
+      "step": 1
+    },
+    "power": {
+      "type": "range",
+      "min": 0.4,
+      "max": 0.8,
+      "step": 0.1
+    },
+    "tap_time": {
+      "type": "range",
+      "min": 0.3,
+      "max": 3.0,
+      "step": 0.1
+    }
+  },
+  "hint": {
+    "params": {
+      "angle_deg": -88,
+      "power": 0.8,
+      "tap_time": 0.5
+    }
+  }
+}

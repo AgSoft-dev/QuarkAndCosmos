@@ -186,6 +186,13 @@
 </div>
 
 <script>
+// NOTE (source de vérité de la physique) : la physique JS de cette maquette
+// est une ébauche écrite à la main, figée au Stage 2. Ce N'EST PAS la
+// référence et elle a déjà divergé du moteur (marges de collision, contact
+// répété sur les murs, disques au lieu de segments, dernier sous-pas non
+// fixe…). Le contrat que le jeu doit reproduire est `docs/physics-spec.md`,
+// implémenté par stage3-physics-engine/engine/. Ne pas corriger les niveaux
+// ou le moteur d'après cette maquette.
 (function(){
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
@@ -839,7 +846,8 @@
 
   // ---- Quantique : boite fermee, SANS gravite, vitesse constante,
   // rebond mural limite a 1, separateur (superposition) qui redirige la
-  // trajectoire selon la moitie touchee. Miroir de stage3-physics-engine/engine/simulate.py.
+  // trajectoire selon la moitie touchee. Inspire de stage3-physics-engine/engine/simulate.py
+  // (version de l'epoque, non tenue a jour : cf. docs/physics-spec.md).
   //
   // Sous-pas fixe (SIM_DT, identique au DT du moteur Python) : un pas de
   // simulation cale sur le framerate (jusqu'a ~33ms) peut "traverser" un mur

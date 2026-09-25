@@ -1,0 +1,115 @@
+{
+  "schema_version": 2,
+  "id": "quantique-incertitude-3",
+  "scale": "quantique",
+  "concept": "incertitude",
+  "difficulty": 3,
+  "codex_text": "« Plus tu vises pile, moins tu sais à quelle vitesse tu iras. C'est le prix à payer pour être précis·e. »",
+  "launcher": {
+    "x": 0.1,
+    "y": 0.7
+  },
+  "target": {
+    "x": 0.88,
+    "y": 0.33,
+    "r": 0.04,
+    "motion": {
+      "axis": "y",
+      "amplitude": 0.07,
+      "period": 0.8
+    }
+  },
+  "obstacles": [
+    {
+      "id": "slit1Top",
+      "type": "wall",
+      "x": 0.35,
+      "y": 0.2425,
+      "length": 0.585,
+      "angle_deg": 90.0
+    },
+    {
+      "id": "slit1Bot",
+      "type": "wall",
+      "x": 0.35,
+      "y": 0.8375,
+      "length": 0.425,
+      "angle_deg": 90.0
+    },
+    {
+      "id": "slit2Top",
+      "type": "wall",
+      "x": 0.6,
+      "y": 0.185,
+      "length": 0.47,
+      "angle_deg": 90.0
+    },
+    {
+      "id": "slit2Bot",
+      "type": "wall",
+      "x": 0.6,
+      "y": 0.78,
+      "length": 0.54,
+      "angle_deg": 90.0
+    }
+  ],
+  "photons": [
+    {
+      "id": "p1",
+      "x": 0.201,
+      "y": 0.655,
+      "r": 0.03,
+      "motion": {
+        "axis": "y",
+        "amplitude": 0.08,
+        "period": 0.5,
+        "phase": 1.6336
+      }
+    },
+    {
+      "id": "p2",
+      "x": 0.267,
+      "y": 0.626,
+      "r": 0.03,
+      "motion": {
+        "axis": "y",
+        "amplitude": 0.08,
+        "period": 0.5,
+        "phase": 4.9009
+      }
+    },
+    {
+      "id": "p3",
+      "x": 0.802,
+      "y": 0.388,
+      "r": 0.03,
+      "motion": {
+        "axis": "y",
+        "amplitude": 0.04,
+        "period": 0.5,
+        "phase": 5.5292
+      }
+    }
+  ],
+  "max_wall_bounces": 0,
+  "param_space": {
+    "angle_deg": {
+      "type": "range",
+      "min": -35,
+      "max": 5,
+      "step": 0.5
+    },
+    "precision": {
+      "type": "range",
+      "min": 0.3,
+      "max": 1.0,
+      "step": 0.05
+    }
+  },
+  "hint": {
+    "params": {
+      "angle_deg": -26.0,
+      "precision": 0.9
+    }
+  }
+}
