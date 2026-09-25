@@ -26,9 +26,10 @@ rayons » (cf. skill gameplay-mechanics — notation à 3 étoiles).
 """
 import copy
 import itertools
+import json
 import math
 
-from . import vec
+from . import shapes, vec
 from .simulate import COLLISION_EPS, DT, TAP_MIN_TIME, _oscillate, simulate
 
 PHOTONS_PER_LEVEL = 3
@@ -46,7 +47,7 @@ SIGMA_BY_DIFFICULTY = {1: 2.2, 2: 1.6, 3: 1.2}
 # REFINE fois plus finement que sa grille de solveur, dans la limite de
 # MAX_RAYS lancers au total.
 REFINE = 3
-MAX_RAYS = 6000
+MAX_RAYS = 4000
 
 # Variantes d'oscillation essayées pour chaque position candidate
 # (amplitude, période en secondes simulées), perpendiculairement au trajet.
@@ -57,8 +58,11 @@ MOTION_PENALTY = 0.03
 # porte la difficulté).
 TIER_WEIGHTS = (1.0, 1.0, 2.0)
 # Nombre de chemins de référence essayés, répartis du plus robuste au moins
-# robuste.
+# robuste, plus le plus robuste de chacune des ROUTE_ANCHORS routes les plus
+# fréquentes : une route rare qui utilise davantage la mécanique (ex : ping-
+# pong entre portes intriquées) est le candidat naturel pour la 3e étoile.
 ANCHORS = 5
+ROUTE_ANCHORS = 4
 # Recherche du triplet de Photons : pour chaque palier k, on garde les
 # SHORTLIST candidats dont la part capturée est la plus proche de la cible
 # du palier, puis on évalue exactement tous les triplets formés.
@@ -109,8 +113,11 @@ class _Path:
     mêmes instants), avec un index spatial des points visités."""
     CELL = 0.05
 
-    def __init__(self, trail):
+    def __init__(self, trail, route=()):
         self.trail = trail
+        # séquence (obstacle, événement) : deux chemins de même route
+        # utilisent la mécanique de la même façon (cf. SimResult.contacts)
+        self.route = tuple(route)
         self.rays = []  # paramètres des rayons qui suivent ce chemin
         self.cells = {}
         for i, p in enumerate(trail):
@@ -138,10 +145,23 @@ class _Path:
         return False
 
 
+# Les Photons ne modifient pas les trajectoires : le lancer de rayons d'un
+# niveau ne dépend que de sa géométrie, on le mémorise (placement, rapport
+# et validation le redemandent pour le même niveau).
+_TRACE_CACHE = {}
+
+
 def trace(level: dict):
     """Tire l'éventail de rayons ; retourne (nb de rayons, chemins valides)."""
     bare = copy.deepcopy(level)
     bare["photons"] = []
+    key = json.dumps(bare, sort_keys=True, default=str)
+    if key not in _TRACE_CACHE:
+        _TRACE_CACHE[key] = _trace(bare)
+    return _TRACE_CACHE[key]
+
+
+def _trace(bare):
     keys, grids = _ray_grid(bare)
     paths = {}
     total = 0
@@ -152,7 +172,7 @@ def trace(level: dict):
         if res.success:
             signature = tuple((round(x, 4), round(y, 4)) for x, y in res.trail)
             if signature not in paths:
-                paths[signature] = _Path(res.trail)
+                paths[signature] = _Path(res.trail, res.contacts)
             paths[signature].rays.append(params)
     return total, list(paths.values())
 
@@ -186,7 +206,7 @@ def star_profile(level: dict) -> dict:
 
 # --- placement des Photons -------------------------------------------------
 
-def _anchors(paths, keys_values):
+def _anchors(paths, keys_values, param_space):
     """ANCHORS chemins de référence, du plus robuste (le plus de rayons
     valides voisins, à un cran près sur chaque paramètre) au moins robuste."""
     keys, grids = keys_values
@@ -205,18 +225,42 @@ def _anchors(paths, keys_values):
             best = max(best, n)
         return best
 
-    ranked = sorted(paths, key=lambda p: (-robustness(p), -p.weight))
+    # Seuls les chemins suivis par au moins un lancer de la grille du SOLVEUR
+    # (plus grossière que celle des rayons) peuvent servir de référence :
+    # sinon la solution 3 étoiles existe mais le validateur ne la retrouve
+    # pas, et la solution de référence exportée ne la reproduit pas.
+    on_grid = [p for p in paths if any(_on_solver_grid(params, param_space) for params in p.rays)]
+    ranked = sorted(on_grid or paths, key=lambda p: (-robustness(p), -p.weight))
     if len(ranked) <= ANCHORS:
         return ranked
     picks = sorted({round(i * (len(ranked) - 1) / (ANCHORS - 1)) for i in range(ANCHORS)})
-    return [ranked[i] for i in picks]
+    anchors = [ranked[i] for i in picks]
+    routes = {}
+    for p in paths:
+        routes[p.route] = routes.get(p.route, 0) + p.weight
+    for route, _ in sorted(routes.items(), key=lambda kv: -kv[1])[:ROUTE_ANCHORS]:
+        best = next((p for p in ranked if p.route == route), None)
+        if best is not None and best not in anchors:
+            anchors.append(best)
+    return anchors
+
+
+def _on_solver_grid(params, param_space):
+    """Vrai si chaque paramètre continu tombe sur un cran de la grille du
+    solveur (les rayons l'échantillonnent REFINE fois plus finement)."""
+    for key, spec in param_space.items():
+        if spec["type"] == "range":
+            k = (params[key] - spec["min"]) / spec["step"]
+            if abs(k - round(k)) > 1e-6:
+                return False
+    return True
 
 
 def _clear_of_objects(level, pos, t):
     r = PHOTON_RADIUS
     for obs in level.get("obstacles", []):
         ox, oy = _oscillate(obs["x"], obs["y"], obs.get("motion"), t)
-        if vec.dist(pos, (ox, oy)) < obs.get("r", 0.03) + r + PHOTON_CLEARANCE:
+        if shapes.distance(dict(obs, x=ox, y=oy), pos) < shapes.radius(obs) + r + PHOTON_CLEARANCE:
             return False
     tgt = level["target"]
     if vec.dist(pos, (tgt["x"], tgt["y"])) < tgt.get("r", 0.045) + r + PHOTON_CLEARANCE:
@@ -300,7 +344,7 @@ def place_photons(level: dict) -> dict:
     targets = target_shares(level.get("difficulty", 1))
 
     best, best_cost = None, None
-    for anchor in _anchors(paths, _ray_grid(bare)):
+    for anchor in _anchors(paths, _ray_grid(bare), bare["param_space"]):
         candidates = _candidates(bare, anchor.trail)
         trio, cost = _best_trio(paths, candidates, targets)
         if trio is not None and (best_cost is None or cost < best_cost):

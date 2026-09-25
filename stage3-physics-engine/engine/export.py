@@ -20,6 +20,7 @@ def build_export_payload(level: dict) -> dict:
     payload["max_photons_reachable"] = report["max_photons_reachable"]
     payload["tolerance"] = report["tolerance"]
     payload["three_star_tolerance"] = report["three_star_tolerance"]
+    payload["bypass_solutions"] = report["bypass_solutions"]
     payload["star_profile"] = report["star_profile"]
     return payload
 

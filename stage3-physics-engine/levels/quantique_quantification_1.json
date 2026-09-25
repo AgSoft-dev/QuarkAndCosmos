@@ -24,6 +24,12 @@
       }
     }
   ],
+  "must_contact": [
+    [
+      "barrier",
+      "pass"
+    ]
+  ],
   "param_space": {
     "angle_deg": {
       "type": "range",
@@ -51,7 +57,7 @@
     {
       "id": "p1",
       "x": 0.23,
-      "y": 0.504,
+      "y": 0.505,
       "r": 0.03,
       "motion": {
         "axis": "y",
@@ -63,7 +69,7 @@
     {
       "id": "p2",
       "x": 0.35,
-      "y": 0.507,
+      "y": 0.509,
       "r": 0.03,
       "motion": {
         "axis": "y",
@@ -74,8 +80,8 @@
     },
     {
       "id": "p3",
-      "x": 0.62,
-      "y": 0.515,
+      "x": 0.56,
+      "y": 0.516,
       "r": 0.03
     }
   ],
@@ -95,13 +101,14 @@
   "max_photons_reachable": 3,
   "tolerance": 0.4571,
   "three_star_tolerance": 0.1714,
+  "bypass_solutions": 0,
   "star_profile": {
     "rays": 95,
     "valid_rays": 40,
     "distinct_paths": 40,
     "shares": {
       "1": 0.925,
-      "2": 0.7,
+      "2": 0.675,
       "3": 0.4
     },
     "target_shares": {

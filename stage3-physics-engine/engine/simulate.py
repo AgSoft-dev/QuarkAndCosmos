@@ -17,7 +17,7 @@ pendant le vol, via deux briques génériques :
 """
 import math
 from dataclasses import dataclass, field
-from . import vec
+from . import shapes, vec
 from .concepts import handler_for
 
 DT = 0.01
@@ -65,6 +65,8 @@ class SimResult:
     photons_collected: set = field(default_factory=set)
     steps: int = 0
     trail: list = field(default_factory=list)
+    # (id de l'obstacle, événement du handler) dans l'ordre des contacts
+    contacts: list = field(default_factory=list)
 
 
 def simulate(level: dict, params: dict, record_trail: bool = False) -> SimResult:
@@ -101,6 +103,9 @@ def simulate(level: dict, params: dict, record_trail: bool = False) -> SimResult
     # et le franchissement d'une barrière était ré-évalué à chaque pas contre
     # un seuil qui oscille. Une interaction = un contact = un événement.
     in_contact = set()
+    contacts = []
+    # Un niveau peut autoriser plus de rebonds "subis" (ex : bande exigée).
+    max_wall_bounces = level.get("max_wall_bounces", MAX_WALL_BOUNCES)
 
     tap_time = params.get("tap_time")
 
@@ -130,16 +135,16 @@ def simulate(level: dict, params: dict, record_trail: bool = False) -> SimResult
         if bounced:
             pos = (x, y)
             wall_bounces += 1
-            if wall_bounces > MAX_WALL_BOUNCES:
-                return SimResult(success=False, reason="lost:too_many_wall_bounces", steps=step, trail=trail)
+            if wall_bounces > max_wall_bounces:
+                return SimResult(success=False, reason="lost:too_many_wall_bounces", steps=step, trail=trail, contacts=contacts)
 
         # obstacles specifiques au concept (position/seuil effectifs a
         # l'instant present si l'obstacle porte une oscillation, cf. "Element
         # oscillant" - skill gameplay-mechanics)
         for obs in level.get("obstacles", []):
             ox, oy = _oscillate(obs["x"], obs["y"], obs.get("motion"), elapsed)
-            touching = vec.dist(pos, (ox, oy)) < obs.get("r", 0.03) + COLLISION_EPS
-            if not touching:
+            placed = obs if (ox, oy) == (obs["x"], obs["y"]) else dict(obs, x=ox, y=oy)
+            if not shapes.touching(placed, pos, COLLISION_EPS):
                 in_contact.discard(obs["id"])
                 continue
             if obs["id"] in in_contact:
@@ -152,6 +157,8 @@ def simulate(level: dict, params: dict, record_trail: bool = False) -> SimResult
                 obs_eff["energy_threshold"] = _effective_threshold(obs, elapsed)
             handler = handler_for(level["concept"], obs.get("type", ""))
             vel, event = handler(obs_eff, pos, vel, params, state)
+            if obs.get("type") != "wall":
+                contacts.append((obs["id"], event))
             if obs.get("type") == "wall":
                 # Un mur interne (ex : goulot d'entree) est un rebond "subi",
                 # comme une paroi de la boite — compte dans le meme plafond,
@@ -159,8 +166,8 @@ def simulate(level: dict, params: dict, record_trail: bool = False) -> SimResult
                 # et retomber "par hasard" sur la cible (cf. essais Stage 3
                 # ayant motive MAX_WALL_BOUNCES a l'origine).
                 wall_bounces += 1
-                if wall_bounces > MAX_WALL_BOUNCES:
-                    return SimResult(success=False, reason="lost:too_many_wall_bounces", steps=step, trail=trail)
+                if wall_bounces > max_wall_bounces:
+                    return SimResult(success=False, reason="lost:too_many_wall_bounces", steps=step, trail=trail, contacts=contacts)
 
         # photons (collecte pendant le vol, cf. gameplay-mechanics) ; un
         # Photon peut osciller (cf. stars.py : c'est ce qui rend le 3 étoiles
@@ -175,6 +182,6 @@ def simulate(level: dict, params: dict, record_trail: bool = False) -> SimResult
         # cible (position effective si oscillante)
         tx, ty = _oscillate(target["x"], target["y"], target.get("motion"), elapsed)
         if vec.dist(pos, (tx, ty)) < target.get("r", 0.045) + COLLISION_EPS:
-            return SimResult(success=True, photons_collected=collected, steps=step, trail=trail)
+            return SimResult(success=True, photons_collected=collected, steps=step, trail=trail, contacts=contacts)
 
-    return SimResult(success=False, reason="timeout", steps=MAX_STEPS, trail=trail)
+    return SimResult(success=False, reason="timeout", steps=MAX_STEPS, trail=trail, contacts=contacts)

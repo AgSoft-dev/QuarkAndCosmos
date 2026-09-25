@@ -48,6 +48,16 @@ def _sample(paths, photons):
     return out
 
 
+def _routes(paths):
+    """Routes valides (séquence obstacle:événement) et leur part des rayons."""
+    n = sum(p.weight for p in paths) or 1
+    counts = {}
+    for p in paths:
+        key = " → ".join(f"{o}:{e}" for o, e in p.route) or "(aucun contact)"
+        counts[key] = counts.get(key, 0) + p.weight
+    return [{"route": k, "share": round(v / n, 4)} for k, v in sorted(counts.items(), key=lambda kv: -kv[1])]
+
+
 def level_entry(concept: str, difficulty: int) -> dict:
     level = make_level(concept, difficulty)
     report = validate(level)
@@ -62,6 +72,8 @@ def level_entry(concept: str, difficulty: int) -> dict:
         "sigma": sigma_for(difficulty),
         "solvable": report["solvable"],
         "tolerance": report["tolerance"],
+        "bypass_solutions": report["bypass_solutions"],
+        "routes": _routes(paths),
         "rays": total,
         "valid_rays": sum(p.weight for p in paths),
         "distinct_paths": len(paths),

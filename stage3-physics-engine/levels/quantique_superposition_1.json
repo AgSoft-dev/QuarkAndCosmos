@@ -95,6 +95,12 @@
       }
     }
   ],
+  "must_contact": [
+    [
+      "splitter",
+      "deflect"
+    ]
+  ],
   "param_space": {
     "angle_deg": {
       "type": "range",
@@ -120,7 +126,7 @@
     {
       "id": "p1",
       "x": 0.433,
-      "y": 0.384,
+      "y": 0.379,
       "r": 0.03,
       "motion": {
         "axis": "y",
@@ -131,26 +137,26 @@
     },
     {
       "id": "p2",
-      "x": 0.507,
-      "y": 0.333,
+      "x": 0.536,
+      "y": 0.307,
       "r": 0.03,
       "motion": {
         "axis": "y",
         "amplitude": 0.04,
         "period": 0.5,
-        "phase": 3.3929
+        "phase": 2.6389
       }
     },
     {
       "id": "p3",
-      "x": 0.566,
-      "y": 0.292,
+      "x": 0.595,
+      "y": 0.265,
       "r": 0.03,
       "motion": {
         "axis": "y",
-        "amplitude": 0.04,
+        "amplitude": 0.08,
         "period": 0.5,
-        "phase": 1.885
+        "phase": 1.131
       }
     }
   ],
@@ -170,13 +176,14 @@
   "max_photons_reachable": 3,
   "tolerance": 0.2473,
   "three_star_tolerance": 0.086,
+  "bypass_solutions": 0,
   "star_profile": {
     "rays": 273,
     "valid_rays": 65,
     "distinct_paths": 65,
     "shares": {
-      "1": 0.9231,
-      "2": 0.6769,
+      "1": 0.9077,
+      "2": 0.6462,
       "3": 0.3692
     },
     "target_shares": {

@@ -93,6 +93,7 @@
   .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
   .seg button { font: inherit; font-size: 12px; background: none; color: var(--text-secondary); border: 0; padding: 2px 10px; cursor: pointer; }
   .seg button[aria-pressed="true"] { background: var(--text-primary); color: var(--surface-1); }
+  .routes { margin-top: 4px; color: var(--text-muted); font-size: 11.5px; }
   .stats { font-size: 12px; margin-top: 4px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
   .table-wrap { overflow-x: auto; background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; }
   table { border-collapse: collapse; width: 100%; font-size: 12.5px; font-variant-numeric: tabular-nums; }
@@ -222,12 +223,31 @@ function mapFigure(e) {
     marker: { size: 10, color: css("--text-primary"), symbol: "diamond" },
     hovertemplate: "lanceur<extra></extra>",
   });
+  const labels = [];
   const shapes = [
     { type: "rect", x0: 0, x1: 1, y0: 0, y1: 1, line: { color: css("--border"), width: 1 }, layer: "below" },
   ];
-  for (const o of g.obstacles) shapes.push(circle(o.x, o.y, o.r, css("--obstacle"), css("--obstacle"), 1));
+  const hx = [], hy = [], htext = [];
+  for (const o of g.obstacles) {
+    const isWall = o.type === "wall";
+    const info = obstacleInfo(o);
+    if (o.length !== undefined) {
+      const a = (o.angle_deg || 0) * Math.PI / 180, h = o.length / 2;
+      const x0 = o.x - Math.cos(a) * h, y0 = o.y - Math.sin(a) * h, x1 = o.x + Math.cos(a) * h, y1 = o.y + Math.sin(a) * h;
+      shapes.push({ type: "line", xref: "x", yref: "y", x0, y0, x1, y1, layer: "above",
+                    line: { color: isWall ? css("--obstacle") : css("--text-primary"), width: isWall ? 2 : 4 } });
+      if (!isWall) for (let i = 0; i <= 4; i++) { hx.push(x0 + (x1 - x0) * i / 4); hy.push(y0 + (y1 - y0) * i / 4); htext.push(info); }
+    } else {
+      shapes.push(circle(o.x, o.y, o.r, isWall ? css("--obstacle") : css("--text-primary"),
+                         isWall ? css("--obstacle") : "rgba(0,0,0,0)", isWall ? 1 : 2));
+      if (!isWall) { hx.push(o.x); hy.push(o.y); htext.push(info); }
+    }
+    if (!isWall) labels.push({ x: o.x, y: o.y, text: o.id, showarrow: false, xshift: 14, yshift: -10,
+                               font: { size: 10, color: css("--text-secondary") } });
+  }
+  traces.push({ x: hx, y: hy, mode: "markers", marker: { size: 14, color: "rgba(0,0,0,0)" },
+                text: htext, hovertemplate: "%{text}<extra></extra>" });
   shapes.push(circle(g.target.x, g.target.y, g.target.r, css("--target"), "rgba(0,0,0,0)", 2));
-  const labels = [];
   for (const ph of g.photons) {
     if (ph.motion) {
       const a = ph.motion.amplitude, alongX = ph.motion.axis === "x";
@@ -257,10 +277,31 @@ function mapFigure(e) {
   };
 }
 
+function obstacleInfo(o) {
+  const bits = [`${o.id} · ${o.type}`];
+  if (o.pole) bits.push(`pôle ${o.pole}, déviation ${Math.abs(o.kick_deg)}°`);
+  if (o.energy_threshold !== undefined) {
+    const m = o.threshold_motion;
+    bits.push(m ? `seuil ${o.energy_threshold} ± ${m.amplitude} (période ${m.period}s)` : `seuil ${o.energy_threshold}`);
+  }
+  if (o.arm_a_deg !== undefined) bits.push(`bras ${o.arm_a_deg}° / ${o.arm_b_deg}°`);
+  if (o.type === "gate") bits.push("fermée avant le tap, ouverte après");
+  if (o.type === "gate_anti") bits.push("ouverte avant le tap, fermée après");
+  if (o.type === "surface") bits.push("particule : rebond · onde : traverse");
+  if (o.motion) bits.push(`oscille ±${o.motion.amplitude} (${o.motion.axis}), période ${o.motion.period}s`);
+  return bits.join("<br>");
+}
+
+function routesLine(e) {
+  return e.routes.slice(0, 3).map(r => `${pct(r.share)} ${r.route}`).join("<br>");
+}
+
 function statsLine(e) {
   const s = e.shares, t = e.target_shares;
   return `≥1★ ${pct(s[1])} (cible ${pct(t[1])}) · ≥2★ ${pct(s[2])} (${pct(t[2])}) · 3★ <strong>${pct(s[3])}</strong> (${pct(t[3])})<br>` +
-    `${e.valid_rays}/${e.rays} lancers valides · ${e.distinct_paths} chemins · ${e.moving_photons} Photon(s) oscillant(s)` +
+    `${e.valid_rays}/${e.rays} lancers valides · tolérance ${pct(e.tolerance)} · ${e.distinct_paths} chemins · ${e.moving_photons} Photon(s) oscillant(s)` +
+    (e.bypass_solutions ? ` · <span class="badge">⚠ ${e.bypass_solutions} contournement(s)</span>` : "") +
+    `<div class="routes">${routesLine(e)}</div>` +
     (e.ceiling ? ` · <span class="badge">⚠ plancher 3★ : chemins trop uniformes</span>` : "");
 }
 

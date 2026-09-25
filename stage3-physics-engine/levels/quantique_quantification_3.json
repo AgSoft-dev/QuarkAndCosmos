@@ -1,0 +1,206 @@
+{
+  "schema_version": 1,
+  "launcher": {
+    "x": 0.1,
+    "y": 0.8
+  },
+  "target": {
+    "x": 0.6,
+    "y": 0.16,
+    "r": 0.06
+  },
+  "obstacles": [
+    {
+      "id": "b1",
+      "type": "barrier",
+      "x": 0.3,
+      "y": 0.8,
+      "length": 0.18,
+      "angle_deg": 90.0,
+      "energy_threshold": 0.6,
+      "threshold_motion": {
+        "amplitude": 0.4,
+        "period": 0.7,
+        "phase": 0.0
+      }
+    },
+    {
+      "id": "b2",
+      "type": "barrier",
+      "x": 0.44,
+      "y": 0.8,
+      "length": 0.18,
+      "angle_deg": 90.0,
+      "energy_threshold": 0.6,
+      "threshold_motion": {
+        "amplitude": 0.4,
+        "period": 0.7,
+        "phase": 3.6
+      }
+    },
+    {
+      "id": "m",
+      "type": "mirror",
+      "x": 0.6,
+      "y": 0.8,
+      "length": 0.198,
+      "angle_deg": -45.0
+    },
+    {
+      "id": "b3",
+      "type": "barrier",
+      "x": 0.6,
+      "y": 0.45,
+      "length": 0.18,
+      "angle_deg": 0.0,
+      "energy_threshold": 0.6,
+      "threshold_motion": {
+        "amplitude": 0.4,
+        "period": 0.7,
+        "phase": 0.8
+      }
+    },
+    {
+      "id": "ceilL",
+      "type": "wall",
+      "x": 0.475,
+      "y": 0.45,
+      "length": 0.07,
+      "angle_deg": 0.0
+    },
+    {
+      "id": "ceilR",
+      "type": "wall",
+      "x": 0.87,
+      "y": 0.45,
+      "length": 0.36,
+      "angle_deg": 0.0
+    },
+    {
+      "id": "w1Top",
+      "type": "wall",
+      "x": 0.3,
+      "y": 0.33,
+      "length": 0.76,
+      "angle_deg": 90.0
+    },
+    {
+      "id": "w1Bot",
+      "type": "wall",
+      "x": 0.3,
+      "y": 0.97,
+      "length": 0.16,
+      "angle_deg": 90.0
+    },
+    {
+      "id": "w2Top",
+      "type": "wall",
+      "x": 0.44,
+      "y": 0.33,
+      "length": 0.76,
+      "angle_deg": 90.0
+    },
+    {
+      "id": "w2Bot",
+      "type": "wall",
+      "x": 0.44,
+      "y": 0.97,
+      "length": 0.16,
+      "angle_deg": 90.0
+    }
+  ],
+  "must_contact": [
+    [
+      "b1",
+      "pass"
+    ],
+    [
+      "b2",
+      "pass"
+    ],
+    [
+      "m",
+      "bounce"
+    ],
+    [
+      "b3",
+      "pass"
+    ]
+  ],
+  "max_wall_bounces": 0,
+  "param_space": {
+    "angle_deg": {
+      "type": "range",
+      "min": -12,
+      "max": 12,
+      "step": 1
+    },
+    "power": {
+      "type": "choice",
+      "values": [
+        0.3,
+        0.45,
+        0.6,
+        0.75,
+        0.9
+      ]
+    }
+  },
+  "id": "quantique-quantification-3",
+  "scale": "quantique",
+  "concept": "quantification",
+  "difficulty": 3,
+  "codex_text": "« Pas de réglage continu ici : seulement quelques crans d'énergie possibles, ni plus ni moins. »",
+  "photons": [
+    {
+      "id": "p1",
+      "x": 0.522,
+      "y": 0.77,
+      "r": 0.03
+    },
+    {
+      "id": "p2",
+      "x": 0.643,
+      "y": 0.387,
+      "r": 0.03
+    },
+    {
+      "id": "p3",
+      "x": 0.646,
+      "y": 0.333,
+      "r": 0.03
+    }
+  ],
+  "solvable": true,
+  "reference_solution": {
+    "params": {
+      "angle_deg": -4,
+      "power": 0.45
+    },
+    "photons_collected": 3,
+    "photon_ids": [
+      "p1",
+      "p2",
+      "p3"
+    ]
+  },
+  "max_photons_reachable": 3,
+  "tolerance": 0.056,
+  "three_star_tolerance": 0.016,
+  "bypass_solutions": 0,
+  "star_profile": {
+    "rays": 365,
+    "valid_rays": 20,
+    "distinct_paths": 20,
+    "shares": {
+      "1": 0.7,
+      "2": 0.3,
+      "3": 0.3
+    },
+    "target_shares": {
+      "1": 0.7066,
+      "2": 0.2494,
+      "3": 0.0439
+    }
+  }
+}

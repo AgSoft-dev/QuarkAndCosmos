@@ -18,6 +18,12 @@
       "r": 0.05
     }
   ],
+  "must_contact": [
+    [
+      "gate",
+      "pass"
+    ]
+  ],
   "param_space": {
     "angle_deg": {
       "type": "range",
@@ -47,45 +53,45 @@
   "photons": [
     {
       "id": "p1",
-      "x": 0.233,
-      "y": 0.495,
+      "x": 0.254,
+      "y": 0.5,
       "r": 0.03,
       "motion": {
         "axis": "y",
-        "amplitude": 0.08,
+        "amplitude": 0.04,
         "period": 0.5,
-        "phase": 3.8956
+        "phase": 3.5186
       }
     },
     {
       "id": "p2",
-      "x": 0.38,
-      "y": 0.49,
+      "x": 0.338,
+      "y": 0.5,
       "r": 0.03,
       "motion": {
         "axis": "y",
-        "amplitude": 0.08,
+        "amplitude": 0.04,
         "period": 0.5,
-        "phase": 1.2566
+        "phase": 2.0106
       }
     },
     {
       "id": "p3",
-      "x": 0.695,
-      "y": 0.479,
+      "x": 0.399,
+      "y": 0.5,
       "r": 0.03,
       "motion": {
         "axis": "y",
         "amplitude": 0.08,
         "period": 0.5,
-        "phase": 1.885
+        "phase": 3.5186
       }
     }
   ],
   "solvable": true,
   "reference_solution": {
     "params": {
-      "angle_deg": -3,
+      "angle_deg": -2,
       "power": 0.7,
       "tap_time": 0.1
     },
@@ -98,15 +104,16 @@
   },
   "max_photons_reachable": 3,
   "tolerance": 0.6165,
-  "three_star_tolerance": 0.2368,
+  "three_star_tolerance": 0.2406,
+  "bypass_solutions": 0,
   "star_profile": {
     "rays": 2090,
     "valid_rays": 1208,
     "distinct_paths": 39,
     "shares": {
       "1": 0.9081,
-      "2": 0.6631,
-      "3": 0.3932
+      "2": 0.6325,
+      "3": 0.3974
     },
     "target_shares": {
       "1": 0.9019,

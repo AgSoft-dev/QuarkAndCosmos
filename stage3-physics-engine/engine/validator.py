@@ -20,6 +20,20 @@ class Solution:
     params: dict
     photons: int
     photon_ids: list = field(default_factory=list)
+    contacts: list = field(default_factory=list)
+
+
+def uses_mechanic(level: dict, contacts) -> bool:
+    """
+    Vrai si les contacts d'un lancer contiennent, dans l'ordre, chaque
+    (obstacle, événement) de `must_contact` (ex : [["s1", "bounce"],
+    ["s2", "wave"]] = rebond en particule sur s1 PUIS traversée en onde de
+    s2). Un lancer réussi qui ne le vérifie pas est un contournement : le
+    niveau se résout sans la mécanique qu'il est censé enseigner.
+    """
+    required = [tuple(c) for c in level.get("must_contact", [])]
+    it = iter(tuple(c) for c in contacts)
+    return all(any(c == req for c in it) for req in required)
 
 
 def _grid_values(spec):
@@ -69,6 +83,7 @@ def solve(level: dict, max_solutions=200):
                 params=params,
                 photons=len(result.photons_collected),
                 photon_ids=sorted(result.photons_collected),
+                contacts=result.contacts,
             ))
             if (max_solutions is not None and len(solutions) >= max_solutions
                     and any(s.photons == total_photons for s in solutions)):
@@ -105,5 +120,8 @@ def validate(level: dict) -> dict:
             "photon_ids": best.photon_ids,
         },
         "max_photons_reachable": max((s.photons for s in solutions), default=0),
+        # lancers réussis qui contournent la mécanique (cf. uses_mechanic) ;
+        # doit valoir 0 pour un niveau publié
+        "bypass_solutions": sum(1 for s in solutions if not uses_mechanic(level, s.contacts)),
         "star_profile": star_profile(level) if solutions else None,
     }

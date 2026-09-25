@@ -19,6 +19,12 @@
       "interference_offset_deg": 180
     }
   ],
+  "must_contact": [
+    [
+      "surface",
+      "wave"
+    ]
+  ],
   "param_space": {
     "angle_deg": {
       "type": "range",
@@ -48,46 +54,46 @@
   "photons": [
     {
       "id": "p1",
-      "x": 0.213,
-      "y": 0.299,
+      "x": 0.234,
+      "y": 0.3,
       "r": 0.03,
       "motion": {
         "axis": "y",
-        "amplitude": 0.08,
-        "period": 0.5,
-        "phase": 3.8956
+        "amplitude": 0.04,
+        "period": 0.25,
+        "phase": 2.5133
       }
     },
     {
       "id": "p2",
-      "x": 0.653,
-      "y": 0.318,
+      "x": 0.161,
+      "y": 0.3,
       "r": 0.03,
       "motion": {
         "axis": "y",
         "amplitude": 0.08,
         "period": 0.5,
-        "phase": 2.2619
+        "phase": 0.377
       }
     },
     {
       "id": "p3",
-      "x": 0.737,
-      "y": 0.322,
+      "x": 0.581,
+      "y": 0.3,
       "r": 0.03,
       "motion": {
         "axis": "y",
         "amplitude": 0.08,
         "period": 0.5,
-        "phase": 0.754
+        "phase": 5.4035
       }
     }
   ],
   "solvable": true,
   "reference_solution": {
     "params": {
-      "angle_deg": 0,
-      "power": 0.7,
+      "angle_deg": -3,
+      "power": 0.5,
       "tap_time": 0.1
     },
     "photons_collected": 3,
@@ -98,16 +104,17 @@
     ]
   },
   "max_photons_reachable": 3,
-  "tolerance": 0.1429,
-  "three_star_tolerance": 0.0275,
+  "tolerance": 0.5385,
+  "three_star_tolerance": 0.1978,
+  "bypass_solutions": 0,
   "star_profile": {
     "rays": 1406,
-    "valid_rays": 142,
-    "distinct_paths": 8,
+    "valid_rays": 690,
+    "distinct_paths": 40,
     "shares": {
-      "1": 0.8521,
-      "2": 0.6831,
-      "3": 0.4225
+      "1": 0.9029,
+      "2": 0.6362,
+      "3": 0.4
     },
     "target_shares": {
       "1": 0.9019,

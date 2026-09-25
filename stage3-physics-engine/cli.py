@@ -5,7 +5,7 @@ CLI du moteur physique vulgarisé — Stage 3 (Quark & Cosmos).
 Usage :
   python3 cli.py list
   python3 cli.py generate <concept> [--difficulty N] [--out path.json]
-  python3 cli.py generate-all [--out-dir levels/]
+  python3 cli.py generate-all [--difficulties 1 2 3] [--out-dir levels/]
   python3 cli.py validate <path.json>
   python3 cli.py solve <path.json> [--max N]
   python3 cli.py report [--difficulties 1 2 3] [--concepts ...] [--out-dir reports/]
@@ -52,14 +52,15 @@ def cmd_generate_all(args):
     os.makedirs(out_dir, exist_ok=True)
     all_ok = True
     for concept in ALL_CONCEPTS:
-        level = make_level(concept, args.difficulty)
-        out = f"{out_dir}/quantique_{concept}_{args.difficulty}.json"
-        payload = write_level(level, out)
-        status = "OK" if payload["solvable"] else "ECHEC"
-        if not payload["solvable"]:
-            all_ok = False
-        print(f"[{status:5}] {concept:15} -> {out}  (Photons max: {payload['max_photons_reachable']}/{len(level.get('photons', []))})"
-              + _stars_line(payload))
+        for difficulty in args.difficulties:
+            level = make_level(concept, difficulty)
+            out = f"{out_dir}/quantique_{concept}_{difficulty}.json"
+            payload = write_level(level, out)
+            ok = payload["solvable"] and payload["bypass_solutions"] == 0
+            all_ok = all_ok and ok
+            print(f"[{'OK' if ok else 'ECHEC':5}] {concept:15} d{difficulty} -> {out}  "
+                  f"(tolérance {payload['tolerance']:.0%}, contournements {payload['bypass_solutions']})"
+                  + _stars_line(payload), flush=True)
     sys.exit(0 if all_ok else 1)
 
 
@@ -111,7 +112,7 @@ def main():
 
     p_all = sub.add_parser("generate-all")
     p_all.add_argument("--out-dir", type=str, default=None)
-    p_all.add_argument("--difficulty", type=int, default=1)
+    p_all.add_argument("--difficulties", type=int, nargs="+", default=[1, 2, 3])
     p_all.set_defaults(func=cmd_generate_all)
 
     p_val = sub.add_parser("validate")
