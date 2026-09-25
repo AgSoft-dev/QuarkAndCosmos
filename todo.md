@@ -36,9 +36,9 @@ Problems found in the current engine and levels (checked by running `cli.py vali
 - [x] **Handlers re-applied on every step of contact:** a spin pole deflected N × `kick_deg` (N depending on speed), and a barrier re-checked its oscillating threshold on every step. Handlers now fire once per contact. The old `spin` level was only solvable because of this bug, so its target was moved and its angle range widened.
 - [x] **Stale references:** `concepts.py` / `generator.py` still say "8 concepts", `concepts.py` documents a `trap` event left over from the removed Décohérence concept, and `gameplay-mechanics` says "ex. 8 concepts pour le Quantique".
 - [x] **No tests, no `pyproject.toml`, no level schema version, no README.** *Done: `tests/` (38 tests, including a check that the committed JSON is identical to the generator output), `pyproject.toml`, `schema_version: 1`, and `stage3-physics-engine/README.md`.*
-  - [ ] Follow-up (§4.1): the JSON export still ships `param_space` and the full reference solution in the game payload; split it into `level.json` / `level.meta.json`.
-- [ ] **No agents exist** (`.claude/agents/` is missing), no `.claude/settings.json`, and no CI. *CI done (`.github/workflows/level-engine.yml` runs the tests). Agents and settings are still open: see §5.4–5.5.*
-- [ ] **The Stage 2 mockup's physics is separate JS code**, not the Stage 3 rules. It will drift from the engine. We need one source of truth for the physics (see §4.3).
+  - [x] Follow-up (§4.1): the JSON export still ships `param_space` and the full reference solution in the game payload; split it into `level.json` / `level.meta.json`. *Done: `schema_version: 2`. `levels/<nom>.json` (shipped: geometry, Photons, `max_wall_bounces`, `param_space` for the dials, `hint.params`) + `levels/meta/<nom>.meta.json` (dev: `must_contact`, solvability, tolerances, bypasses, full reference solution, star profile). `cli.py validate` re-reads `must_contact` from the sibling meta. Tests check both files against the generator, no dev field in the shipped file, no stale file.*
+- [x] **No agents exist** (`.claude/agents/` is missing), no `.claude/settings.json`, and no CI. *CI done (`.github/workflows/level-engine.yml` runs the tests). Done: `.claude/agents/` has `physics-reviewer` (read-only), `level-designer`, `level-qa` and `art-director`, each naming its skills and the stage it may act on (`android-dev` waits for Stage 5). `.claude/settings.json` allows `python3 cli.py *`, `python3 -m pytest*`, `pip install -e*`, with a SessionStart hook that installs pytest in cloud sessions only (never blocks the session).*
+- [x] **The Stage 2 mockup's physics is separate JS code**, not the Stage 3 rules. It will drift from the engine. We need one source of truth for the physics (see §4.3). *Done (minimal step): `docs/physics-spec.md` specifies the deterministic contract (fixed `DT`, step order, shapes, handlers, oscillations, tap, `max_wall_bounces`) with the mockup's known drifts listed; the mockup's script now says it is not the source of truth. Replacing it with a JSON-driven viewer and golden trajectories stays in §4.1/§4.3.*
 
 ---
 
@@ -194,7 +194,7 @@ Each object gets a design sheet with: idle / hover / dragged / active / disabled
 - [ ] Beta: 7 levels, linear, a Codex page per level. Onboarding in level 1 uses **no text**: a ghost hand shows the drag once.
 - [ ] Full: per world, `N concepts × (1 intro + 2–3 ramp) + 3–5 mix levels + 1 showcase level` (the showcase is a setpiece at the end of the world, before the scale-change cinematic).
 - [ ] Difficulty levers the generator can tune: preview length, tolerance window width, oscillation amplitude/period, obstacle count, Photon placement tier.
-- [ ] Hints: after 5 fails, offer the reference solution's *first segment* (read from the exported `reference_solution`). No ads-for-hints in the beta.
+- [ ] Hints: after 5 fails, offer the reference solution's *first segment* (read from the shipped `hint.params`). No ads-for-hints in the beta.
 - [ ] Metrics to log in the closed test: attempts per level, time to first success, star distribution, where players quit, Codex open rate.
 
 ---
@@ -243,7 +243,7 @@ Options, ranked for *this* game (2D, vector/glow, deterministic custom physics, 
 
 ### 4.3 Single source of truth for physics
 - [ ] Decision: **Python = authoring + validation; Kotlin = runtime**, with the same deterministic algorithm, kept in sync by **golden trajectory tests** run in both CI jobs (Python generates `tests/golden/*.json`, a Kotlin JUnit test replays it and asserts positions within 1e-6).
-- [ ] Specify the physics in `docs/physics-spec.md`: timestep, integration, collision order, event semantics, tap timing. Both implementations cite it.
+- [x] Specify the physics in `docs/physics-spec.md`: timestep, integration, collision order, event semantics, tap timing. Both implementations cite it. *Done: the Python engine is the reference; the spec describes its current behaviour, [GATE] fixes will update it.*
 - [ ] Alternative considered: running the Python engine on-device via Chaquopy. Rejected: APK size (+15 MB) and startup cost.
 
 ### 4.4 Android implementation plan (Stage 5) →
@@ -307,15 +307,15 @@ Options, ranked for *this* game (2D, vector/glow, deterministic custom physics, 
 - [ ] Every skill ends with a `## Statut` + `## Changelog` (date, decision, who validated).
 
 ### 5.4 Agents (create `.claude/agents/`) ⇄
-- [ ] `physics-reviewer`: read-only. Checks Codex text and mechanics against `physics-pedagogy`; flags scientific errors and jargon above high-school level.
-- [ ] `level-designer`: writes concept builders/generators, runs `validate` and the tolerance checks, and never hand-places Photons.
-- [ ] `level-qa`: runs the full pack validation + golden tests, and reports brittle levels (tolerance below band) and trivial solutions.
-- [ ] `art-director`: loads `art-direction`; produces/reviews HTML/SVG style frames; checks contrast and colour-blind safety.
+- [x] `physics-reviewer`: read-only. Checks Codex text and mechanics against `physics-pedagogy`; flags scientific errors and jargon above high-school level.
+- [x] `level-designer`: writes concept builders/generators, runs `validate` and the tolerance checks, and never hand-places Photons.
+- [x] `level-qa`: runs the full pack validation + golden tests, and reports brittle levels (tolerance below band) and trivial solutions.
+- [x] `art-director`: loads `art-direction`; produces/reviews HTML/SVG style frames; checks contrast and colour-blind safety.
 - [ ] `android-dev` (Stage 5 only): Kotlin/libGDX with the performance budget from §4.4 as hard constraints.
-- [ ] Each agent's front-matter lists the skills to load and the **stage it's allowed to act on**, which enforces the stage-gate rule mechanically.
+- [x] Each agent's front-matter lists the skills to load and the **stage it's allowed to act on**, which enforces the stage-gate rule mechanically. *Done: stated in each agent's body (Claude Code front-matter has no stage field); golden tests in `level-qa` wait for §4.1.*
 
 ### 5.5 Workflow & automation
-- [ ] `.claude/settings.json`: allow `python3 -m pytest`, `python3 cli.py *`, `ruff`, `./gradlew test`; add a SessionStart hook that installs dev dependencies for cloud sessions.
+- [x] `.claude/settings.json`: allow `python3 -m pytest`, `python3 cli.py *`, `ruff`, `./gradlew test`; add a SessionStart hook that installs dev dependencies for cloud sessions. *Done for the tools that exist today (`cli.py`, pytest, `pip install -e`); add `ruff` / `./gradlew test` when they are introduced.*
 - [ ] Pre-commit: ruff, mypy, JSON-schema validation of `content/levels/**`.
 - [ ] CI `python.yml`: lint + tests + `build-pack` + fail if any shipped level is unsolvable or below its tolerance band.
 - [ ] PR template: stage, scope tag (`BETA`/`FULL`), which skills were updated, screenshots/GIF for visual changes.
