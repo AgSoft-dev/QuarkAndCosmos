@@ -98,7 +98,7 @@ Le jeu n'a pas besoin de `must_contact` ni du journal `contacts` pour jouer : il
 
 ## 8. Tap et paramètres
 
-- **Un seul tap par vol.** `tap_time` est un paramètre comme l'angle : le solveur le cherche sur la grille de `param_space.tap_time`, **sans jamais descendre sous `TAP_MIN_TIME`** (un tap au lancer = réglage pré-tir déguisé). Côté jeu, la convention cohérente avec la validation est d'ignorer un tap avant `TAP_MIN_TIME` (à confirmer en game design).
+- **Un seul tap par vol.** `tap_time` est un paramètre comme l'angle : le solveur le cherche sur la grille de `param_space.tap_time`, **sans jamais descendre sous `TAP_MIN_TIME`** (un tap au lancer = réglage pré-tir déguisé). **Décision game design (validée) :** côté jeu, un tap avant `TAP_MIN_TIME` est ignoré (le geste reste disponible pour la suite du vol), ce qui garantit que tout lancer jouable est un lancer que le validateur a vérifié.
 - En jeu, l'instant du tap est le temps simulé écoulé depuis le lâcher au moment où l'entrée est traitée ; il est quantifié au pas (§4.2).
 - La solvabilité, les tolérances et les étoiles sont **mesurées sur la grille** `param_space` (`range` : de `min` à `max` par `step`, valeurs arrondies à 4 décimales ; `choice` : liste). Des dials continus restent jouables, mais seuls les points de grille sont garantis.
 
