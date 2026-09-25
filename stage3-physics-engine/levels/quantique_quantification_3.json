@@ -1,5 +1,10 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
+  "id": "quantique-quantification-3",
+  "scale": "quantique",
+  "concept": "quantification",
+  "difficulty": 3,
+  "codex_text": "« Pas de réglage continu ici : seulement quelques crans d'énergie possibles, ni plus ni moins. »",
   "launcher": {
     "x": 0.1,
     "y": 0.8
@@ -109,48 +114,6 @@
       "angle_deg": 90.0
     }
   ],
-  "must_contact": [
-    [
-      "b1",
-      "pass"
-    ],
-    [
-      "b2",
-      "pass"
-    ],
-    [
-      "m",
-      "bounce"
-    ],
-    [
-      "b3",
-      "pass"
-    ]
-  ],
-  "max_wall_bounces": 0,
-  "param_space": {
-    "angle_deg": {
-      "type": "range",
-      "min": -12,
-      "max": 12,
-      "step": 1
-    },
-    "power": {
-      "type": "choice",
-      "values": [
-        0.3,
-        0.45,
-        0.6,
-        0.75,
-        0.9
-      ]
-    }
-  },
-  "id": "quantique-quantification-3",
-  "scale": "quantique",
-  "concept": "quantification",
-  "difficulty": 3,
-  "codex_text": "« Pas de réglage continu ici : seulement quelques crans d'énergie possibles, ni plus ni moins. »",
   "photons": [
     {
       "id": "p1",
@@ -171,36 +134,29 @@
       "r": 0.03
     }
   ],
-  "solvable": true,
-  "reference_solution": {
+  "max_wall_bounces": 0,
+  "param_space": {
+    "angle_deg": {
+      "type": "range",
+      "min": -12,
+      "max": 12,
+      "step": 1
+    },
+    "power": {
+      "type": "choice",
+      "values": [
+        0.3,
+        0.45,
+        0.6,
+        0.75,
+        0.9
+      ]
+    }
+  },
+  "hint": {
     "params": {
       "angle_deg": -4,
       "power": 0.45
-    },
-    "photons_collected": 3,
-    "photon_ids": [
-      "p1",
-      "p2",
-      "p3"
-    ]
-  },
-  "max_photons_reachable": 3,
-  "tolerance": 0.056,
-  "three_star_tolerance": 0.016,
-  "bypass_solutions": 0,
-  "star_profile": {
-    "rays": 365,
-    "valid_rays": 20,
-    "distinct_paths": 20,
-    "shares": {
-      "1": 0.7,
-      "2": 0.3,
-      "3": 0.3
-    },
-    "target_shares": {
-      "1": 0.7066,
-      "2": 0.2494,
-      "3": 0.0439
     }
   }
 }

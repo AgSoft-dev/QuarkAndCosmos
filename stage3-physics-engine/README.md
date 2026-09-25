@@ -6,23 +6,34 @@ Chaque difficulté est une **disposition différente** qui pousse la mécanique 
 
 ```bash
 python3 cli.py list                          # concepts disponibles
-python3 cli.py generate-all                  # régénère levels/*.json (7 concepts × 3 difficultés, ~2-3 min)
-python3 cli.py validate levels/<niveau>.json # rapport de solvabilité
+python3 cli.py generate-all                  # régénère levels/*.json + levels/meta/*.meta.json (7 concepts × 3 difficultés, ~2-3 min)
+python3 cli.py validate levels/<niveau>.json # rapport de solvabilité (lit aussi la méta voisine)
 python3 cli.py solve levels/<niveau>.json    # meilleure solution
 
 pip install -e ".[dev]" && python3 -m pytest -q
 ```
+
+## Format d'export (`schema_version` 2)
+
+Chaque niveau est exporté en **deux fichiers** (`engine/export.py`) :
+
+| Fichier | Pour qui | Contenu |
+|---|---|---|
+| `levels/<nom>.json` | **le jeu** (livré) | `schema_version`, `id`, `scale`, `concept`, `difficulty`, `codex_text`, `launcher`, `target`, `obstacles`, `photons`, `max_wall_bounces` (toujours explicite), `param_space` (plages publiques des dials), `hint.params` (paramètres de la solution de référence, pour l'indice « premier segment » après 5 échecs) |
+| `levels/meta/<nom>.meta.json` | outils de dev uniquement | `schema_version`, `id`, `must_contact`, `solvable`, `reference_solution` (avec les ids des Photons collectés), `max_photons_reachable`, `tolerance`, `three_star_tolerance`, `bypass_solutions`, `star_profile` |
+
+`must_contact` ne sert qu'au validateur : il vit dans la méta. `validate`/`solve` lisent le niveau via `read_level`, qui recolle `must_contact` depuis `meta/<nom>.meta.json` ; sans méta, le niveau reste simulable mais les contournements ne sont plus vérifiés (avertissement sur stderr). Le contrat de simulation que le jeu doit reproduire est dans [`docs/physics-spec.md`](../docs/physics-spec.md).
 
 ## Ce que garantit un niveau exporté
 
 - **Solvable** : au moins une combinaison de la grille `param_space` atteint la cible.
 - **Sans contournement** : chaque niveau déclare `must_contact`, la séquence ordonnée (obstacle, événement) qui définit l'usage de la mécanique (ex : `[["s1", "bounce"], ["s2", "wave"]]`). Tout lancer gagnant qui ne la respecte pas est compté dans `bypass_solutions`, qui doit valoir 0.
 - **3 Photons** placés automatiquement (pas à la main, cf. section suivante). Les 3 sont collectables en un seul vol.
-- **Tolérance** ≥ 5 % : la part de la grille qui réussit (`tolerance`, `three_star_tolerance` dans le JSON). En dessous, le niveau est injouable au doigt.
+- **Tolérance** ≥ 5 % : la part de la grille qui réussit (`tolerance`, `three_star_tolerance` dans la méta). En dessous, le niveau est injouable au doigt.
 - **Tap en vol réel** : un tap avant `TAP_MIN_TIME` (0,1 s) n'est pas recherché. Taper au lancer reviendrait à un réglage pré-tir.
-- **`schema_version`** en tête du JSON : à incrémenter à chaque changement incompatible du format.
+- **`schema_version`** en tête des deux fichiers : à incrémenter à chaque changement incompatible du format (v2 : séparation niveau livré / méta).
 
-Les tests vérifient aussi que les JSON commités sont identiques à la sortie du générateur. Après toute modification du moteur ou d'un gabarit, relancer `generate-all`.
+Les tests vérifient aussi que les JSON commités (niveaux **et** méta) sont identiques à la sortie du générateur, qu'aucun champ de dev n'est livré et qu'il n'y a pas de fichier orphelin. Après toute modification du moteur ou d'un gabarit, relancer `generate-all`.
 
 ## Distribution des étoiles et rapport de difficulté
 

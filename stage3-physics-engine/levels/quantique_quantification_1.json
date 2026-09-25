@@ -1,5 +1,10 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
+  "id": "quantique-quantification-1",
+  "scale": "quantique",
+  "concept": "quantification",
+  "difficulty": 1,
+  "codex_text": "« Pas de réglage continu ici : seulement quelques crans d'énergie possibles, ni plus ni moins. »",
   "launcher": {
     "x": 0.1,
     "y": 0.5
@@ -24,35 +29,6 @@
       }
     }
   ],
-  "must_contact": [
-    [
-      "barrier",
-      "pass"
-    ]
-  ],
-  "param_space": {
-    "angle_deg": {
-      "type": "range",
-      "min": -3,
-      "max": 3,
-      "step": 1
-    },
-    "power": {
-      "type": "choice",
-      "values": [
-        0.2,
-        0.4,
-        0.6,
-        0.8,
-        1.0
-      ]
-    }
-  },
-  "id": "quantique-quantification-1",
-  "scale": "quantique",
-  "concept": "quantification",
-  "difficulty": 1,
-  "codex_text": "« Pas de réglage continu ici : seulement quelques crans d'énergie possibles, ni plus ni moins. »",
   "photons": [
     {
       "id": "p1",
@@ -85,36 +61,29 @@
       "r": 0.03
     }
   ],
-  "solvable": true,
-  "reference_solution": {
+  "max_wall_bounces": 1,
+  "param_space": {
+    "angle_deg": {
+      "type": "range",
+      "min": -3,
+      "max": 3,
+      "step": 1
+    },
+    "power": {
+      "type": "choice",
+      "values": [
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1.0
+      ]
+    }
+  },
+  "hint": {
     "params": {
       "angle_deg": -2,
       "power": 1.0
-    },
-    "photons_collected": 3,
-    "photon_ids": [
-      "p1",
-      "p2",
-      "p3"
-    ]
-  },
-  "max_photons_reachable": 3,
-  "tolerance": 0.4571,
-  "three_star_tolerance": 0.1714,
-  "bypass_solutions": 0,
-  "star_profile": {
-    "rays": 95,
-    "valid_rays": 40,
-    "distinct_paths": 40,
-    "shares": {
-      "1": 0.925,
-      "2": 0.675,
-      "3": 0.4
-    },
-    "target_shares": {
-      "1": 0.9019,
-      "2": 0.6615,
-      "3": 0.3947
     }
   }
 }

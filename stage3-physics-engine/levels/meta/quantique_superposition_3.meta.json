@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "id": "quantique-superposition-3",
+  "must_contact": [
+    [
+      "S1",
+      "deflect"
+    ],
+    [
+      "S2",
+      "deflect"
+    ],
+    [
+      "S3",
+      "deflect"
+    ]
+  ],
+  "solvable": true,
+  "reference_solution": {
+    "params": {
+      "angle_deg": -7.5,
+      "power": 0.6
+    },
+    "photons_collected": 3,
+    "photon_ids": [
+      "p1",
+      "p2",
+      "p3"
+    ]
+  },
+  "max_photons_reachable": 3,
+  "tolerance": 0.2104,
+  "three_star_tolerance": 0.0464,
+  "bypass_solutions": 0,
+  "star_profile": {
+    "rays": 2896,
+    "valid_rays": 628,
+    "distinct_paths": 628,
+    "shares": {
+      "1": 0.8487,
+      "2": 0.4952,
+      "3": 0.0812
+    },
+    "target_shares": {
+      "1": 0.7066,
+      "2": 0.2494,
+      "3": 0.0439
+    }
+  }
+}

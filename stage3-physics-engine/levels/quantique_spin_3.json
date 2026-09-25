@@ -1,5 +1,10 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
+  "id": "quantique-spin-3",
+  "scale": "quantique",
+  "concept": "spin",
+  "difficulty": 3,
+  "codex_text": "« Ton spin détermine qui t'attire et qui te repousse — une boussole invisible. »",
   "launcher": {
     "x": 0.1,
     "y": 0.9
@@ -43,53 +48,6 @@
       }
     }
   ],
-  "must_contact": [
-    [
-      "A",
-      "deflect"
-    ],
-    [
-      "B",
-      "deflect"
-    ],
-    [
-      "C",
-      "deflect"
-    ]
-  ],
-  "max_wall_bounces": 0,
-  "param_space": {
-    "angle_deg": {
-      "type": "range",
-      "min": -10,
-      "max": 10,
-      "step": 1
-    },
-    "power": {
-      "type": "range",
-      "min": 0.4,
-      "max": 0.9,
-      "step": 0.1
-    },
-    "spin_up": {
-      "type": "choice",
-      "values": [
-        true,
-        false
-      ]
-    },
-    "tap_time": {
-      "type": "range",
-      "min": 0.1,
-      "max": 1.8,
-      "step": 0.05
-    }
-  },
-  "id": "quantique-spin-3",
-  "scale": "quantique",
-  "concept": "spin",
-  "difficulty": 3,
-  "codex_text": "« Ton spin détermine qui t'attire et qui te repousse — une boussole invisible. »",
   "photons": [
     {
       "id": "p1",
@@ -128,38 +86,40 @@
       }
     }
   ],
-  "solvable": true,
-  "reference_solution": {
+  "max_wall_bounces": 0,
+  "param_space": {
+    "angle_deg": {
+      "type": "range",
+      "min": -10,
+      "max": 10,
+      "step": 1
+    },
+    "power": {
+      "type": "range",
+      "min": 0.4,
+      "max": 0.9,
+      "step": 0.1
+    },
+    "spin_up": {
+      "type": "choice",
+      "values": [
+        true,
+        false
+      ]
+    },
+    "tap_time": {
+      "type": "range",
+      "min": 0.1,
+      "max": 1.8,
+      "step": 0.05
+    }
+  },
+  "hint": {
     "params": {
       "angle_deg": -6,
       "power": 0.7,
       "spin_up": true,
       "tap_time": 0.25
-    },
-    "photons_collected": 3,
-    "photon_ids": [
-      "p1",
-      "p2",
-      "p3"
-    ]
-  },
-  "max_photons_reachable": 3,
-  "tolerance": 0.0522,
-  "three_star_tolerance": 0.011,
-  "bypass_solutions": 0,
-  "star_profile": {
-    "rays": 8820,
-    "valid_rays": 460,
-    "distinct_paths": 56,
-    "shares": {
-      "1": 0.9478,
-      "2": 0.4217,
-      "3": 0.2109
-    },
-    "target_shares": {
-      "1": 0.7066,
-      "2": 0.2494,
-      "3": 0.0439
     }
   }
 }

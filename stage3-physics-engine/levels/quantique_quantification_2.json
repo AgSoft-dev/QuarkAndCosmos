@@ -1,5 +1,10 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
+  "id": "quantique-quantification-2",
+  "scale": "quantique",
+  "concept": "quantification",
+  "difficulty": 2,
+  "codex_text": "« Pas de réglage continu ici : seulement quelques crans d'énergie possibles, ni plus ni moins. »",
   "launcher": {
     "x": 0.1,
     "y": 0.5
@@ -71,40 +76,6 @@
       "angle_deg": 90.0
     }
   ],
-  "must_contact": [
-    [
-      "b1",
-      "pass"
-    ],
-    [
-      "b2",
-      "pass"
-    ]
-  ],
-  "max_wall_bounces": 0,
-  "param_space": {
-    "angle_deg": {
-      "type": "range",
-      "min": -12,
-      "max": 12,
-      "step": 1
-    },
-    "power": {
-      "type": "choice",
-      "values": [
-        0.3,
-        0.45,
-        0.6,
-        0.75,
-        0.9
-      ]
-    }
-  },
-  "id": "quantique-quantification-2",
-  "scale": "quantique",
-  "concept": "quantification",
-  "difficulty": 2,
-  "codex_text": "« Pas de réglage continu ici : seulement quelques crans d'énergie possibles, ni plus ni moins. »",
   "photons": [
     {
       "id": "p1",
@@ -131,36 +102,29 @@
       "r": 0.03
     }
   ],
-  "solvable": true,
-  "reference_solution": {
+  "max_wall_bounces": 0,
+  "param_space": {
+    "angle_deg": {
+      "type": "range",
+      "min": -12,
+      "max": 12,
+      "step": 1
+    },
+    "power": {
+      "type": "choice",
+      "values": [
+        0.3,
+        0.45,
+        0.6,
+        0.75,
+        0.9
+      ]
+    }
+  },
+  "hint": {
     "params": {
       "angle_deg": 1,
       "power": 0.9
-    },
-    "photons_collected": 3,
-    "photon_ids": [
-      "p1",
-      "p2",
-      "p3"
-    ]
-  },
-  "max_photons_reachable": 3,
-  "tolerance": 0.112,
-  "three_star_tolerance": 0.024,
-  "bypass_solutions": 0,
-  "star_profile": {
-    "rays": 365,
-    "valid_rays": 46,
-    "distinct_paths": 46,
-    "shares": {
-      "1": 0.8478,
-      "2": 0.587,
-      "3": 0.2391
-    },
-    "target_shares": {
-      "1": 0.8226,
-      "2": 0.4578,
-      "3": 0.1724
     }
   }
 }

@@ -1,5 +1,10 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
+  "id": "quantique-superposition-1",
+  "scale": "quantique",
+  "concept": "superposition",
+  "difficulty": 1,
+  "codex_text": "« Tu as suivi les deux chemins à la fois, jusqu'à ce que je regarde... et que l'un des deux devienne réel. »",
   "launcher": {
     "x": 0.12,
     "y": 0.5
@@ -95,33 +100,6 @@
       }
     }
   ],
-  "must_contact": [
-    [
-      "splitter",
-      "deflect"
-    ]
-  ],
-  "param_space": {
-    "angle_deg": {
-      "type": "range",
-      "min": -15,
-      "max": 15,
-      "step": 1
-    },
-    "power": {
-      "type": "choice",
-      "values": [
-        0.4,
-        0.6,
-        0.8
-      ]
-    }
-  },
-  "id": "quantique-superposition-1",
-  "scale": "quantique",
-  "concept": "superposition",
-  "difficulty": 1,
-  "codex_text": "« Tu as suivi les deux chemins à la fois, jusqu'à ce que je regarde... et que l'un des deux devienne réel. »",
   "photons": [
     {
       "id": "p1",
@@ -160,36 +138,27 @@
       }
     }
   ],
-  "solvable": true,
-  "reference_solution": {
+  "max_wall_bounces": 1,
+  "param_space": {
+    "angle_deg": {
+      "type": "range",
+      "min": -15,
+      "max": 15,
+      "step": 1
+    },
+    "power": {
+      "type": "choice",
+      "values": [
+        0.4,
+        0.6,
+        0.8
+      ]
+    }
+  },
+  "hint": {
     "params": {
       "angle_deg": -15,
       "power": 0.6
-    },
-    "photons_collected": 3,
-    "photon_ids": [
-      "p1",
-      "p2",
-      "p3"
-    ]
-  },
-  "max_photons_reachable": 3,
-  "tolerance": 0.2473,
-  "three_star_tolerance": 0.086,
-  "bypass_solutions": 0,
-  "star_profile": {
-    "rays": 273,
-    "valid_rays": 65,
-    "distinct_paths": 65,
-    "shares": {
-      "1": 0.9077,
-      "2": 0.6462,
-      "3": 0.3692
-    },
-    "target_shares": {
-      "1": 0.9019,
-      "2": 0.6615,
-      "3": 0.3947
     }
   }
 }

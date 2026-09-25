@@ -1,5 +1,10 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
+  "id": "quantique-intrication-2",
+  "scale": "quantique",
+  "concept": "intrication",
+  "difficulty": 2,
+  "codex_text": "« Actionne le levier ici, et là-bas, à distance, quelque chose bouge. Personne ne sait vraiment pourquoi ça va aussi vite. »",
   "launcher": {
     "x": 0.1,
     "y": 0.5
@@ -59,42 +64,6 @@
       "angle_deg": 90.0
     }
   ],
-  "must_contact": [
-    [
-      "A",
-      "pass"
-    ],
-    [
-      "B",
-      "pass"
-    ]
-  ],
-  "max_wall_bounces": 0,
-  "param_space": {
-    "angle_deg": {
-      "type": "range",
-      "min": -12,
-      "max": 12,
-      "step": 1
-    },
-    "power": {
-      "type": "range",
-      "min": 0.4,
-      "max": 0.9,
-      "step": 0.1
-    },
-    "tap_time": {
-      "type": "range",
-      "min": 0.1,
-      "max": 1.4,
-      "step": 0.05
-    }
-  },
-  "id": "quantique-intrication-2",
-  "scale": "quantique",
-  "concept": "intrication",
-  "difficulty": 2,
-  "codex_text": "« Actionne le levier ici, et là-bas, à distance, quelque chose bouge. Personne ne sait vraiment pourquoi ça va aussi vite. »",
   "photons": [
     {
       "id": "p1",
@@ -121,37 +90,32 @@
       "r": 0.03
     }
   ],
-  "solvable": true,
-  "reference_solution": {
+  "max_wall_bounces": 0,
+  "param_space": {
+    "angle_deg": {
+      "type": "range",
+      "min": -12,
+      "max": 12,
+      "step": 1
+    },
+    "power": {
+      "type": "range",
+      "min": 0.4,
+      "max": 0.9,
+      "step": 0.1
+    },
+    "tap_time": {
+      "type": "range",
+      "min": 0.1,
+      "max": 1.4,
+      "step": 0.05
+    }
+  },
+  "hint": {
     "params": {
       "angle_deg": 1,
       "power": 0.4,
       "tap_time": 0.75
-    },
-    "photons_collected": 3,
-    "photon_ids": [
-      "p1",
-      "p2",
-      "p3"
-    ]
-  },
-  "max_photons_reachable": 3,
-  "tolerance": 0.1272,
-  "three_star_tolerance": 0.0267,
-  "bypass_solutions": 0,
-  "star_profile": {
-    "rays": 4050,
-    "valid_rays": 515,
-    "distinct_paths": 72,
-    "shares": {
-      "1": 0.8602,
-      "2": 0.5631,
-      "3": 0.2097
-    },
-    "target_shares": {
-      "1": 0.8226,
-      "2": 0.4578,
-      "3": 0.1724
     }
   }
 }

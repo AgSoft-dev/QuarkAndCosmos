@@ -1,0 +1,44 @@
+{
+  "schema_version": 2,
+  "id": "quantique-spin-1",
+  "must_contact": [
+    [
+      "pole",
+      "deflect"
+    ]
+  ],
+  "solvable": true,
+  "reference_solution": {
+    "params": {
+      "angle_deg": -17,
+      "power": 0.5,
+      "spin_up": true,
+      "tap_time": 0.1
+    },
+    "photons_collected": 3,
+    "photon_ids": [
+      "p1",
+      "p2",
+      "p3"
+    ]
+  },
+  "max_photons_reachable": 3,
+  "tolerance": 0.2619,
+  "three_star_tolerance": 0.1071,
+  "bypass_solutions": 0,
+  "star_profile": {
+    "rays": 1260,
+    "valid_rays": 330,
+    "distinct_paths": 22,
+    "shares": {
+      "1": 0.9091,
+      "2": 0.6818,
+      "3": 0.4091
+    },
+    "target_shares": {
+      "1": 0.9019,
+      "2": 0.6615,
+      "3": 0.3947
+    }
+  }
+}

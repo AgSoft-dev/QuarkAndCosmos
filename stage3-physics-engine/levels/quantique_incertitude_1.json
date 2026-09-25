@@ -1,5 +1,10 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
+  "id": "quantique-incertitude-1",
+  "scale": "quantique",
+  "concept": "incertitude",
+  "difficulty": 1,
+  "codex_text": "« Plus tu vises pile, moins tu sais à quelle vitesse tu iras. C'est le prix à payer pour être précis·e. »",
   "launcher": {
     "x": 0.1,
     "y": 0.6
@@ -15,30 +20,6 @@
     }
   },
   "obstacles": [],
-  "param_space": {
-    "angle_deg": {
-      "type": "range",
-      "min": -15,
-      "max": 5,
-      "step": 0.5
-    },
-    "precision": {
-      "type": "choice",
-      "values": [
-        0.3,
-        0.5,
-        0.7,
-        0.8,
-        0.9,
-        1.0
-      ]
-    }
-  },
-  "id": "quantique-incertitude-1",
-  "scale": "quantique",
-  "concept": "incertitude",
-  "difficulty": 1,
-  "codex_text": "« Plus tu vises pile, moins tu sais à quelle vitesse tu iras. C'est le prix à payer pour être précis·e. »",
   "photons": [
     {
       "id": "p1",
@@ -71,36 +52,30 @@
       }
     }
   ],
-  "solvable": true,
-  "reference_solution": {
+  "max_wall_bounces": 1,
+  "param_space": {
+    "angle_deg": {
+      "type": "range",
+      "min": -15,
+      "max": 5,
+      "step": 0.5
+    },
+    "precision": {
+      "type": "choice",
+      "values": [
+        0.3,
+        0.5,
+        0.7,
+        0.8,
+        0.9,
+        1.0
+      ]
+    }
+  },
+  "hint": {
     "params": {
       "angle_deg": -15,
       "precision": 0.7
-    },
-    "photons_collected": 3,
-    "photon_ids": [
-      "p1",
-      "p2",
-      "p3"
-    ]
-  },
-  "max_photons_reachable": 3,
-  "tolerance": 0.1829,
-  "three_star_tolerance": 0.0813,
-  "bypass_solutions": 0,
-  "star_profile": {
-    "rays": 726,
-    "valid_rays": 134,
-    "distinct_paths": 3,
-    "shares": {
-      "1": 1.0,
-      "2": 0.6567,
-      "3": 0.4403
-    },
-    "target_shares": {
-      "1": 0.9019,
-      "2": 0.6615,
-      "3": 0.3947
     }
   }
 }
