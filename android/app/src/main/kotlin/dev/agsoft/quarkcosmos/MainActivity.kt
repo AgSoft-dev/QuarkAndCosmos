@@ -21,6 +21,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import dev.agsoft.quarkcosmos.ui.AgSoftSplash
 import dev.agsoft.quarkcosmos.ui.LocalType
 import dev.agsoft.quarkcosmos.ui.QC
 import dev.agsoft.quarkcosmos.ui.QuantumMapScreen
@@ -28,7 +29,7 @@ import dev.agsoft.quarkcosmos.ui.WelcomeScreen
 import dev.agsoft.quarkcosmos.ui.WorldsScreen
 import dev.agsoft.quarkcosmos.ui.rememberQcType
 
-/** POC menus: welcome → scales → Quantum world map → level (GameActivity). */
+/** POC menus: AgSoft splash → welcome → scales → Quantum world map → level (GameActivity). */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -37,24 +38,32 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-private enum class Screen { WELCOME, WORLDS, QUANTUM_MAP }
+private enum class Screen { SPLASH, WELCOME, WORLDS, QUANTUM_MAP }
 
 @Composable
 private fun QuarkApp() {
     val context = LocalContext.current
-    var screen by rememberSaveable { mutableStateOf(Screen.WELCOME) }
+    var screen by rememberSaveable { mutableStateOf(Screen.SPLASH) }
     val best by remember { Progress.bestStars(context) }.collectAsState(initial = emptyMap())
     val back = { screen = if (screen == Screen.QUANTUM_MAP) Screen.WORLDS else Screen.WELCOME }
-    BackHandler(enabled = screen != Screen.WELCOME) { back() }
+    BackHandler(enabled = screen != Screen.WELCOME && screen != Screen.SPLASH) { back() }
 
     CompositionLocalProvider(LocalType provides rememberQcType()) {
-        Box(Modifier.fillMaxSize().background(QC.bg).windowInsetsPadding(WindowInsets.safeDrawing)) {
-            when (screen) {
-                Screen.WELCOME -> WelcomeScreen(onPlay = { screen = Screen.WORLDS })
-                Screen.WORLDS -> WorldsScreen(best, onBack = back, onOpen = { screen = Screen.QUANTUM_MAP })
-                Screen.QUANTUM_MAP -> QuantumMapScreen(best, onBack = back, onPlay = { node, i ->
-                    context.startActivity(GameActivity.intent(context, node, i))
-                })
+        // studio splash on cold start (ADR-0009), full screen, then the welcome screen
+        if (screen == Screen.SPLASH) {
+            Box(Modifier.fillMaxSize().background(QC.bg)) { AgSoftSplash(onDone = { screen = Screen.WELCOME }) }
+        } else {
+            Box(Modifier.fillMaxSize().background(QC.bg).windowInsetsPadding(WindowInsets.safeDrawing)) {
+                when (screen) {
+                    Screen.SPLASH -> Unit
+                    Screen.WELCOME -> WelcomeScreen(onPlay = { screen = Screen.WORLDS })
+                    Screen.WORLDS -> WorldsScreen(best, onBack = back, onOpen = { screen = Screen.QUANTUM_MAP })
+                    Screen.QUANTUM_MAP -> QuantumMapScreen(best, onBack = back, onPlay = { node, i ->
+                        // guided tour of the slingshot on the first level until it is completed
+                        val tutorial = i == 0 && best[node.levelId ?: ""] == null
+                        context.startActivity(GameActivity.intent(context, node, i, tutorial))
+                    })
+                }
             }
         }
     }

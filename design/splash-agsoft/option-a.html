@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AgSoft splash — Option A · Struck silver</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --page:#05030a; --bg:#0a0612; --ink:#f7eef9; --ink2:#b9a7c9; --edge:#7a6d8c;
+    --silver:#c7ccd4; --silver-hi:#e4e7ec; --silver-lo:#9aa1ad; --tile-ink:#1a1426;
+    --pink:#f472b6; --cyan:#67e8f9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--page);color:var(--ink);font-family:'Fira Sans',system-ui,sans-serif;
+       display:flex;flex-direction:column;align-items:center;padding:28px 16px 72px;line-height:1.5}
+  header{max-width:640px;text-align:center;margin-bottom:18px}
+  .eyebrow{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2)}
+  h1{font-weight:500;font-size:22px;margin:.25em 0 0}
+  .phone{width:min(390px,92vw);aspect-ratio:390/844;border-radius:44px;overflow:hidden;background:var(--bg);position:relative;
+         box-shadow:0 0 0 1px #2a2238,0 0 0 7px #0d0a14,0 0 0 8px #2a2238,0 30px 80px rgba(0,0,0,.6)}
+  .phone svg{display:block;width:100%;height:100%}
+  .controls{display:flex;gap:10px;margin:22px 0 10px;align-items:center;flex-wrap:wrap;justify-content:center}
+  button{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;background:transparent;color:var(--ink);
+         border:1px solid var(--edge);border-radius:999px;padding:7px 14px;cursor:pointer}
+  button:hover{border-color:var(--silver)}
+  button[aria-pressed="true"]{border-color:var(--silver);background:#1a1426}
+  button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+  .status{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;color:var(--ink2);min-height:1.5em;text-align:center}
+  .timeline{width:min(390px,92vw);margin:8px 0 4px;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10px;color:var(--ink2)}
+  .track{position:relative;height:30px;border-top:1px solid var(--edge)}
+  .seg{position:absolute;top:0;height:100%;border-left:1px solid var(--edge);padding:4px 0 0 4px;white-space:nowrap;overflow:hidden}
+  .head{position:absolute;top:-5px;width:1px;height:12px;background:var(--silver-hi)}
+  .row2{position:relative;height:18px}
+  .row2 span{position:absolute;top:0;border-top:1px dashed var(--edge);padding-top:2px;white-space:nowrap;overflow:hidden}
+  .icons{display:flex;gap:26px;align-items:flex-end;justify-content:center;flex-wrap:wrap;margin:26px 0 8px}
+  .icons figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:8px}
+  .icons figcaption{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10.5px;color:var(--ink2)}
+  .icons .well{background:var(--bg);padding:10px;border-radius:10px;box-shadow:0 0 0 1px #2a2238;display:flex;align-items:center;justify-content:center}
+  .caption{max-width:620px;margin-top:22px;font-size:14.5px;color:var(--ink2)}
+  .caption h2{font-size:15px;font-weight:500;color:var(--ink);margin:1.4em 0 .3em}
+  .caption strong{color:var(--ink);font-weight:500}
+  .caption code{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12.5px;color:var(--silver-hi)}
+  .caption ul{padding-left:1.1em;margin:.3em 0}
+  .caption table{border-collapse:collapse;font-size:12.5px;margin-top:.4em}
+  .caption td,.caption th{border-bottom:1px solid #2a2238;padding:4px 10px 4px 0;text-align:left;font-weight:400}
+  .caption th{color:var(--ink)}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">AgSoft · developer splash · option A</div>
+  <h1>Struck silver: an element tile that softens under the hammer</h1>
+</header>
+
+<div class="phone" role="img" aria-label="Animated AgSoft splash: a silver periodic table tile for element 47, Ag, is drawn, a metallic sheen crosses it, it is struck and softens, then slides left to spell AgSoft, and fades to the game background.">
+<svg id="stage" viewBox="0 0 390 844" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bgGlow" cx="50%" cy="47%" r="65%">
+      <stop offset="0" stop-color="#120b1d"/><stop offset="1" stop-color="#0a0612"/>
+    </radialGradient>
+    <radialGradient id="bloom">
+      <stop offset="0" stop-color="#dfe3ea" stop-opacity=".20"/>
+      <stop offset=".55" stop-color="#dfe3ea" stop-opacity=".05"/>
+      <stop offset="1" stop-color="#dfe3ea" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="sheenGrad" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset=".5" stop-color="#ffffff" stop-opacity=".8"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="tileClip"><rect id="clipRect" width="128" height="128" rx="10"/></clipPath>
+    <clipPath id="softClip"><rect id="softClipRect" x="0" y="0" width="400" height="844"/></clipPath>
+  </defs>
+
+  <!-- C-style background, kept very dark and low-frequency -->
+  <rect width="390" height="844" fill="url(#bgGlow)"/>
+  <ellipse id="bloomEl" cx="195" cy="400" rx="160" ry="160" fill="url(#bloom)" opacity="0"/>
+
+  <!-- Matter: the element tile (B style: flat fills, crescent, facet, highlight dot, 1.5 px outline) -->
+  <g id="tileMove">
+    <g id="tileSquash">
+      <g clip-path="url(#tileClip)">
+        <g id="fillGroup" opacity="0">
+          <rect width="128" height="128" fill="#9aa1ad"/>
+          <rect id="fillMain" x="-6" y="-6" width="128" height="128" rx="14" fill="#c7ccd4"/>
+          <path d="M0 0H86L0 86Z" fill="#d3d8df"/>
+        </g>
+        <g id="sheen" opacity="0">
+          <rect x="-22" y="-80" width="44" height="300" fill="url(#sheenGrad)"/>
+          <line x1="-22" y1="-80" x2="-22" y2="220" stroke="#f472b6" stroke-width=".75" opacity=".7"/>
+          <line x1="22" y1="-80" x2="22" y2="220" stroke="#67e8f9" stroke-width=".75" opacity=".7"/>
+        </g>
+      </g>
+      <rect id="outline" width="128" height="128" rx="10" fill="none" stroke="#eef1f5" stroke-width="1.5"
+            pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/>
+      <circle id="hl" cx="8.5" cy="8.5" r="2" fill="#ffffff" opacity="0"/>
+      <text id="num" x="13" y="27" font-family="JetBrains Mono, ui-monospace, monospace" font-size="15" font-weight="600" fill="#1a1426" opacity="0">0</text>
+      <text id="sym" x="64" y="83" text-anchor="middle" font-family="Fira Sans, system-ui, sans-serif" font-size="60" font-weight="600"
+            fill="#1a1426" stroke="#1a1426" stroke-width="0" stroke-linejoin="round" opacity="0">Ag</text>
+      <text id="name" x="64" y="103" text-anchor="middle" font-family="Fira Sans, system-ui, sans-serif" font-size="12.5" font-weight="500" fill="#1a1426" opacity="0">Silver</text>
+      <text id="mass" x="64" y="118" text-anchor="middle" font-family="JetBrains Mono, ui-monospace, monospace" font-size="10.5" font-weight="500" fill="#1a1426" opacity="0">107.87</text>
+    </g>
+  </g>
+
+  <!-- Wordmark tail: "Soft" slides out from behind the tile -->
+  <g clip-path="url(#softClip)">
+    <text id="soft" x="0" y="0" font-family="Fira Sans, system-ui, sans-serif" font-size="54" font-weight="500"
+          fill="#e4e7ec" stroke="#e4e7ec" stroke-width="0" stroke-linejoin="round" opacity="0">Soft</text>
+  </g>
+  <text id="tag" x="195" y="502" text-anchor="middle" font-family="JetBrains Mono, ui-monospace, monospace" font-size="11"
+        letter-spacing="1.6" fill="#b9a7c9" opacity="0">argentum · soft silver</text>
+
+  <!-- Hand-over to the game's background -->
+  <rect id="fade" width="390" height="844" fill="#0a0612" opacity="0"/>
+</svg>
+</div>
+
+<div class="controls">
+  <button id="replay" type="button">Replay</button>
+  <button id="slow" type="button" aria-pressed="false">0.25× speed</button>
+  <button id="lang" type="button" aria-pressed="false">EN → FR</button>
+</div>
+<div class="status" id="status" aria-live="polite"></div>
+<div class="timeline" aria-hidden="true">
+  <div class="track" id="track"><div class="head" id="head"></div></div>
+  <div class="row2" id="row2"></div>
+</div>
+
+<div class="icons" id="icons"></div>
+
+<section class="caption">
+  <h2>Concept</h2>
+  <p>A periodic-table tile for <strong>silver: 47 · Ag · Silver · 107.87</strong> (from Latin <em>argentum</em>). The outline is traced like an instrument calibrating while the atomic number counts up to 47. A metallic sheen crosses the tile, with a hair-thin pink/cyan dispersion fringe that nods to the Quantum palette. Then the tile is <strong>struck</strong>: it squashes, springs back, its corners round off and the “Ag” glyphs swell and soften. The softened tile slides left and “Soft” slides out from behind it, so the tile itself spells <strong>[Ag]Soft</strong>. Hold, then fade to <code>#0a0612</code>, the welcome screen's background.</p>
+
+  <h2>Wordplay</h2>
+  <p>AgSoft = “soft Ag”. Silver is a soft, malleable metal (Mohs hardness ≈ 2.5, it can be beaten into leaf), so the logo is <em>worked</em> like metal, not melted. The symbol “Ag” keeps its real Latin origin, shown in the tagline (<em>argentum</em>). Everything on the tile is factual: atomic number 47, standard atomic weight 107.87.</p>
+
+  <h2>Android implementation</h2>
+  <ul>
+    <li><strong>Phase 1, system splash</strong> (Android 12 SplashScreen API, <code>androidx.core:core-splashscreen</code> for minSdk 26): <code>windowSplashScreenBackground = #0a0612</code>, <code>windowSplashScreenAnimatedIcon</code> = an AnimatedVectorDrawable of the tile (outline <code>trimPathEnd</code> 0→1 then fill alpha, about 600 ms). Glyphs are exported as vector paths (Fira Sans and JetBrains Mono are OFL). API 26–30 shows the static tile. The tile fits inside the 160 dp safe circle of the 240 dp icon mask (preview below).</li>
+    <li><strong>Phase 2, Compose</strong> (<code>setOnExitAnimationListener</code> hands over to an <code>AgSoftSplash()</code> composable that starts on the same frame and at the same position): a single <code>Canvas</code>. The sheen is a translated <code>Brush.linearGradient</code> inside <code>clipPath</code>. The strike is <code>graphicsLayer</code> scale with a <code>spring()</code> pivoted at the bottom edge. The softening is the glyph path drawn twice, fill plus <code>Stroke(width, join = StrokeJoin.Round)</code> with an animated width (the same trick as this mockup), plus an animated corner radius. “Soft” is revealed with <code>clipRect</code>. The count-up is done in phase 2 only (an AVD cannot draw changing text), so the AVD shows “47” straight away.</li>
+    <li><strong>Budget</strong>: about 2.45 s in total (AVD ≈ 0.6 s + Compose ≈ 1.85 s). Cold start only, tap to skip. About 6 KB AVD plus 4 KB of path data, no bitmap, no video, no <code>RenderEffect</code>/blur. One radial “bloom” gradient drawn once (so no extra bloom pass), under 20 draw calls per frame. <code>prefers-reduced-motion</code> maps to <code>Settings.Global.ANIMATOR_DURATION_SCALE == 0</code>: show the still logo for 600 ms, then cut.</li>
+  </ul>
+
+  <h2>Checks</h2>
+  <table>
+    <tr><th>Text / background</th><th>Colours</th><th>WCAG ratio</th></tr>
+    <tr><td>Tile text on tile</td><td><code>#1a1426</code> / <code>#c7ccd4</code></td><td>11.1 : 1</td></tr>
+    <tr><td>Tile text on crescent</td><td><code>#1a1426</code> / <code>#9aa1ad</code></td><td>6.9 : 1</td></tr>
+    <tr><td>“Soft”</td><td><code>#e4e7ec</code> / <code>#0a0612</code></td><td>16.2 : 1</td></tr>
+    <tr><td>Tagline</td><td><code>#b9a7c9</code> / <code>#0a0612</code></td><td>9.0 : 1</td></tr>
+  </table>
+  <p>No information is carried by colour; the pink/cyan fringe is decoration only. At 48 px the tile keeps the two cues that make it read as an element tile: the corner number and the centred symbol. The name and mass are dropped in the icon variant.</p>
+</section>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const DUR = 2450, STILL = 2000;
+  const SEGS = [[0,620,'tile'],[620,1060,'sheen'],[1060,1380,'strike'],[1380,1820,'wordmark'],[1820,2100,'hold'],[2100,2450,'fade']];
+  const ROW2 = [[0,620,'AVD (system splash)'],[620,2450,'Compose sequence']];
+  const TXT = {
+    en:{name:'Silver', tag:'argentum · soft silver', btn:'EN → FR'},
+    fr:{name:'Argent', tag:'argentum · métal malléable', btn:'FR → EN'}
+  };
+  const S = 128, CX = 195, CY = 400, SC1 = 0.9;
+  const L = {x0: CX - S/2, y0: CY - S/2, x1: 0, y1: CY - S*SC1/2, softX: 0, base: 0};
+
+  const clamp = (v,a=0,b=1) => Math.min(b, Math.max(a, v));
+  const seg = (t,a,b) => clamp((t-a)/(b-a));
+  const lerp = (a,b,p) => a + (b-a)*p;
+  const E = {
+    out: p => 1 - Math.pow(1-p, 3),
+    inOut: p => p < .5 ? 4*p*p*p : 1 - Math.pow(-2*p+2, 3)/2
+  };
+
+  const el = {};
+  ['clipRect','fillMain','fillGroup','sheen','outline','hl','num','sym','name','mass','tileMove','tileSquash','soft','softClipRect','tag','fade','bloomEl'].forEach(k => el[k] = $(k));
+  const set = (e, a, v) => e.setAttribute(a, v);
+
+  function layout(){
+    const w = el.soft.getComputedTextLength();
+    const ts = S*SC1, gap = 8, total = ts + gap + w;
+    L.x1 = CX - total/2;
+    L.softX = L.x1 + ts + gap;
+    L.base = L.y1 + 83*SC1;
+    set(el.soft, 'y', L.base);
+  }
+
+  function render(t){
+    const pDraw = E.inOut(seg(t,0,420));
+    set(el.outline, 'stroke-dashoffset', 100*(1-pDraw));
+    const pFill = E.out(seg(t,260,620));
+    set(el.fillGroup, 'opacity', pFill); set(el.hl, 'opacity', pFill);
+
+    set(el.num, 'opacity', seg(t,40,160));
+    el.num.textContent = String(Math.round(47*E.out(seg(t,40,470))));
+    const pSym = E.out(seg(t,320,600));
+    set(el.sym, 'opacity', pSym); set(el.sym, 'transform', `translate(0 ${6*(1-pSym)})`);
+    const pMeta = seg(t,440,720);
+    set(el.name, 'opacity', pMeta); set(el.mass, 'opacity', pMeta);
+
+    // Metallic sheen sweep
+    const pS = seg(t,620,1040);
+    set(el.sheen, 'opacity', pS > 0 && pS < 1 ? 1 : 0);
+    set(el.sheen, 'transform', `translate(${-60 + (S+120)*E.inOut(pS)} 0) rotate(18 0 64)`);
+
+    // Strike: squash then damped spring, pivot at the bottom edge
+    let a = 0; const s = t - 1060;
+    if (s > 0) a = s < 70 ? E.out(s/70) : Math.exp(-(s-70)/120)*Math.cos((s-70)/38);
+    const sx = 1 + .07*a, sy = 1 - .09*a;
+    set(el.tileSquash, 'transform', `translate(64 128) scale(${sx} ${sy}) translate(-64 -128)`);
+
+    // Softening: rounder corners, swelling glyphs with round joins
+    const soft = E.out(seg(t,1060,1380));
+    const rx = 10 + 8*soft;
+    set(el.clipRect, 'rx', rx); set(el.outline, 'rx', rx); set(el.fillMain, 'rx', 14 + 8*soft);
+    set(el.sym, 'stroke-width', 2.6*soft);
+
+    // Slide into the [Ag]Soft wordmark
+    const pm = E.inOut(seg(t,1380,1780));
+    const sc = lerp(1, SC1, pm), x = lerp(L.x0, L.x1, pm), y = lerp(L.y0, L.y1, pm);
+    set(el.tileMove, 'transform', `translate(${x} ${y}) scale(${sc})`);
+    const pr = E.out(seg(t,1480,1820));
+    set(el.soft, 'x', L.softX - 40*(1-pr)); set(el.soft, 'opacity', pr);
+    set(el.soft, 'stroke-width', 1.5*E.out(seg(t,1640,1900)));
+    set(el.softClipRect, 'x', x + S*sc + 1);
+    set(el.tag, 'opacity', E.out(seg(t,1700,1950)));
+
+    // Single soft bloom behind the matter
+    set(el.bloomEl, 'cx', CX); set(el.bloomEl, 'cy', CY);
+    set(el.bloomEl, 'opacity', pFill*(1 + .5*Math.max(0,a)));
+
+    set(el.fade, 'opacity', E.inOut(seg(t,2100,2450)));
+    updateHead(t);
+  }
+
+  // Timeline UI
+  const track = $('track'), head = $('head'), row2 = $('row2');
+  SEGS.forEach(([a,b,l]) => { const d = document.createElement('div'); d.className='seg';
+    d.style.left = (a/DUR*100)+'%'; d.style.width = ((b-a)/DUR*100)+'%'; d.textContent = l; track.appendChild(d); });
+  ROW2.forEach(([a,b,l]) => { const d = document.createElement('span');
+    d.style.left = (a/DUR*100)+'%'; d.style.width = ((b-a)/DUR*100 - .6)+'%'; d.textContent = l; row2.appendChild(d); });
+  function updateHead(t){ head.style.left = (t/DUR*100)+'%'; }
+
+  // Playback
+  const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let raf = 0, t0 = 0, speed = 1;
+  const status = $('status');
+  function tick(now){
+    const t = (now - t0)*speed;
+    render(Math.min(t, DUR));
+    status.textContent = t < 2100 ? `playing · ${Math.round(Math.min(t,DUR))} ms` :
+      (t < DUR ? 'fading to #0a0612' : `done · ${DUR} ms · hand-over → welcome screen (#0a0612)`);
+    if (t < DUR) raf = requestAnimationFrame(tick);
+  }
+  function play(){
+    cancelAnimationFrame(raf);
+    if (mq.matches){ render(STILL); status.textContent = 'prefers-reduced-motion: still logo shown, no animation'; return; }
+    t0 = performance.now(); raf = requestAnimationFrame(tick);
+  }
+  $('replay').addEventListener('click', play);
+  $('slow').addEventListener('click', e => { speed = speed === 1 ? .25 : 1; e.currentTarget.setAttribute('aria-pressed', speed !== 1); play(); });
+  let lang = 'en';
+  $('lang').addEventListener('click', e => {
+    lang = lang === 'en' ? 'fr' : 'en';
+    el.name.textContent = TXT[lang].name; el.tag.textContent = TXT[lang].tag;
+    e.currentTarget.textContent = TXT[lang].btn; e.currentTarget.setAttribute('aria-pressed', lang === 'fr');
+    play();
+  });
+  mq.addEventListener && mq.addEventListener('change', play);
+
+  // Icon-size previews (static, simplified: corner number + symbol only)
+  let icN = 0;
+  function icon(size, mask){
+    const id = 'ic' + (icN++);
+    const tile = `
+      <defs><clipPath id="${id}"><rect x="2" y="2" width="44" height="44" rx="8"/></clipPath></defs>
+      <g clip-path="url(#${id})">
+        <rect x="2" y="2" width="44" height="44" fill="#9aa1ad"/>
+        <rect x="0" y="0" width="44" height="44" rx="10" fill="#c7ccd4"/>
+        <path d="M2 2H32L2 32Z" fill="#d3d8df"/>
+      </g>
+      <rect x="2.5" y="2.5" width="43" height="43" rx="7.5" fill="none" stroke="#eef1f5" stroke-width="1"/>
+      <text x="6" y="12.5" font-family="JetBrains Mono, ui-monospace, monospace" font-size="8" font-weight="600" fill="#1a1426">47</text>
+      <text x="24" y="36" text-anchor="middle" font-family="Fira Sans, system-ui, sans-serif" font-size="21" font-weight="600"
+            fill="#1a1426" stroke="#1a1426" stroke-width=".9" stroke-linejoin="round">Ag</text>`;
+    if (!mask) return `<svg width="${size}" height="${size}" viewBox="0 0 48 48" aria-hidden="true">${tile}</svg>`;
+    return `<svg width="${size}" height="${size}" viewBox="0 0 120 120" aria-hidden="true">
+      <circle cx="60" cy="60" r="59" fill="#0a0612" stroke="#7a6d8c" stroke-width="1" stroke-dasharray="3 3"/>
+      <circle cx="60" cy="60" r="40" fill="none" stroke="#7a6d8c" stroke-width=".75" stroke-dasharray="1.5 2.5"/>
+      <g transform="translate(32 32) scale(${56/48})">${tile}</g></svg>`;
+  }
+  $('icons').innerHTML = [
+    ['96 px', icon(96)], ['48 px', icon(48)], ['32 px', icon(32)],
+    ['Android 12 icon mask<br>(240 dp / 160 dp safe)', icon(120, true)]
+  ].map(([c,s]) => `<figure><div class="well">${s}</div><figcaption>${c}</figcaption></figure>`).join('');
+
+  const start = () => { layout(); play(); };
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(start); else start();
+  render(0);
+})();
+</script>
+</body>
+</html>

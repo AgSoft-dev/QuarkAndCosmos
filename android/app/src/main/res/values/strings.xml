@@ -56,15 +56,15 @@
     <string name="concept_dualite">Wave–particle duality</string>
 
     <!-- Level screen (libGDX, passed through GameText) -->
-    <string name="game_flash_pass">Tunnel effect: enough energy, Quarky gets through!</string>
-    <string name="game_flash_blocked">Energy below the threshold: the barrier sends Quarky back.</string>
+    <string name="game_flash_pass">Tunnel effect: Quarky went through the barrier, not over it!</string>
+    <string name="game_flash_blocked">Below the tunnel threshold: the barrier sends Quarky back.</string>
     <string name="game_readings">INSTRUMENT READINGS</string>
     <string name="game_angle">ANGLE</string>
     <string name="game_energy">QUARKY’S ENERGY</string>
-    <string name="game_threshold">BARRIER THRESHOLD</string>
+    <string name="game_threshold">TUNNEL THRESHOLD</string>
     <string name="game_passes">PASSES</string>
     <string name="game_blocked">BLOCKED</string>
-    <string name="game_aim_help">Pull Quarky back, then let go. The barrier’s threshold starts oscillating at release.</string>
+    <string name="game_aim_help">Pull left for energy, slide up or down to aim, then let go. The tunnel threshold starts oscillating at release.</string>
     <string name="game_hint">Hint: the violet dotted line shows the start of the reference path.</string>
     <string name="game_result">INSTRUMENT READING</string>
     <string name="game_outcome_win">Target reached</string>
@@ -78,4 +78,13 @@
     <string name="game_retry">RETRY</string>
     <string name="game_map">MAP</string>
     <string name="game_next">CONTINUE</string>
+    <!-- Aiming guided tour (first slingshot level) -->
+    <string name="game_tour_energy">Pull left: energy</string>
+    <string name="game_tour_aim">Slide up/down: aim</string>
+    <string name="game_tour_launch">Let go: launch</string>
+
+    <!-- AgSoft studio splash (ADR-0009) -->
+    <string name="splash_element_name">Silver</string>
+    <string name="splash_tagline">argentum · soft silver</string>
+    <string name="splash_description">AgSoft, silver element 47</string>
 </resources>

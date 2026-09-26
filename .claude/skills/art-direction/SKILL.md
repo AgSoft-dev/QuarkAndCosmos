@@ -63,7 +63,7 @@ Continuous colour progression from small to large: pink → yellow/orange → gr
 | Derived (medium energy, entanglement filament) | `#c4b5fd` |
 | HUD text / secondary text | `#f7eef9` / `#b9a7c9` (≥ 4.5:1 on the background) |
 
-Colour blindness (deuteranopia/protanopia): no information by colour alone. Mandatory doubles: line style per force, ↑/↓ spin and +/− glyphs, **the Photon's number of rays (4/6/8) for its energy** (medium/high Photons are close in deuteranopia). The other scales will get their contract (key + accent + background + threshold) in the same format.
+Colour blindness (deuteranopia/protanopia): no information by colour alone. Mandatory doubles: line style per force, ↑/↓ spin and +/− glyphs, **the Photon's number of rays (4/6/8) for its energy** (medium/high Photons are close in deuteranopia). For the 4-rung quantisation level (ADR-0008): **4/6/8/10 rays**, a fourth energy colour to pick and validate in S5 (candidate `#fef08a`), and a thin outer ring on the top rung. The other scales will get their contract (key + accent + background + threshold) in the same format.
 
 ## Target and Photon — rendering
 
@@ -89,6 +89,7 @@ Stage 1 (graphic identity & art direction) validated, **art direction v2 include
 
 ## Changelog
 
+- 2026-09-26 — Photon colour-blind double extended to 4 steps for the quantisation rungs (4/6/8/10 rays + outer ring on E4; ADR-0008).
 - 2026-09-26 — Translated to English; reference page moved to `design/art-direction-v2/` (S1).
 - 2026-09-25 — **v1 → v2**:
   - **Rendering**: illustrated gradient matter (Cut the Rope style) → **flat B matter** (flat fills, shadow crescent, facets) + **C cinematic background** (3-layer parallax, grain/vignette ≤ 3%), a single bloom pass.

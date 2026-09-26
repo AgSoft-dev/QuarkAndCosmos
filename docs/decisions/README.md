@@ -11,5 +11,7 @@ One file per decision that closed a `[GATE]` in `todo.md` or changed a contract.
 | [0005](ADR-0005-golden-trajectories.md) | 2026-09-26 | Python is the physics reference; Kotlin replays golden trajectories within 1e-6 |
 | [0006](ADR-0006-android-poc-before-audio.md) | 2026-09-26 | Android POC (Stage 5) before audio (Stage 4) |
 | [0007](ADR-0007-repo-english-app-bilingual.md) | 2026-09-26 | Repository in English; app in English + French; §5.1 layout |
+| [0008](ADR-0008-quantum-concept-fixes.md) | 2026-09-26 | Quantum concept fixes (§2.2): tunnel thickness, rung-lock quantisation, slit diffraction, uncertainty cone, Stern–Gerlach spin, near-crystal entanglement |
+| [0009](ADR-0009-agsoft-splash.md) | 2026-09-26 | AgSoft studio splash: option A "Struck silver" (Compose, cold start) |
 
 Earlier game-design decisions (tap floor `TAP_MIN_TIME`, 3-star model, 7 beta concepts) are recorded in the skills (`gameplay-mechanics`) and `todo.md` §0.

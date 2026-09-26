@@ -32,7 +32,7 @@ Problems found in the current engine and levels (checked by running `cli.py vali
 - [x] **Degenerate in-flight taps:** the best solution for `dualite` and `intrication` was `tap_time = 0.0`. Tapping at launch makes the tap equivalent to a pre-launch setting, which defeats the rule "every concept depends on time during flight". *Done: `TAP_MIN_TIME = 0.1 s`; earlier taps are excluded from the search, and a test enforces it. Game side (decided): a tap before 0.1 s is ignored and the tap stays available.*
   - [x] Follow-up: in `dualite`, any tap before contact worked (a window, not a timing). *Done: difficulties 2–3 put the tap window between two contacts (particle bounce, then wave crossing).*
 - [x] **Brittle / over-tight levels:** `tunnel` had 2 solutions in the whole grid, `quantification` had 9 and `dualite` had 7. `spin` restricted the angle to `[-12, -11]` (the solution was effectively hard-coded). *Done: `tolerance` and `three_star_tolerance` are in the report and the JSON, and a test requires ≥ 5%. Tunnel went from 4% to 21% with continuous power sampling, spin's angle range is now `[-20, 0]`, and all 7 levels are between 14% and 62%.*
-- [ ] **Physics mis-vulgarisation (tunnel):** the code and the Codex line ("Assez d'énergie, et même un mur n'est plus vraiment un mur" — "with enough energy, even a wall isn't really a wall") describe *classically going over* a barrier. Quantum tunnelling is the opposite: the particle gets through **without** enough energy, with a probability that drops fast as the barrier gets thicker. See §2.
+- [x] **Physics mis-vulgarisation (tunnel):** the code and the Codex line ("Assez d'énergie, et même un mur n'est plus vraiment un mur" — "with enough energy, even a wall isn't really a wall") describe *classically going over* a barrier. Quantum tunnelling is the opposite: the particle gets through **without** enough energy, with a probability that drops fast as the barrier gets thicker. See §2.
 - [x] **Superposition modelled as a deterministic splitter** chosen by impact point. That reads as "a deflector", not as "two paths at once". See §2 for a mechanic that shows both branches. *Done: a flat beam splitter makes a transmitted and a reflected ghost; a tap measures (nearest copy to a detector wins, its Photons only); target needs a measured Quarky; a copy crashing before the measure = decoherence fail. Spec: `docs/physics-spec.md` §7 bis.*
 - [ ] **`quantification` isn't distinct:** discrete power "notches" (`choice` values) are already used by every other level, so the concept has no mechanic of its own.
 - [x] **Handlers re-applied on every step of contact:** a spin pole deflected N × `kick_deg` (N depending on speed), and a barrier re-checked its oscillating threshold on every step. Handlers now fire once per contact. The old `spin` level was only solvable because of this bug, so its target was moved and its angle range widened.
@@ -153,8 +153,8 @@ Each object gets a design sheet with: idle / hover / dragged / active / disabled
 | Cosmic | **Expansion of the universe / redshift** | Photons redden as the level "expands" over time; collect them before they fade | Timer through redshift |
 | Cosmic | **Dark matter** (enrichment) | An invisible mass you infer from how visible objects move | — |
 
-- [ ] **[GATE]** User approves the fixed Quantum mechanics (tunnel thickness, 2-ghost superposition, rung-lock quantisation, slit diffraction) before the Stage 3 rewrite. *2-ghost superposition: approved and implemented.*
-- [ ] Rule: **every Codex fact must be scientifically correct, even when the mechanic is a simplification.** Each Codex page has a one-line "Dans la vraie physique…" ("In real physics…") note that says where the game simplified.
+- [x] **[GATE]** User approves the fixed Quantum mechanics (tunnel thickness, 2-ghost superposition, rung-lock quantisation, slit diffraction) before the Stage 3 rewrite. *2-ghost superposition: approved and implemented.* *Approved 2026-09-26 for all 7 concepts ([ADR-0008](docs/decisions/ADR-0008-quantum-concept-fixes.md)); implementation in S5.*
+- [ ] Rule: **every Codex fact must be scientifically correct, even when the mechanic is a simplification.** Each Codex page has a one-line "Dans la vraie physique…" ("In real physics…") note that says where the game simplified. *Rule and the 7 notes written in the `physics-pedagogy` skill (S4); the Codex pages themselves are still to build.*
 
 ### 2.3 Educational feedback loop
 - [ ] **Before the level:** one-sentence "hypothesis" card: the scientist asks "Que se passe-t-il si… ?" ("What happens if…?"). The player can skip it.
@@ -194,7 +194,7 @@ Each object gets a design sheet with: idle / hover / dragged / active / disabled
 - [ ] Touch: drag target ≥ 48 dp, drag starts from anywhere near Quarky (a 2× radius), cancel by dragging back to the origin.
 
 ### 3.4 Progression across scales
-- [ ] Beta: 7 levels, linear, a Codex page per level. Onboarding in level 1 uses **no text**: a ghost hand shows the drag once.
+- [ ] Beta: 7 levels, linear, a Codex page per level. Onboarding in level 1 uses **no text**: a ghost hand shows the drag once. *POC (user request 2026-09-26): a looping ghost-finger tour on Tunnel 1 with faded arrows and three short labels (energy / aim / let go), shown until the level is first completed.*
 - [ ] Full: per world, `N concepts × (1 intro + 2–3 ramp) + 3–5 mix levels + 1 showcase level` (the showcase is a setpiece at the end of the world, before the scale-change cinematic).
 - [ ] Difficulty levers the generator can tune: preview length, tolerance window width, oscillation amplitude/period, obstacle count, Photon placement tier.
 - [ ] Hints: after 5 fails, offer the reference solution's *first segment* (read from the shipped `hint.params`). No ads-for-hints in the beta.
@@ -313,7 +313,7 @@ Options, ranked for *this* game (2D, vector/glow, deterministic custom physics, 
 - [ ] `art-direction` → v2 after the §1 gate. Split it into `SKILL.md` (rules) + `references/palette.md`, `references/objects.md`, `references/scales.md` so it loads lighter.
 - [ ] `gameplay-mechanics`: remove the stale "8 concepts". Add the 3-Photon placement tiers, the `t_min` tap rule, the tolerance bands, and the core-loop timings from §3.
 - [ ] `storytelling`: add the Codex template (§2.3), the scientist's voice guide with 5 good/bad examples, and a reading-level target.
-- [ ] **New** `physics-pedagogy` skill: the §2 tables, the "Dans la vraie physique…" rule, the Core/Enrichment labels, and the forbidden simplifications (e.g. "tunnel = having enough energy").
+- [x] **New** `physics-pedagogy` skill: the §2 tables, the "Dans la vraie physique…" rule, the Core/Enrichment labels, and the forbidden simplifications (e.g. "tunnel = having enough energy"). *Done S4; Core/Enrichment labels are a proposal until §2.1.*
 - [ ] **New** `level-builder` skill: how to add a concept plugin, run validate/solve, read tolerance reports, regenerate golden files.
 - [x] **New** `android-architecture` skill: created only at Stage 5 (it holds the §4.4 decisions once validated). *Done with the POC.*
 - [x] Every skill ends with a `## Status` + `## Changelog` (date, decision, who validated). *Done S1.*
@@ -340,8 +340,16 @@ Options, ranked for *this* game (2D, vector/glow, deterministic custom physics, 
 1. [x] **S1** Repo hygiene: restructure (§5.1), fix stale docs, CLAUDE.md status table, pyproject, CI skeleton. *(no design change)* *Done 2026-09-26, plus (user request) repo translated to English and the app made bilingual EN/FR.*
 2. [ ] **S2** ⇄ Physics-core fixes + tests + golden files (§4.1 physics core).
 3. [x] **S3** ⇄ Art direction v2 style frames, 3 options (§1.1–1.2) → **[GATE] user picks**. *B + C background, Quarky v2, portrait.*
-4. [ ] **S4** ⇄ Physics pedagogy skill + Quantum concept fixes proposal (§2.2) → **[GATE] user approves**.
-5. [ ] **S5** → Validator upgrades (t_min, tolerance, concept-usage, 3-Photon proof) + regenerate the 7 beta levels with 3 Photons each.
+4. [x] **S4** ⇄ Physics pedagogy skill + Quantum concept fixes proposal (§2.2) → **[GATE] user approves**. *Done 2026-09-26: `physics-pedagogy` skill, fixes approved ([ADR-0008](docs/decisions/ADR-0008-quantum-concept-fixes.md)).*
+5. [ ] **S5** → Validator upgrades (t_min, tolerance, concept-usage, 3-Photon proof) + regenerate the 7 beta levels with 3 Photons each. Implement the approved §2.2 fixes ([ADR-0008](docs/decisions/ADR-0008-quantum-concept-fixes.md); target layouts in `gameplay-mechanics`, pedagogy in `physics-pedagogy`). For each fix: engine handler (`concepts/handlers.py`, `core/`), `docs/physics-spec.md` update, generator templates (3 difficulties), validator (`must_contact`, 0 bypass, tolerance band), regenerated levels + metas + goldens, `physics-reviewer` pass on the handler docstrings.
+   - [ ] Tunnel: barrier with `height` (above max launch energy: no classical passage) and `thickness` fields; crossing iff energy ≥ E_t(d) = V − (k/d)² (ADR-0008 follow-up); 2–3 barriers to choose from; breathing thickness (`thickness_motion`) replaces `threshold_motion`. **Tunnel 1, played by the Android POC, changes**: update its goldens and the `tunnel_barrier` port in `android/core-physics/…/Handlers.kt` in the same PR.
+   - [ ] Quantisation: rung-lock launcher E1…E4 (`power` choice = rungs), a `lock` obstacle accepting one exact rung, colour-matched Photons (Photon `rung` field in the schema). *Decided: 4 rungs kept; Photon double = 4/6/8/10 rays + an outer ring on E4, fourth colour picked and validated in S5 (ADR-0008 follow-up).*
+   - [ ] Duality: a slit narrower than Quarky's radius, crossed only in wave mode (diffraction fan: the exit direction spreads deterministically), particle bounces off the grating.
+   - [ ] Uncertainty: dial → two linked bars (position cone ↔ speed spread); the preview is a cone. *Decided: seeded deterministic draw inside a cone of probability (peaked on the centre, truncated); the validator proves a win on the whole cone (ADR-0008 follow-up).*
+   - [ ] Spin: Stern–Gerlach magnet obstacle (up deflected one way, down the other, deflection from the field side), widened `angle_deg` range, flip in flight kept.
+   - [ ] Entanglement: the tap targets the near crystal (an obstacle `role: near`) and the far gate reacts; schema field for the pair link; filament feedback event for the renderer.
+   - [x] Codex: rewrite `content/codex/{en,fr}/quantique.json` against the `physics-pedagogy` skill. *Done 2026-09-26 (user request), plus the Tunnel in-game strings ("tunnel threshold") and handler docstrings. Revisit the lines against the drafts once the S5 mechanics ship.*
+   - [ ] Kotlin port (`android/core-physics`): port the new handlers against the regenerated goldens (`:core-physics:test` green); level schema version bump if new fields ship.
 6. [ ] **S6** → Level viewer (HTML, reads `content/levels`), which replaces the hard-coded mockup levels; playtest the 7 levels. → **[GATE] Stage 3 validated**.
 7. [ ] **S7** Stage 4 audio (not detailed here, per the stage rule).
 8. [ ] **S8** → **[GATE] engine decision** → Android spike (§4.2) → `:core-physics` Kotlin port against the golden files. *Engine decided; POC done for Tunnel 1 (§4.5), ahead of S7 audio at the user's request. Spike on a low-end phone still open.*

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AgSoft splash — Option B · Quicksilver drop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --page:#05030a; --bg:#0a0612; --ink:#f7eef9; --ink2:#b9a7c9; --edge:#7a6d8c;
+    --silver:#c7ccd4; --silver-hi:#e4e7ec; --silver-lo:#9aa1ad; --tile-ink:#1a1426;
+    --pink:#f472b6; --cyan:#67e8f9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--page);color:var(--ink);font-family:'Fira Sans',system-ui,sans-serif;
+       display:flex;flex-direction:column;align-items:center;padding:28px 16px 72px;line-height:1.5}
+  header{max-width:640px;text-align:center;margin-bottom:18px}
+  .eyebrow{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2)}
+  h1{font-weight:500;font-size:22px;margin:.25em 0 0}
+  .phone{width:min(390px,92vw);aspect-ratio:390/844;border-radius:44px;overflow:hidden;background:var(--bg);position:relative;
+         box-shadow:0 0 0 1px #2a2238,0 0 0 7px #0d0a14,0 0 0 8px #2a2238,0 30px 80px rgba(0,0,0,.6)}
+  .phone svg{display:block;width:100%;height:100%}
+  .controls{display:flex;gap:10px;margin:22px 0 10px;align-items:center;flex-wrap:wrap;justify-content:center}
+  button{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;background:transparent;color:var(--ink);
+         border:1px solid var(--edge);border-radius:999px;padding:7px 14px;cursor:pointer}
+  button:hover{border-color:var(--silver)}
+  button[aria-pressed="true"]{border-color:var(--silver);background:#1a1426}
+  button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+  .status{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;color:var(--ink2);min-height:1.5em;text-align:center}
+  .timeline{width:min(390px,92vw);margin:8px 0 4px;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10px;color:var(--ink2)}
+  .track{position:relative;height:30px;border-top:1px solid var(--edge)}
+  .seg{position:absolute;top:0;height:100%;border-left:1px solid var(--edge);padding:4px 0 0 4px;white-space:nowrap;overflow:hidden}
+  .head{position:absolute;top:-5px;width:1px;height:12px;background:var(--silver-hi)}
+  .row2{position:relative;height:18px}
+  .row2 span{position:absolute;top:0;border-top:1px dashed var(--edge);padding-top:2px;white-space:nowrap;overflow:hidden}
+  .icons{display:flex;gap:26px;align-items:flex-end;justify-content:center;flex-wrap:wrap;margin:26px 0 8px}
+  .icons figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:8px}
+  .icons figcaption{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10.5px;color:var(--ink2);text-align:center}
+  .icons .well{background:var(--bg);padding:10px;border-radius:10px;box-shadow:0 0 0 1px #2a2238;display:flex;align-items:center;justify-content:center}
+  .caption{max-width:620px;margin-top:22px;font-size:14.5px;color:var(--ink2)}
+  .caption h2{font-size:15px;font-weight:500;color:var(--ink);margin:1.4em 0 .3em}
+  .caption strong{color:var(--ink);font-weight:500}
+  .caption code{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12.5px;color:var(--silver-hi)}
+  .caption ul{padding-left:1.1em;margin:.3em 0}
+  .caption table{border-collapse:collapse;font-size:12.5px;margin-top:.4em}
+  .caption td,.caption th{border-bottom:1px solid #2a2238;padding:4px 10px 4px 0;text-align:left;font-weight:400}
+  .caption th{color:var(--ink)}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">AgSoft · developer splash · option B</div>
+  <h1>Quicksilver drop: water-silver settles into soft silver</h1>
+</header>
+
+<div class="phone" role="img" aria-label="Animated AgSoft splash: a liquid quicksilver drop falls and splashes, the liquid gathers into a periodic table tile that first reads 80 Hg Mercury, then recalibrates to 47 Ag Silver, and the AgSoft wordmark fills up like a liquid before fading to the game background.">
+<svg id="stage" viewBox="0 0 390 844" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bgGlow" cx="50%" cy="46%" r="65%">
+      <stop offset="0" stop-color="#120b1d"/><stop offset="1" stop-color="#0a0612"/>
+    </radialGradient>
+    <radialGradient id="bloom">
+      <stop offset="0" stop-color="#dfe3ea" stop-opacity=".20"/>
+      <stop offset=".55" stop-color="#dfe3ea" stop-opacity=".05"/>
+      <stop offset="1" stop-color="#dfe3ea" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Metaball ("goo") filter: mockup shortcut for the liquid; on Android it becomes keyframed path morphs -->
+    <filter id="goo" x="-60%" y="-60%" width="220%" height="220%" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4"/>
+      <feColorMatrix mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7"/>
+    </filter>
+    <clipPath id="tileClip"><rect width="128" height="128" rx="14"/></clipPath>
+    <clipPath id="waveClip"><path id="wavePath" d="M0 0Z"/></clipPath>
+  </defs>
+
+  <rect width="390" height="844" fill="url(#bgGlow)"/>
+  <ellipse id="bloomEl" cx="195" cy="420" rx="170" ry="170" fill="url(#bloom)" opacity="0"/>
+
+  <!-- Invisible-physics layer: thin dotted ripples + a faint meniscus line -->
+  <line id="meniscus" x1="45" y1="444" x2="345" y2="444" stroke="#c7ccd4" stroke-width=".75" opacity="0"/>
+  <g id="ripples" fill="none" stroke="#c7ccd4" stroke-width=".75" stroke-dasharray="3 4"></g>
+
+  <!-- Matter layer -->
+  <g id="body">
+    <g id="liquid" filter="url(#goo)" fill="#cfd4db">
+      <ellipse id="drop" cx="195" cy="110" rx="18" ry="18"/>
+      <circle id="tail" cx="195" cy="90" r="8"/>
+      <ellipse id="puddle" cx="195" cy="444" rx="0" ry="0"/>
+      <rect id="grow" x="195" y="444" width="0" height="0" rx="0"/>
+      <g id="droplets"></g>
+    </g>
+    <circle id="dropHl" cx="189" cy="102" r="3" fill="#ffffff" opacity="0"/>
+
+    <!-- Crisp tile (B style), fades in over the settled liquid -->
+    <g id="tile" transform="translate(131 316)" opacity="0">
+      <g clip-path="url(#tileClip)">
+        <rect width="128" height="128" fill="#9aa1ad"/>
+        <rect x="-6" y="-6" width="128" height="128" rx="20" fill="#c7ccd4"/>
+        <path d="M0 0H86L0 86Z" fill="#d3d8df"/>
+        <g id="merc" font-family="Fira Sans, system-ui, sans-serif" fill="#1a1426">
+          <text x="13" y="27" font-family="JetBrains Mono, ui-monospace, monospace" font-size="15" font-weight="600">80</text>
+          <text x="64" y="83" text-anchor="middle" font-size="60" font-weight="600">Hg</text>
+          <text id="mercName" x="64" y="103" text-anchor="middle" font-size="12.5" font-weight="500">Mercury</text>
+          <text x="64" y="118" text-anchor="middle" font-family="JetBrains Mono, ui-monospace, monospace" font-size="10.5" font-weight="500">200.59</text>
+        </g>
+        <g id="silv" font-family="Fira Sans, system-ui, sans-serif" fill="#1a1426" opacity="0">
+          <text x="13" y="27" font-family="JetBrains Mono, ui-monospace, monospace" font-size="15" font-weight="600">47</text>
+          <text x="64" y="83" text-anchor="middle" font-size="60" font-weight="600" stroke="#1a1426" stroke-width="1.6" stroke-linejoin="round">Ag</text>
+          <text id="silvName" x="64" y="103" text-anchor="middle" font-size="12.5" font-weight="500">Silver</text>
+          <text x="64" y="118" text-anchor="middle" font-family="JetBrains Mono, ui-monospace, monospace" font-size="10.5" font-weight="500">107.87</text>
+        </g>
+      </g>
+      <rect width="128" height="128" rx="14" fill="none" stroke="#eef1f5" stroke-width="1.5"/>
+      <circle cx="9" cy="9" r="2" fill="#ffffff"/>
+      <!-- The quicksilver bead that stays on the tile -->
+      <g id="bead" opacity="0">
+        <circle cx="110" cy="18" r="6.5" fill="#7f8794"/>
+        <circle cx="109" cy="17" r="6" fill="#e4e7ec"/>
+        <circle cx="107" cy="15" r="1.6" fill="#ffffff"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- Wordmark, filled like a rising liquid level -->
+  <g clip-path="url(#waveClip)">
+    <text id="word" x="195" y="514" text-anchor="middle" font-family="Fira Sans, system-ui, sans-serif" font-size="44"><tspan font-weight="600" fill="#c7ccd4">Ag</tspan><tspan font-weight="300" fill="#e4e7ec">Soft</tspan></text>
+  </g>
+  <text id="tag" x="195" y="550" text-anchor="middle" font-family="JetBrains Mono, ui-monospace, monospace" font-size="11"
+        letter-spacing="1.6" fill="#b9a7c9" opacity="0">quicksilver at heart</text>
+
+  <rect id="fade" width="390" height="844" fill="#0a0612" opacity="0"/>
+</svg>
+</div>
+
+<div class="controls">
+  <button id="replay" type="button">Replay</button>
+  <button id="slow" type="button" aria-pressed="false">0.25× speed</button>
+  <button id="lang" type="button" aria-pressed="false">EN → FR</button>
+</div>
+<div class="status" id="status" aria-live="polite"></div>
+<div class="timeline" aria-hidden="true">
+  <div class="track" id="track"><div class="head" id="head"></div></div>
+  <div class="row2" id="row2"></div>
+</div>
+
+<div class="icons" id="icons"></div>
+
+<section class="caption">
+  <h2>Concept</h2>
+  <p>A single <strong>quicksilver drop</strong> falls onto the dark screen, stretched by its speed. It splashes into a puddle; thin dotted ripples spread and a few droplets leap and fall back. The liquid then <strong>gathers and rises into a square</strong>, wobbles like jelly and sets into a crisp element tile. For a beat the tile reads <strong>80 · Hg · Mercury · 200.59</strong>, then it “recalibrates” like an instrument to <strong>47 · Ag · Silver · 107.87</strong>. One bead of quicksilver stays on the corner. The <strong>AgSoft</strong> wordmark fills from below behind a wavy liquid level. Hold, then fade to <code>#0a0612</code>.</p>
+
+  <h2>Wordplay</h2>
+  <p>Quicksilver is <strong>mercury (Hg, 80)</strong>, a metal that is liquid at room temperature. Its symbol comes from Latin <em>hydrargyrum</em>, from Greek <em>hydrargyros</em>, “water-silver”. Silver itself is <strong>Ag, 47</strong>, from Latin <em>argentum</em>, and it is a soft metal: “soft Ag”, AgSoft. The Hg → Ag flip is an alchemist's wink, not chemistry: mercury never turns into silver. The two metals only share the word “silver”. The tagline plays on the idiom in both languages: EN “quicksilver at heart”, FR “du vif-argent dans les veines” (<em>vif-argent</em> is French for quicksilver and for a lively person).</p>
+
+  <h2>Android implementation</h2>
+  <ul>
+    <li><strong>Phase 1, system splash</strong> (Android 12 SplashScreen API, <code>androidx.core:core-splashscreen</code> for minSdk 26): background <code>#0a0612</code> with a transparent icon, so the drop can fall from above the icon mask, which it could not do inside the 240 dp circle. This costs a blank dark frame during cold start, and the frame is the welcome screen's colour anyway.</li>
+    <li><strong>Phase 2, Compose</strong> (<code>setKeepOnScreenCondition</code> until the first frame, then <code>AgSoftSplash()</code>): one <code>Canvas</code>. The liquid is <strong>not</strong> a blur filter (the SVG “goo” here is a mockup shortcut; <code>RenderEffect</code> is API 31+ and costly). Instead it is 4 keyframed shapes with the same number of cubic points (drop, puddle, blob, rounded tile), interpolated point by point into a <code>Path</code>. Droplets are <code>drawCircle</code> on parabolas that shrink as they land. Ripples are <code>drawOval(style = Stroke(0.75.dp, pathEffect = dashPathEffect))</code>. The tile switches to the crisp vector tile once it has settled. The Hg → Ag roll is two glyph-path groups under <code>clipRect</code> with a vertical offset. The wordmark fill is a <code>clipPath</code> built from a sine-wave <code>Path</code>.</li>
+    <li><strong>Budget</strong>: about 2.5 s in total, cold start only, tap to skip. About 8 KB of path data, no bitmap, no video, no blur. One radial “bloom” gradient drawn once, about 30 draw calls per frame at peak (5 droplets, 3 ripples), and every <code>Path</code> is reused (no allocation per frame). Reduced motion (<code>ANIMATOR_DURATION_SCALE == 0</code>) shows the still logo for 600 ms, then cuts.</li>
+  </ul>
+
+  <h2>Checks</h2>
+  <table>
+    <tr><th>Text / background</th><th>Colours</th><th>WCAG ratio</th></tr>
+    <tr><td>Tile text on tile</td><td><code>#1a1426</code> / <code>#c7ccd4</code></td><td>11.1 : 1</td></tr>
+    <tr><td>Tile text on crescent</td><td><code>#1a1426</code> / <code>#9aa1ad</code></td><td>6.9 : 1</td></tr>
+    <tr><td>“Ag” in wordmark</td><td><code>#c7ccd4</code> / <code>#0a0612</code></td><td>12.4 : 1</td></tr>
+    <tr><td>“Soft” in wordmark</td><td><code>#e4e7ec</code> / <code>#0a0612</code></td><td>16.2 : 1</td></tr>
+    <tr><td>Tagline</td><td><code>#b9a7c9</code> / <code>#0a0612</code></td><td>9.0 : 1</td></tr>
+  </table>
+  <p>“Ag” and “Soft” differ in weight (600 vs 300) as well as tone, so the split does not rely on colour. The ripples follow the invisible-physics rule (0.75 px, dotted, monochrome). At 48 px the icon keeps the corner number, the symbol and the quicksilver bead.</p>
+</section>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const DUR = 2500, STILL = 2100;
+  const SEGS = [[0,440,'drop'],[440,1020,'splash·gather'],[1020,1620,'tile Hg→Ag'],[1620,1900,'word'],[1900,2150,'hold'],[2150,2500,'fade']];
+  const ROW2 = [[0,2500,'system splash: background only → Compose sequence from frame 1']];
+  const TXT = {
+    en:{merc:'Mercury', silv:'Silver', tag:'quicksilver at heart', btn:'EN → FR'},
+    fr:{merc:'Mercure', silv:'Argent', tag:'du vif-argent dans les veines', btn:'FR → EN'}
+  };
+  const CX = 195, FLOOR = 444, TILE = 128;
+
+  const clamp = (v,a=0,b=1) => Math.min(b, Math.max(a, v));
+  const seg = (t,a,b) => clamp((t-a)/(b-a));
+  const lerp = (a,b,p) => a + (b-a)*p;
+  const E = {
+    in: p => p*p,
+    out: p => 1 - Math.pow(1-p, 3),
+    inOut: p => p < .5 ? 4*p*p*p : 1 - Math.pow(-2*p+2, 3)/2
+  };
+  const set = (e, a, v) => e.setAttribute(a, v);
+  const NS = 'http://www.w3.org/2000/svg';
+
+  const el = {};
+  ['drop','tail','puddle','grow','dropHl','body','tile','merc','silv','bead','word','tag','fade','bloomEl','meniscus','wavePath','mercName','silvName'].forEach(k => el[k] = $(k));
+
+  // Droplets (liquid layer) and ripples (physics layer)
+  const DROPS = [[-0.13,.46,6],[-0.07,.58,5.5],[0.02,.64,6.5],[0.08,.52,5.5],[0.14,.42,6]];
+  const G = 0.0024;
+  const dropEls = DROPS.map(() => { const c = document.createElementNS(NS,'circle'); $('droplets').appendChild(c); return c; });
+  const RIP = [440, 520, 610];
+  const ripEls = RIP.map(() => { const e = document.createElementNS(NS,'ellipse'); $('ripples').appendChild(e); return e; });
+
+  function render(t){
+    // 1. Falling drop, stretched by speed (squash & stretch)
+    const pf = seg(t,0,440), yF = lerp(110, FLOOR-16, E.in(pf));
+    const vis = t < 440 ? 1 : 0;
+    set(el.drop, 'cy', yF); set(el.drop, 'rx', 18*(1-.14*pf)); set(el.drop, 'ry', 18*(1+.28*pf));
+    set(el.drop, 'opacity', vis*seg(t,0,90)); set(el.tail, 'opacity', vis*seg(t,0,90));
+    set(el.tail, 'cy', yF - 20 - 16*pf); set(el.tail, 'r', 8 - 2*pf);
+    set(el.dropHl, 'cx', CX - 7); set(el.dropHl, 'cy', yF - 9 - 4*pf); set(el.dropHl, 'opacity', vis*seg(t,0,90));
+
+    // 2. Puddle spreads, then is drawn into the rising blob
+    let prx = 0, pry = 0;
+    if (t >= 440){
+      const pe = E.out(seg(t,440,640)), pg = E.in(seg(t,620,1000));
+      prx = lerp(lerp(20, 74, pe), 0, pg); pry = lerp(lerp(16, 7, pe), 0, pg);
+    }
+    set(el.puddle, 'rx', prx); set(el.puddle, 'ry', pry); set(el.puddle, 'cy', FLOOR - pry);
+
+    const pr = E.out(seg(t,620,1020));
+    const h = TILE*pr, w = lerp(90, TILE, pr), r = Math.min(lerp(42, 14, pr), h/2, w/2);
+    set(el.grow, 'x', CX - w/2); set(el.grow, 'y', FLOOR - h); set(el.grow, 'width', w); set(el.grow, 'height', h); set(el.grow, 'rx', Math.max(0,r));
+
+    DROPS.forEach(([vx,vy,r0], i) => {
+      const tau = t - 440, land = 2*vy/G, c = dropEls[i];
+      if (tau <= 0 || tau >= land){ set(c,'r',0); return; }
+      const y = FLOOR - 8 - vy*tau + .5*G*tau*tau;
+      set(c,'cx', CX + vx*tau + (i-2)*6); set(c,'cy', y);
+      set(c,'r', r0*(1 - .35*Math.pow(tau/land, 3)));
+    });
+
+    // Physics layer: meniscus + dotted ripples
+    set(el.meniscus, 'opacity', .28*seg(t,380,460)*(1 - seg(t,900,1150)));
+    RIP.forEach((t0, i) => {
+      const p = seg(t, t0, t0+720), e = ripEls[i];
+      set(e,'cx',CX); set(e,'cy',FLOOR);
+      set(e,'rx', lerp(22, 175, E.out(p))); set(e,'ry', lerp(4, 26, E.out(p)));
+      set(e,'opacity', p > 0 && p < 1 ? .6*(1-p) : 0);
+    });
+
+    // 3. Jelly wobble after the tile forms, pivot at the floor
+    const s = t - 1000;
+    const wob = s > 0 ? Math.exp(-s/150)*Math.sin(s/34) : 0;
+    set(el.body, 'transform', `translate(${CX} ${FLOOR}) scale(${1+.05*wob} ${1-.06*wob}) translate(${-CX} ${-FLOOR})`);
+
+    // Liquid → crisp tile crossfade
+    const pc = seg(t,1000,1140);
+    set($('liquid'), 'opacity', 1 - seg(t,1120,1220));
+    set(el.tile, 'opacity', pc);
+
+    // 4. Recalibration Hg (80) → Ag (47)
+    const pk = E.inOut(seg(t,1360,1600));
+    set(el.merc, 'opacity', 1-pk); set(el.merc, 'transform', `translate(0 ${-14*pk})`);
+    set(el.silv, 'opacity', pk);   set(el.silv, 'transform', `translate(0 ${14*(1-pk)})`);
+    set(el.bead, 'opacity', E.out(seg(t,1500,1640)));
+
+    // 5. Wordmark filled by a rising wavy level
+    const pw = E.inOut(seg(t,1600,1900));
+    const lvl = lerp(528, 468, pw), amp = 3.2*(1-pw);
+    let d = `M40 ${lvl}`;
+    for (let x = 40; x <= 350; x += 10) d += ` L${x} ${(lvl + amp*Math.sin(x*.06 + t*.014)).toFixed(2)}`;
+    d += ' L350 560 L40 560Z';
+    set(el.wavePath, 'd', pw <= 0 ? 'M0 0Z' : d);
+    set(el.tag, 'opacity', E.out(seg(t,1780,2000)));
+
+    set(el.bloomEl, 'opacity', seg(t,380,1100));
+    set(el.fade, 'opacity', E.inOut(seg(t,2150,2500)));
+    head.style.left = (t/DUR*100)+'%';
+  }
+
+  // Timeline UI
+  const track = $('track'), head = $('head'), row2 = $('row2');
+  SEGS.forEach(([a,b,l]) => { const d = document.createElement('div'); d.className='seg';
+    d.style.left = (a/DUR*100)+'%'; d.style.width = ((b-a)/DUR*100)+'%'; d.textContent = l; track.appendChild(d); });
+  ROW2.forEach(([a,b,l]) => { const d = document.createElement('span');
+    d.style.left = (a/DUR*100)+'%'; d.style.width = ((b-a)/DUR*100)+'%'; d.textContent = l; row2.appendChild(d); });
+
+  // Playback
+  const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let raf = 0, t0 = 0, speed = 1;
+  const status = $('status');
+  function tick(now){
+    const t = (now - t0)*speed;
+    render(Math.min(t, DUR));
+    status.textContent = t < 2150 ? `playing · ${Math.round(Math.min(t,DUR))} ms` :
+      (t < DUR ? 'fading to #0a0612' : `done · ${DUR} ms · hand-over → welcome screen (#0a0612)`);
+    if (t < DUR) raf = requestAnimationFrame(tick);
+  }
+  function play(){
+    cancelAnimationFrame(raf);
+    if (mq.matches){ render(STILL); status.textContent = 'prefers-reduced-motion: still logo shown, no animation'; return; }
+    t0 = performance.now(); raf = requestAnimationFrame(tick);
+  }
+  $('replay').addEventListener('click', play);
+  $('slow').addEventListener('click', e => { speed = speed === 1 ? .25 : 1; e.currentTarget.setAttribute('aria-pressed', speed !== 1); play(); });
+  let lang = 'en';
+  $('lang').addEventListener('click', e => {
+    lang = lang === 'en' ? 'fr' : 'en';
+    el.mercName.textContent = TXT[lang].merc; el.silvName.textContent = TXT[lang].silv; el.tag.textContent = TXT[lang].tag;
+    e.currentTarget.textContent = TXT[lang].btn; e.currentTarget.setAttribute('aria-pressed', lang === 'fr');
+    play();
+  });
+  mq.addEventListener && mq.addEventListener('change', play);
+
+  // Icon-size previews (static: corner number + symbol + quicksilver bead)
+  let icN = 0;
+  function icon(size, mask){
+    const id = 'ic' + (icN++);
+    const tile = `
+      <defs><clipPath id="${id}"><rect x="2" y="2" width="44" height="44" rx="8"/></clipPath></defs>
+      <g clip-path="url(#${id})">
+        <rect x="2" y="2" width="44" height="44" fill="#9aa1ad"/>
+        <rect x="0" y="0" width="44" height="44" rx="10" fill="#c7ccd4"/>
+        <path d="M2 2H32L2 32Z" fill="#d3d8df"/>
+      </g>
+      <rect x="2.5" y="2.5" width="43" height="43" rx="7.5" fill="none" stroke="#eef1f5" stroke-width="1"/>
+      <text x="6" y="12.5" font-family="JetBrains Mono, ui-monospace, monospace" font-size="8" font-weight="600" fill="#1a1426">47</text>
+      <text x="24" y="36" text-anchor="middle" font-family="Fira Sans, system-ui, sans-serif" font-size="21" font-weight="600"
+            fill="#1a1426" stroke="#1a1426" stroke-width=".6" stroke-linejoin="round">Ag</text>
+      <circle cx="38.6" cy="9.6" r="3.4" fill="#7f8794"/>
+      <circle cx="38.2" cy="9.2" r="3.1" fill="#e4e7ec"/>
+      <circle cx="37.3" cy="8.2" r=".9" fill="#ffffff"/>`;
+    if (!mask) return `<svg width="${size}" height="${size}" viewBox="0 0 48 48" aria-hidden="true">${tile}</svg>`;
+    return `<svg width="${size}" height="${size}" viewBox="0 0 120 120" aria-hidden="true">
+      <circle cx="60" cy="60" r="59" fill="#0a0612" stroke="#7a6d8c" stroke-width="1" stroke-dasharray="3 3"/>
+      <circle cx="60" cy="60" r="40" fill="none" stroke="#7a6d8c" stroke-width=".75" stroke-dasharray="1.5 2.5"/>
+      <g transform="translate(32 32) scale(${56/48})">${tile}</g></svg>`;
+  }
+  $('icons').innerHTML = [
+    ['96 px', icon(96)], ['48 px', icon(48)], ['32 px', icon(32)],
+    ['launcher icon in<br>adaptive mask', icon(120, true)]
+  ].map(([c,s]) => `<figure><div class="well">${s}</div><figcaption>${c}</figcaption></figure>`).join('');
+
+  const start = () => play();
+  render(0);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(start); else start();
+})();
+</script>
+</body>
+</html>
