@@ -8,6 +8,7 @@ Player-facing text (the Codex line of each concept) is not generated here: it
 lives in content/codex/{en,fr}/quantique.json, keyed by the module's CODEX_KEY.
 """
 
+from ..core.simulate import check_limits
 from ..solver.stars import place_photons
 from . import ALL_CONCEPTS, DIFFICULTIES, concept
 
@@ -24,6 +25,9 @@ def make_level(concept_id: str, difficulty: int = 1) -> dict:
     level["scale"] = "quantique"
     level["concept"] = concept_id
     level["difficulty"] = difficulty
+    problems = check_limits(level)
+    if problems:
+        raise ValueError(f"{level['id']}: a contact could be stepped over: " + "; ".join(problems))
     # Photons placed by ray tracing (see stars.py): the share of valid paths
     # earning 1/2/3 stars follows a truncated gaussian whose σ shrinks with
     # difficulty.

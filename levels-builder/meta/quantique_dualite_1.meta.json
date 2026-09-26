@@ -10,7 +10,7 @@
   "solvable": true,
   "reference_solution": {
     "params": {
-      "angle_deg": -3,
+      "angle_deg": -2,
       "power": 0.5,
       "tap_time": 0.1
     },
@@ -23,15 +23,15 @@
   },
   "max_photons_reachable": 3,
   "tolerance": 0.5385,
-  "three_star_tolerance": 0.1978,
+  "three_star_tolerance": 0.1758,
   "bypass_solutions": 0,
   "star_profile": {
     "rays": 1406,
     "valid_rays": 690,
     "distinct_paths": 40,
     "shares": {
-      "1": 0.9029,
-      "2": 0.6362,
+      "1": 0.9493,
+      "2": 0.6565,
       "3": 0.4
     },
     "target_shares": {

@@ -30,12 +30,12 @@
   "bypass_solutions": 0,
   "star_profile": {
     "rays": 2920,
-    "valid_rays": 454,
-    "distinct_paths": 454,
+    "valid_rays": 467,
+    "distinct_paths": 467,
     "shares": {
-      "1": 0.8568,
-      "2": 0.5639,
-      "3": 0.1806
+      "1": 0.8587,
+      "2": 0.561,
+      "3": 0.1756
     },
     "target_shares": {
       "1": 0.8226,

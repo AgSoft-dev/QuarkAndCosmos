@@ -22,6 +22,8 @@ from ..core import shapes, vec
 
 
 def _bounce(obstacle, pos, vel):
+    """Reflection on the obstacle, only if Quarky is approaching it (vec.reflect);
+    core/simulate.py then mirrors the penetration out of the obstacle."""
     return vec.reflect(vel, shapes.normal(obstacle, pos)), "bounce"
 
 

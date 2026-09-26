@@ -27,33 +27,33 @@
   "photons": [
     {
       "id": "p1",
-      "x": 0.207,
-      "y": 0.473,
+      "x": 0.231,
+      "y": 0.479,
       "r": 0.03,
       "motion": {
         "axis": "y",
-        "amplitude": 0.08,
-        "period": 0.25,
-        "phase": 0.754
+        "amplitude": 0.04,
+        "period": 0.5,
+        "phase": 3.8956
       }
     },
     {
       "id": "p2",
-      "x": 0.568,
-      "y": 0.673,
-      "r": 0.03,
-      "motion": {
-        "axis": "x",
-        "amplitude": 0.08,
-        "period": 0.25,
-        "phase": 2.5133
-      }
+      "x": 0.488,
+      "y": 0.623,
+      "r": 0.03
     },
     {
       "id": "p3",
-      "x": 0.62,
-      "y": 0.727,
-      "r": 0.03
+      "x": 0.607,
+      "y": 0.77,
+      "r": 0.03,
+      "motion": {
+        "axis": "x",
+        "amplitude": 0.04,
+        "period": 0.5,
+        "phase": 0.754
+      }
     }
   ],
   "max_wall_bounces": 1,
@@ -87,8 +87,8 @@
   },
   "hint": {
     "params": {
-      "angle_deg": -17,
-      "power": 0.5,
+      "angle_deg": -15,
+      "power": 0.7,
       "spin_up": true,
       "tap_time": 0.1
     }

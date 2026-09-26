@@ -86,7 +86,7 @@ class Simulation(val level: Level, params: Map<String, Any>, private val listene
         val t = (step + 1) * DT
         steps = step + 1
 
-        // 1. move (explicit Euler, constant velocity between two contacts)
+        // 1. move (semi-implicit Euler with no force field: x += v·DT)
         x += vx * DT
         y += vy * DT
         movedX = x
@@ -99,10 +99,11 @@ class Simulation(val level: Level, params: Map<String, Any>, private val listene
             tapped = true
         }
 
-        // 3. walls of the closed box (one step = at most one counted bounce)
+        // 3. walls of the closed box (one step = at most one counted bounce);
+        // the penetration is mirrored back inside
         var bounced = false
-        if (x <= 0.0) { x = 0.0; vx = Math.abs(vx); bounced = true } else if (x >= 1.0) { x = 1.0; vx = -Math.abs(vx); bounced = true }
-        if (y <= 0.0) { y = 0.0; vy = Math.abs(vy); bounced = true } else if (y >= 1.0) { y = 1.0; vy = -Math.abs(vy); bounced = true }
+        if (x <= 0.0) { x = -x; vx = Math.abs(vx); bounced = true } else if (x >= 1.0) { x = 2.0 - x; vx = -Math.abs(vx); bounced = true }
+        if (y <= 0.0) { y = -y; vy = Math.abs(vy); bounced = true } else if (y >= 1.0) { y = 2.0 - y; vy = -Math.abs(vy); bounced = true }
         if (bounced) {
             listener?.onBoxBounce()
             if (++wallBounces > level.maxWallBounces) return finish(Status.LOST_WALL_BOUNCES, step)
@@ -122,7 +123,10 @@ class Simulation(val level: Level, params: Map<String, Any>, private val listene
             if (inContact[i]) continue
             inContact[i] = true
             val threshold = effectiveThreshold(o, t)
+            val vxIn = vx
+            val vyIn = vy
             val event = handlers[i](this, o, ox, oy, threshold)
+            if (event == ContactEvent.BOUNCE) mirrorOut(o, ox, oy, vxIn, vyIn)
             listener?.onContact(i, event)
             if (o.type == "wall") {
                 if (++wallBounces > level.maxWallBounces) return finish(Status.LOST_WALL_BOUNCES, step)
@@ -174,7 +178,8 @@ class Simulation(val level: Level, params: Map<String, Any>, private val listene
 
     internal val isTapped get() = tapped
 
-    /** Reflect the velocity on the obstacle placed at (ox, oy) — vec.reflect(vel, normal). */
+    /** Reflect the velocity on the obstacle placed at (ox, oy), only while
+     *  approaching — vec.reflect(vel, normal). */
     internal fun reflectOn(o: Obstacle, ox: Double, oy: Double) {
         shapes.closestPoint(o, ox, oy, x, y)
         val nx0 = x - shapes.cx
@@ -183,8 +188,23 @@ class Simulation(val level: Level, params: Map<String, Any>, private val listene
         val nx = if (m < 1e-9) 0.0 else nx0 / m
         val ny = if (m < 1e-9) 0.0 else ny0 / m
         val d = vx * nx + vy * ny
+        if (d >= 0.0) return
         vx -= 2 * d * nx
         vy -= 2 * d * ny
+    }
+
+    /** After a reflection, mirror the penetration out of the contact surface
+     *  (radius + EPS) — simulate._mirror_out, same order of operations. */
+    private fun mirrorOut(o: Obstacle, ox: Double, oy: Double, vxIn: Double, vyIn: Double) {
+        shapes.closestPoint(o, ox, oy, x, y)
+        val nx = x - shapes.cx
+        val ny = y - shapes.cy
+        val d = Math.hypot(nx, ny)
+        val reach = shapes.radius(o) + COLLISION_EPS
+        if (d < 1e-9 || d >= reach || vxIn * nx + vyIn * ny >= 0.0 || vx * nx + vy * ny <= 0.0) return
+        val k = 2 * (reach - d) / d
+        x += nx * k
+        y += ny * k
     }
 
     /** Quarky's energy: the velocity norm (conserved by bounces). */

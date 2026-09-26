@@ -14,9 +14,9 @@
   "solvable": true,
   "reference_solution": {
     "params": {
-      "angle_deg": -4,
-      "power": 0.8,
-      "tap_time": 0.5
+      "angle_deg": 1,
+      "power": 0.4,
+      "tap_time": 0.85
     },
     "photons_collected": 3,
     "photon_ids": [
@@ -26,17 +26,17 @@
     ]
   },
   "max_photons_reachable": 3,
-  "tolerance": 0.0931,
-  "three_star_tolerance": 0.0168,
+  "tolerance": 0.0897,
+  "three_star_tolerance": 0.016,
   "bypass_solutions": 0,
   "star_profile": {
     "rays": 5766,
-    "valid_rays": 537,
-    "distinct_paths": 48,
+    "valid_rays": 517,
+    "distinct_paths": 47,
     "shares": {
-      "1": 0.8212,
-      "2": 0.4451,
-      "3": 0.1806
+      "1": 0.8182,
+      "2": 0.4468,
+      "3": 0.1779
     },
     "target_shares": {
       "1": 0.8226,

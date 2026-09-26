@@ -35,8 +35,10 @@ class Obstacle(
     val y: Double,
     /** Explicit radius, otherwise the Shapes.radius default. */
     val r: Double?,
-    /** Length of a segment; null for a disc. */
+    /** Length of a segment (capsule); null for a disc or a polygon. */
     val length: Double?,
+    /** Polygon outline: vertex offsets from (x, y), flattened [dx0, dy0, dx1, dy1, …]; null otherwise. */
+    val points: DoubleArray? = null,
     val angleDeg: Double,
     val energyThreshold: Double?,
     val motion: Motion?,
@@ -109,6 +111,7 @@ class Level(
             y = o.num("y"),
             r = o.numOrNull("r"),
             length = o.numOrNull("length"),
+            points = o["points"]?.jsonArray?.flatMap { p -> p.jsonArray.map { it.jsonPrimitive.double } }?.toDoubleArray(),
             angleDeg = o.numOrNull("angle_deg") ?: 0.0,
             energyThreshold = o.numOrNull("energy_threshold"),
             motion = motion(o["motion"]),

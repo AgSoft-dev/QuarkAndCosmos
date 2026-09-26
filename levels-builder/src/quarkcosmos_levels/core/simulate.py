@@ -14,6 +14,17 @@ during the flight, through generic building blocks:
     whose instant is one more parameter searched by the solver (like the
     angle or the power) — see concepts/handlers.py for the handlers that read
     the "tapped" state once that instant has passed.
+
+Integration: fixed step DT, semi-implicit (symplectic) Euler — velocity first
+(v += a·DT), then position (x += v·DT). The Quantum box has no force field
+(a = 0), so a step is x += v·DT; the order is fixed now so a later scale with
+gravity or fields stays bit-for-bit portable (docs/physics-spec.md §4).
+
+Collisions (§5): a reflection only happens while approaching (v·n < 0), and
+the penetration is then mirrored out of the contact surface — the position a
+continuous collision would give on a flat face. Tunnelling through thin
+objects is ruled out by construction: `check_limits` requires every moving
+thing to travel less than half an object's contact band per step.
 """
 import math
 from dataclasses import dataclass, field
@@ -35,6 +46,56 @@ TAP_MIN_TIME = 0.1
 # "Suffered" bounces (box walls + internal walls) tolerated before the
 # particle counts as lost, see the comment in simulate().
 MAX_WALL_BOUNCES = 1
+
+
+def launch_speed_max(level: dict) -> float:
+    """Highest launch speed the level's param_space allows (spec §3)."""
+    ps = level.get("param_space", {})
+
+    def values(spec):
+        return spec["values"] if spec["type"] == "choice" else [spec["min"], spec["max"]]
+
+    if "precision" in ps:
+        return max(max(0.15, 1.2 - p) for p in values(ps["precision"]))
+    if "power" in ps:
+        return max(values(ps["power"]))
+    return 1.0
+
+
+def _motion_speed(motion):
+    return 2 * math.pi * abs(motion["amplitude"]) / motion["period"] if motion else 0.0
+
+
+def check_limits(level: dict) -> list:
+    """Anti-tunnelling guarantee (discrete steps, no sweep needed): Quarky and
+    any object move towards each other by at most (v + v_obj)·DT per step,
+    which must stay below half the object's contact band (radius + EPS), so a
+    contact can never be stepped over, however thin the object. Returns the
+    list of violations (empty = OK)."""
+    v = launch_speed_max(level)
+    problems = []
+    things = [("obstacle", o, shapes.radius(o)) for o in level.get("obstacles", []) if o.get("type") != "detector"]
+    things += [("photon", p, p.get("r", 0.02)) for p in level.get("photons", [])]
+    things.append(("target", level["target"], level["target"].get("r", 0.045)))
+    for kind, obj, r in things:
+        travel = (v + _motion_speed(obj.get("motion"))) * DT
+        if travel >= r + COLLISION_EPS:
+            problems.append(f"{kind} {obj.get('id', '')}: {travel:.4f} per step >= contact band {r + COLLISION_EPS:.4f}")
+    return problems
+
+
+def _mirror_out(obs, pos, vel_in, vel_out):
+    """After a reflection, mirror the penetration out of the contact surface
+    (radius + EPS): exact for a flat face, where it equals a continuous
+    collision. Only when the handler turned an approach (v·n < 0) into a
+    departure (v'·n > 0)."""
+    n = shapes.normal(obs, pos)
+    d = vec.mag(n)
+    reach = shapes.radius(obs) + COLLISION_EPS
+    if d < 1e-9 or d >= reach or vec.dot(vel_in, n) >= 0.0 or vec.dot(vel_out, n) <= 0.0:
+        return pos
+    k = 2 * (reach - d) / d
+    return (pos[0] + n[0] * k, pos[1] + n[1] * k)
 
 
 def _oscillate(base_x, base_y, motion, t):
@@ -184,21 +245,22 @@ def simulate(level: dict, params: dict, record_trail: bool = False) -> SimResult
         superposed = len(bodies) > 1
         spawned = []
         for body in bodies:
-            # walls of the closed box (bounce, never an exit)
+            # walls of the closed box (bounce, never an exit); the penetration
+            # is mirrored back inside, like on any flat face
             x, y = body.pos
             vel = body.vel
             bounced = False
             if x <= 0.0:
-                x, vel = 0.0, (abs(vel[0]), vel[1])
+                x, vel = -x, (abs(vel[0]), vel[1])
                 bounced = True
             elif x >= 1.0:
-                x, vel = 1.0, (-abs(vel[0]), vel[1])
+                x, vel = 2.0 - x, (-abs(vel[0]), vel[1])
                 bounced = True
             if y <= 0.0:
-                y, vel = 0.0, (vel[0], abs(vel[1]))
+                y, vel = -y, (vel[0], abs(vel[1]))
                 bounced = True
             elif y >= 1.0:
-                y, vel = 1.0, (vel[0], -abs(vel[1]))
+                y, vel = 2.0 - y, (vel[0], -abs(vel[1]))
                 bounced = True
             body.vel = vel
             if bounced:
@@ -227,11 +289,15 @@ def simulate(level: dict, params: dict, record_trail: bool = False) -> SimResult
                     obs_eff["x"], obs_eff["y"] = ox, oy
                     obs_eff["energy_threshold"] = _effective_threshold(obs, elapsed)
                 handler = handler_for(level["concept"], obs.get("type", ""))
+                vel_in = body.vel
                 body.vel, event = handler(obs_eff, body.pos, body.vel, params, state)
+                if event in ("bounce", "wave"):
+                    body.pos = _mirror_out(obs_eff, body.pos, vel_in, body.vel)
                 if event == "split":
                     # Superposition: Quarky goes straight on (transmitted copy)
                     # AND reflects (reflected copy).
                     ghost = body.fork(reflect_velocity(obs_eff, body.pos, body.vel))
+                    ghost.pos = _mirror_out(obs_eff, body.pos, vel_in, ghost.vel)
                     body.contacts.append((obs["id"], "transmit"))
                     ghost.contacts.append((obs["id"], "reflect"))
                     spawned.append(ghost)

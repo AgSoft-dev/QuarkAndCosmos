@@ -22,7 +22,7 @@
   "solvable": true,
   "reference_solution": {
     "params": {
-      "angle_deg": -91,
+      "angle_deg": -88,
       "power": 0.8,
       "tap_time": 0.5,
       "tap_time_2": 0.8
@@ -35,17 +35,17 @@
     ]
   },
   "max_photons_reachable": 3,
-  "tolerance": 0.063,
-  "three_star_tolerance": 0.0056,
+  "tolerance": 0.0658,
+  "three_star_tolerance": 0.0031,
   "bypass_solutions": 0,
   "star_profile": {
     "rays": 11000,
-    "valid_rays": 693,
+    "valid_rays": 724,
     "distinct_paths": 34,
     "shares": {
-      "1": 0.759,
-      "2": 0.3478,
-      "3": 0.0895
+      "1": 0.9116,
+      "2": 0.268,
+      "3": 0.047
     },
     "target_shares": {
       "1": 0.7066,

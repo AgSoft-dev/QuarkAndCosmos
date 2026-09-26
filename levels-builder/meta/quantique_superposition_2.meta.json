@@ -10,9 +10,9 @@
   "solvable": true,
   "reference_solution": {
     "params": {
-      "angle_deg": -88,
-      "power": 0.8,
-      "tap_time": 0.5
+      "angle_deg": -87,
+      "power": 0.6,
+      "tap_time": 0.6
     },
     "photons_collected": 3,
     "photon_ids": [
@@ -22,17 +22,17 @@
     ]
   },
   "max_photons_reachable": 3,
-  "tolerance": 0.1045,
-  "three_star_tolerance": 0.0182,
+  "tolerance": 0.0987,
+  "three_star_tolerance": 0.0169,
   "bypass_solutions": 0,
   "star_profile": {
     "rays": 1540,
-    "valid_rays": 161,
-    "distinct_paths": 39,
+    "valid_rays": 152,
+    "distinct_paths": 31,
     "shares": {
-      "1": 0.8261,
-      "2": 0.441,
-      "3": 0.1739
+      "1": 0.8355,
+      "2": 0.4737,
+      "3": 0.1711
     },
     "target_shares": {
       "1": 0.8226,

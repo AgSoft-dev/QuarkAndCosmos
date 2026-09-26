@@ -22,7 +22,7 @@ levels-builder/meta/<name>.meta.json   dev-only data (never shipped)
 | `difficulty` | int | 1 discover, 2 sequence, 3 chain. |
 | `launcher` | `{x, y}` | start point in the unit box (`y` pointing down). |
 | `target` | `{x, y, r, motion?}` | the portal. |
-| `obstacles` | array | `{id, type, x, y, r?, length?, angle_deg?, …}`; types and per-type fields in [`physics-spec.md`](physics-spec.md) §5–§7. `id`s are data keys (some are French words, e.g. `cloison`, `couvercle`: kept as is). |
+| `obstacles` | array | `{id, type, x, y, r?, length?, angle_deg?, points?, …}` (shape: circle by default, capsule with `length`, polygon outline with `points` = vertex offsets from `(x, y)`); types and per-type fields in [`physics-spec.md`](physics-spec.md) §5–§7. `id`s are data keys (some are French words, e.g. `cloison`, `couvercle`: kept as is). |
 | `photons` | array | 3 Photons `{id, x, y, r, motion?}`, numbered in order of passage. |
 | `max_wall_bounces` | int | "suffered" bounces allowed (always explicit). |
 | `param_space` | object | public setting ranges for the UI dials: `{"type": "range", "min", "max", "step"}` or `{"type": "choice", "values"}` per parameter (`angle_deg`, `power`, `precision`, `spin_up`, `tap_time`, `tap_time_2`). |
