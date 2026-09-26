@@ -114,6 +114,7 @@ The shipped lines in `content/codex/{en,fr}/quantique.json` were rewritten from 
 - **One-liner:** energy comes in fixed steps, like the rungs of a ladder, never in between.
 - **Rule the player predicts:** this lock opens only for E2; E1 or E3 bounce off.
 - **Approved mechanic (rung-lock):** the launcher has **energy rungs E1…E4** (no continuous power). Locks (barriers/gates) accept **one exact rung**, not a threshold: too little and too much both bounce. Photons are **colour-matched** to rungs: a Photon is collected only by a Quarky on its rung (colour = energy, doubled by the number of rays, see `art-direction`).
+- **Quantisation rungs (user decision 2026-09-26): 4 rungs E1…E4 are kept.** The Photon colour-blind double gets a fourth step: **4 / 6 / 8 / 10 rays** for E1 / E2 / E3 / E4, and a fourth energy colour chosen with `art-direction` in S5 and run through the palette validator (candidate `#fef08a`: normal-vision ΔE ≥ 15 against the three existing colours; the worst colour-blind pair stays the existing violet/cyan one, already doubled by the rays). Because 8 vs 10 rays is hard to count at Photon size, E4 also carries a thin outer ring, so no rung relies on colour or a close ray count alone.
 - **In-level feedback:** the launcher coils light up rung by rung; a Photon changes colour when it matches the current rung; each lock shows the rung it accepts.
 - **Codex anchor:** neon signs, lasers, spectral lines (each element's barcode of colours).
 - **In real physics…** it is the energy of a particle *bound* in an atom that is quantised; a free particle can move at any speed. The launcher's rungs stand for an atom's energy levels, and a jump between two levels gives out a photon of energy E = hν, hence one exact colour.
@@ -186,5 +187,6 @@ Created 2026-09-26 (S4). The **fixed Quantum mechanics are approved** by the use
 
 ## Changelog
 
+- 2026-09-26 — Quantisation keeps 4 rungs (user decision): Photon double becomes 4/6/8/10 rays + an outer ring on E4.
 - 2026-09-26 — Tunnel model (height above max energy, threshold E_t(d) = V − (k/d)²) and uncertainty model (seeded draw inside a cone of probability, validated on the whole cone) decided by the user; shipped Codex lines and Tunnel strings corrected.
 - 2026-09-26 — Created (S4): target and principles, forbidden simplifications, Core/Enrichment proposal, per-concept tables with the approved §2.2 fixes (ADR-0008), EN/FR Codex drafts and hypothesis cards, Codex writing rules, §2.3 loop as guidance, review checklist.
