@@ -33,7 +33,7 @@ Decoherence was removed from the beta scope (design feedback: redundant with sup
 
 Slingshot drag-and-release: the player pulls Quarky back then lets go; physics (gravity where the scale has it, plus any fields) does the rest until the target or a failure. See the mockup [`design/mockups/index.html`](../../../design/mockups/index.html).
 
-**Touch mapping (Android, user decision 2026-09-26): linear slingshot.** The drag starts anywhere in the play area and its two axes are independent: the horizontal pull away from the shot sets the energy (by length), the vertical slide turns the aim at a fixed rate (≈ 6 px per degree, down aims up) from its current value. Release launches; a release without a pull only keeps the new angle. Replaces the angle-from-drag-direction mapping, too twitchy on short pulls and pinned at the edges of narrow angle ranges.
+**Touch mapping (Android, user decision 2026-09-26): linear slingshot.** The drag starts anywhere in the play area and its two axes are independent: the horizontal pull away from the shot sets the energy (by length), the vertical slide turns the aim at a fixed rate (≈ 6 px per degree, down aims up) from its current value. Release launches; a release without a pull only keeps the new angle. Replaces the angle-from-drag-direction mapping, too twitchy on short pulls and pinned at the edges of narrow angle ranges. **Room to drag (user concern):** the full-energy pull shortens when the drag starts near the left edge (never closer than 20 dp to it), the aim rate shrinks for wide angle ranges so half the range fits in 150 dp of slide, and a faint rail shows the full-energy point during the drag.
 
 ## Object control — the "lab experiment" paradigm
 
@@ -121,6 +121,7 @@ Direction validated for the mechanics above (launch loop, lab-style object setti
 
 ## Changelog
 
+- 2026-09-26 — Slingshot room: edge-aware pull range, aim rate fitted to the angle range, drag rail.
 - 2026-09-26 — Touch mapping: linear slingshot (energy = horizontal pull, aim = vertical slide).
 - 2026-09-26 — §2.2 Quantum concept fixes approved by the user ([ADR-0008](../../../docs/decisions/ADR-0008-quantum-concept-fixes.md)): the concept table states the approved mechanics (to implement in S5) next to the current ones, and a proposed S5 target-layout table is added; pedagogy now lives in the new `physics-pedagogy` skill (S4).
 - 2026-09-26 — Translated to English; the beta concept list moved here from `CLAUDE.md` (single source); paths updated to the `levels-builder/` layout (S1).

@@ -40,7 +40,7 @@ The physics knows neither libGDX nor Android; the game view knows neither activi
 - **AgSoft splash** (cold start, [ADR-0009](../docs/decisions/ADR-0009-agsoft-splash.md)): a silver element tile 47 · Ag is traced, struck and becomes [Ag]Soft, then fades to the welcome screen; tap to skip.
 - **Quantum map**: 7 nodes (order of the `gameplay-mechanics` skill), Quarky on the current node, stars per level; only Tunnel effect is playable, the 6 others are locked.
 - **Tunnel effect 1**:
-  - linear slingshot from anywhere in the box: pull left to set the energy, slide up/down to aim (6 units per degree, from the current angle), release to shoot; angle and energy snap to the `param_space` grid validated by the Python engine;
+  - linear slingshot from anywhere in the box: pull left to set the energy, slide up/down to aim (6 units per degree at most, less for wide angle ranges; from the current angle), release to shoot; the full-energy pull shortens near the left edge and a faint rail shows it; angle and energy snap to the `param_space` grid validated by the Python engine;
   - the bottom panel shows Quarky's energy against the barrier's oscillating threshold (PASSES / BLOCKED);
   - 3 Photons = 3 stars, in a single flight; the result reads as an instrument reading, with the lab logbook line;
   - guided tour until the level is first completed: a ghost finger loops the gesture (pull left → slide up/down → let go) with faded arrows and three short EN/FR labels, driving the real readings; the first touch hides it, it returns after 6 s idle until the first shot;

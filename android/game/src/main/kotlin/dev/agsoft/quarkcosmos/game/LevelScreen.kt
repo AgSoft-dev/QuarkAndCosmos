@@ -112,6 +112,12 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
     private var armed = false
     private val dragStart = Vector2()
     private var dragAngle0 = 0.0
+    /** Pull length for full energy on this drag: shorter when the drag starts
+     *  close to the left edge, so full energy is always reachable on screen. */
+    private var pullRange = PULL_RANGE
+    /** Vertical slide per degree of aim: the level's whole angle range fits in
+     *  [MAX_AIM_TRAVEL] each way (6 units/° for Tunnel's ±12°, less for wider ranges). */
+    private val unitsPerDeg = min(DEG_PER_UNIT, MAX_AIM_TRAVEL / max(1f, ((angleMax - angleMin) / 2).toFloat()))
     private var pull = 0f
     private var sim: Simulation? = null
     private var acc = 0f
@@ -204,6 +210,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
             armed = false
             dragStart.set(x, y)
             dragAngle0 = aimAngle
+            pullRange = (x - EDGE_MARGIN - DEAD_ZONE).coerceIn(MIN_PULL_RANGE, PULL_RANGE)
         }
     }
 
@@ -215,9 +222,9 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         val dy = dragStart.y - y
         pull = max(dx, 0f)
         armed = pull > DEAD_ZONE
-        val deg = (dragAngle0 - dy / DEG_PER_UNIT).coerceIn(angleMin, angleMax)
+        val deg = (dragAngle0 - dy / unitsPerDeg).coerceIn(angleMin, angleMax)
         val a = ParamGrid.snap(angleSpec, deg)
-        val p = if (armed) ParamGrid.snap(powerSpec, powerMin + ((pull - DEAD_ZONE) / PULL_RANGE).coerceIn(0f, 1f) * (powerMax - powerMin)) else aimPower
+        val p = if (armed) ParamGrid.snap(powerSpec, powerMin + ((pull - DEAD_ZONE) / pullRange).coerceIn(0f, 1f) * (powerMax - powerMin)) else aimPower
         if (a != aimAngle || p != aimPower) host.haptic(Haptic.TICK)
         aimAngle = a
         aimPower = p
@@ -396,6 +403,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         quarky.draw(pose, time)
         drawBursts()
         drawForeground()
+        drawDragRail()
         drawTour()
         buttons.clear()
         drawTopBar()
@@ -421,7 +429,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         val dirY = -sin(aimRad)
         when (phase) {
             Phase.AIM -> {
-                val f = if (armed) ((pull - DEAD_ZONE) / PULL_RANGE).coerceIn(0f, 1f) else 0f
+                val f = if (armed) ((pull - DEAD_ZONE) / pullRange).coerceIn(0f, 1f) else 0f
                 pose.x = lx - dirX * f * r * 1.1f
                 pose.y = ly - dirY * f * r * 1.1f
                 pose.ang = atan2(dirY, dirX)
@@ -883,6 +891,23 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         b.draw(cv.grain, 0f, 0f, w, h, o / 128f, 0f, o / 128f + w / 128f, h / 128f)
     }
 
+    // --- drag rail: how far the pull can go --------------------------------------
+
+    /** While dragging: a faint rail from the drag start to the full-energy point,
+     *  a notch at the finger, so the player sees the room left to pull. */
+    private fun drawDragRail() {
+        if (!dragging || phase != Phase.AIM) return
+        val x0 = dragStart.x
+        val y0 = dragStart.y
+        val full = x0 - DEAD_ZONE - pullRange
+        cv.line(full, y0, x0, y0, 1f, Pal.hudMuted, .35f)
+        cv.line(full, y0 - 6, full, y0 + 6, 1.4f, Pal.key, .6f)
+        if (armed) {
+            val fx = max(full, x0 - pull)
+            cv.line(fx, y0 - 4, fx, y0 + 4, 1.4f, Pal.hud, .7f)
+        }
+    }
+
     // --- guided tour (first slingshot level) ------------------------------------
 
     private fun stopTour() {
@@ -903,7 +928,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         val pullF = ease((tourT - T_PULL) / (T_AIM - T_PULL - .2f)) * TOUR_PULL_F
         val swing = if (tourT in T_AIM..T_LAUNCH) sin((tourT - T_AIM) / (T_LAUNCH - T_AIM) * TAU) else 0f
         aimPower = ParamGrid.snap(powerSpec, powerMin + pullF * (powerMax - powerMin))
-        aimAngle = ParamGrid.snap(angleSpec, (restAngle - swing * TOUR_SWING / DEG_PER_UNIT).coerceIn(angleMin, angleMax))
+        aimAngle = ParamGrid.snap(angleSpec, (restAngle - swing * TOUR_SWING / unitsPerDeg).coerceIn(angleMin, angleMax))
         if (tourT < T_PULL || tourT > T_END) { aimAngle = restAngle; aimPower = restPower }
     }
 
@@ -1182,8 +1207,14 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         const val LAUNCHER_R = 24f
         const val DEAD_ZONE = 14f
         const val PULL_RANGE = 150f
-        /** Vertical drag (virtual units) per degree of aim. */
+        /** Vertical drag (virtual units) per degree of aim, at most. */
         const val DEG_PER_UNIT = 6f
+        /** Vertical slide needed for half the angle range, at most (keeps wide ranges on screen). */
+        const val MAX_AIM_TRAVEL = 150f
+        /** Room kept between the full-energy point and the screen's left edge. */
+        const val EDGE_MARGIN = 20f
+        /** Shortest full-energy pull, for a drag started close to the left edge. */
+        const val MIN_PULL_RANGE = 40f
         // guided tour timeline (s): press, pull, aim, let go, pause
         const val TOUR_PERIOD = 7f
         const val T_PULL = .5f

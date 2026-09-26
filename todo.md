@@ -191,7 +191,7 @@ Each object gets a design sheet with: idle / hover / dragged / active / disabled
 - [ ] Hit-stop of 40–60 ms on key events (tunnel crossing, collapse, portal).
 - [ ] Camera: micro-shake on impacts only (≤ 2 px), with an accessibility toggle.
 - [ ] Audio stings per event, tuned in pitch per scale (Stage 4, but reserve the hooks now).
-- [ ] Touch: drag target ≥ 48 dp, drag starts from anywhere near Quarky (a 2× radius), cancel by dragging back to the origin. *POC differs (user decision 2026-09-26): linear slingshot from anywhere in the box, cancel = release without a pull. Still to check: enough room to drag near the screen edges.*
+- [ ] Touch: drag target ≥ 48 dp, drag starts from anywhere near Quarky (a 2× radius), cancel by dragging back to the origin. *POC differs (user decision 2026-09-26): linear slingshot from anywhere in the box, cancel = release without a pull. Room near the screen edges handled: edge-aware pull range, aim rate fitted to the angle range, drag rail.*
 
 ### 3.4 Progression across scales
 - [ ] Beta: 7 levels, linear, a Codex page per level. Onboarding in level 1 uses **no text**: a ghost hand shows the drag once. *POC (user request 2026-09-26): a looping ghost-finger tour on Tunnel 1 with faded arrows and three short labels (energy / aim / let go), shown until the level is first completed.*
