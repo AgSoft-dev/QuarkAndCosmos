@@ -29,7 +29,7 @@ import json
 import math
 
 from ..core import shapes, vec
-from ..core.simulate import COLLISION_EPS, DT, TAP_MIN_TIME, _oscillate, simulate, taps_ordered
+from ..core.simulate import COLLISION_EPS, DT, TAP_MIN_TIME, _oscillate, launch_speed_max, simulate, taps_ordered
 
 PHOTONS_PER_LEVEL = 3
 PHOTON_RADIUS = 0.03
@@ -274,6 +274,7 @@ def _candidates(level, trail):
     (oscillation perpendicular to the path, zero phase at the instant the
     reference passes: so the reference always collects this Photon)."""
     out = []
+    v_max = launch_speed_max(level)
     for i in range(0, len(trail), CANDIDATE_STRIDE):
         t = (i + 1) * DT
         if not _clear_of_objects(level, trail[i], t):
@@ -283,6 +284,10 @@ def _candidates(level, trail):
         step = vec.sub(trail[min(i + 1, len(trail) - 1)], trail[max(i - 1, 0)])
         axis = "y" if abs(step[0]) >= abs(step[1]) else "x"
         for amplitude, period in PHOTON_MOTIONS:
+            # anti-tunnelling (core/simulate.check_limits): an oscillation so
+            # fast that Quarky could step over the Photon is never proposed
+            if (v_max + 2 * math.pi * amplitude / period) * DT >= PHOTON_RADIUS + COLLISION_EPS:
+                continue
             phase = round((-2 * math.pi * t / period) % (2 * math.pi), 4)
             out.append((i, dict(base, motion={"axis": axis, "amplitude": amplitude,
                                               "period": period, "phase": phase})))

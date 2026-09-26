@@ -42,38 +42,38 @@
   "photons": [
     {
       "id": "p1",
-      "x": 0.54,
-      "y": 0.54,
+      "x": 0.4,
+      "y": 0.805,
       "r": 0.03,
       "motion": {
-        "axis": "y",
+        "axis": "x",
         "amplitude": 0.04,
-        "period": 0.5,
-        "phase": 4.1469
+        "period": 0.25,
+        "phase": 1.508
       }
     },
     {
       "id": "p2",
-      "x": 0.645,
-      "y": 0.533,
+      "x": 0.4,
+      "y": 0.715,
       "r": 0.03,
       "motion": {
-        "axis": "y",
-        "amplitude": 0.06,
-        "period": 0.15,
-        "phase": 3.351
+        "axis": "x",
+        "amplitude": 0.08,
+        "period": 0.5,
+        "phase": 1.6336
       }
     },
     {
       "id": "p3",
-      "x": 0.729,
-      "y": 0.527,
+      "x": 0.4,
+      "y": 0.64,
       "r": 0.03,
       "motion": {
-        "axis": "y",
-        "amplitude": 0.08,
+        "axis": "x",
+        "amplitude": 0.04,
         "period": 0.5,
-        "phase": 0.754
+        "phase": 6.0319
       }
     }
   ],
@@ -101,8 +101,8 @@
   "hint": {
     "params": {
       "angle_deg": -92,
-      "power": 0.4,
-      "tap_time": 0.9
+      "power": 0.5,
+      "tap_time": 0.7
     }
   }
 }

@@ -25,10 +25,11 @@ def make_level(concept_id: str, difficulty: int = 1) -> dict:
     level["scale"] = "quantique"
     level["concept"] = concept_id
     level["difficulty"] = difficulty
-    problems = check_limits(level)
-    if problems:
-        raise ValueError(f"{level['id']}: a contact could be stepped over: " + "; ".join(problems))
     # Photons placed by ray tracing (see stars.py): the share of valid paths
     # earning 1/2/3 stars follows a truncated gaussian whose σ shrinks with
     # difficulty.
-    return place_photons(level)
+    level = place_photons(level)
+    problems = check_limits(level)
+    if problems:
+        raise ValueError(f"{level['id']}: a contact could be stepped over: " + "; ".join(problems))
+    return level

@@ -15,8 +15,8 @@
   "reference_solution": {
     "params": {
       "angle_deg": -92,
-      "power": 0.4,
-      "tap_time": 0.9
+      "power": 0.5,
+      "tap_time": 0.7
     },
     "photons_collected": 3,
     "photon_ids": [
@@ -27,16 +27,16 @@
   },
   "max_photons_reachable": 3,
   "tolerance": 0.1716,
-  "three_star_tolerance": 0.0685,
+  "three_star_tolerance": 0.0689,
   "bypass_solutions": 0,
   "star_profile": {
     "rays": 2016,
     "valid_rays": 346,
     "distinct_paths": 90,
     "shares": {
-      "1": 0.9162,
+      "1": 0.896,
       "2": 0.659,
-      "3": 0.3988
+      "3": 0.4017
     },
     "target_shares": {
       "1": 0.9019,
