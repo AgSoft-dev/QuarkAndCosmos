@@ -59,3 +59,13 @@ Pas fixe `DT = 0.01`, 300 pas max, boîte fermée sans gravité. Rebonds « subi
 Formes (`engine/shapes.py`) : disque (`x, y, r`) ou segment plat (`x, y, length, angle_deg`) pour les miroirs, portes, fenêtres et parois. Types d'obstacles : `wall`, `mirror` (rebond voulu, non compté), `barrier`, `splitter`, `gate` (fermée avant le tap), `gate_anti` (ouverte avant le tap), `pole`, `surface`.
 
 Les oscillations (obstacles, cible, Photons) sont calées sur l'instant du lancer : le dispositif « démarre » quand Quarky part. Le jeu doit reproduire cette convention, sinon la solvabilité validée ici ne tient plus.
+
+## Trajectoires golden (contrat avec le runtime Android)
+
+Le runtime Android (`android/core-physics`, Kotlin) porte ce moteur à l'identique. Pour qu'ils ne divergent jamais, `engine/golden.py` enregistre quelques lancers par niveau porté (solution de référence, victoire partielle, rebond de trop, timeout) avec la position à chaque pas :
+
+```bash
+python3 cli.py golden        # écrit tests/golden/<niveau>.golden.json
+```
+
+`tests/test_golden.py` échoue si ces fichiers ne correspondent plus au moteur (les régénérer après tout changement de physique ou de niveau Tunnel), et le test JUnit `GoldenTest` du module Kotlin les rejoue à 1e-6 près. Niveaux couverts : `GOLDEN_LEVELS` (Tunnel 1-3 pour le POC) — à étendre en même temps que les handlers Kotlin.

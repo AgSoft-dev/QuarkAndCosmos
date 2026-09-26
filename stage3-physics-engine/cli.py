@@ -9,6 +9,7 @@ Usage :
   python3 cli.py validate <path.json>   # lit aussi meta/<nom>.meta.json (must_contact)
   python3 cli.py solve <path.json> [--max N]
   python3 cli.py report [--difficulties 1 2 3] [--concepts ...] [--out-dir reports/]
+  python3 cli.py golden [--out-dir tests/golden/]   # trajectoires de référence pour le port Kotlin
 """
 import argparse
 import json
@@ -18,6 +19,7 @@ from engine.generator import make_level, ALL_CONCEPTS
 from engine.validator import validate, solve
 from engine.export import write_level, read_level
 from engine.report import build_report, write_report
+from engine.golden import write_goldens
 
 
 def _stars_line(meta):
@@ -98,6 +100,11 @@ def cmd_report(args):
         print(f"{kind:4} -> {path}")
 
 
+def cmd_golden(args):
+    for path in write_goldens("levels", args.out_dir):
+        print(f"golden -> {path}")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Moteur physique vulgarisé — Quark & Cosmos")
     sub = parser.add_subparsers(dest="cmd", required=True)
@@ -129,6 +136,10 @@ def main():
     p_rep.add_argument("--concepts", nargs="+", choices=ALL_CONCEPTS, default=None)
     p_rep.add_argument("--out-dir", type=str, default="reports")
     p_rep.set_defaults(func=cmd_report)
+
+    p_gold = sub.add_parser("golden", help="trajectoires golden pour le runtime Kotlin")
+    p_gold.add_argument("--out-dir", type=str, default="tests/golden")
+    p_gold.set_defaults(func=cmd_golden)
 
     args = parser.parse_args()
     args.func(args)

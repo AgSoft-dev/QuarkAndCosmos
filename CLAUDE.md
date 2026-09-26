@@ -6,6 +6,8 @@ Jeu mobile Android de puzzle physique (nom de code provisoire). Le joueur traver
 
 Avancer strictement stage par stage (1: DA/UI-UX, 2: mockup HTML/JS, 3: moteur physique Python/CLI, 4: audio, 5: architecture Android). Ne jamais produire de code ou de spec pour une étape future tant que l'étape en cours n'est pas validée par l'utilisateur.
 
+Exception décidée par l'utilisateur (2026-09-26) : le POC Android (Stage 5, `android/`) passe **avant** l'audio (Stage 4), qui reste à faire. Moteur retenu : libGDX pour le jeu + coque Kotlin/Compose (cf. skill `android-architecture`).
+
 ## Portée de la version test fermée
 
 Le premier build jouable (test fermé) se limite au **premier monde uniquement (échelle Quantique)**, ~1 niveau par concept ci-dessous (7 concepts → 7 niveaux, dans la fourchette 5-10). C'est une version allégée du modèle de progression complet (cf. `gameplay-mechanics`) : pas ou peu de montée en difficulté intra-concept, et **aucun niveau mixant plusieurs concepts** — cette richesse (progression complète + niveaux de mix inter-concepts) est réservée à la full release, pas à la beta.
@@ -29,5 +31,6 @@ Les 4 autres échelles restent hors périmètre de ce build. Toute décision de 
 - `art-direction` — direction artistique validée (palette, personnage Quarky, règles visuelles, level design). À charger avant toute production visuelle ou mockup.
 - `storytelling` — univers narratif validé (prémisse, ton, rôle du/de la scientifique, intégration au Codex, ordre de progression Quantique → Cosmologique). À charger avant tout texte in-game.
 - `gameplay-mechanics` — boucle de jeu, contrôle d'orientation/puissance des objets, système à 3 étoiles. À charger avant toute spec de niveau ou de scoring.
+- `android-architecture` — modules de l'app Android (`:core-physics`, `:game` libGDX, `:app` Compose), déterminisme Python ⇄ Kotlin par trajectoires golden, budgets. À charger avant toute modification de `android/`.
 
 D'autres skills/agents seront ajoutés au fil des stages (moteur physique, architecture Android, etc.) — le détail de chaque domaine vit dans son propre skill, pas ici.

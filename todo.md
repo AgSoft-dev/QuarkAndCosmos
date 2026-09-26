@@ -239,11 +239,11 @@ Options, ranked for *this* game (2D, vector/glow, deterministic custom physics, 
 | Unity | 30+ MB | Ecosystem | Overkill, APK size, licensing history | Not recommended |
 | Flutter + Flame | ~10–15 MB | Fast UI | Dart physics port, custom shaders are limited | Possible, not preferred |
 
-- [ ] **[GATE]** Decide the engine. Recommended: **libGDX (game view) + a thin native Android shell** (Play services, haptics, settings), all Kotlin.
+- [x] **[GATE]** Decide the engine. Recommended: **libGDX (game view) + a thin native Android shell** (Play services, haptics, settings), all Kotlin. *Decided (2026-09-26): libGDX game view + Kotlin/Compose shell, `minSdk 26`. POC in `android/` (see §4.5).*
 - [ ] Spike (2 days, time-boxed): render the Quantum level with bloom + 200 particles on a low-end device (e.g. an Android Go-class phone with 2 GB RAM) and measure frame time.
 
 ### 4.3 Single source of truth for physics
-- [ ] Decision: **Python = authoring + validation; Kotlin = runtime**, with the same deterministic algorithm, kept in sync by **golden trajectory tests** run in both CI jobs (Python generates `tests/golden/*.json`, a Kotlin JUnit test replays it and asserts positions within 1e-6).
+- [x] Decision: **Python = authoring + validation; Kotlin = runtime**, with the same deterministic algorithm, kept in sync by **golden trajectory tests** run in both CI jobs (Python generates `tests/golden/*.json`, a Kotlin JUnit test replays it and asserts positions within 1e-6). *Done for the tunnel levels: `python3 cli.py golden` → `stage3-physics-engine/tests/golden/`, freshness checked by `tests/test_golden.py`, replayed by `android/core-physics` `GoldenTest`. Extend `GOLDEN_LEVELS` with each ported concept.*
 - [x] Specify the physics in `docs/physics-spec.md`: timestep, integration, collision order, event semantics, tap timing. Both implementations cite it. *Done: the Python engine is the reference; the spec describes its current behaviour, [GATE] fixes will update it.*
 - [ ] Alternative considered: running the Python engine on-device via Chaquopy. Rejected: APK size (+15 MB) and startup cost.
 
@@ -263,9 +263,18 @@ Options, ranked for *this* game (2D, vector/glow, deterministic custom physics, 
 - [ ] Accessibility: a colour-blind-safe palette variant, reduced motion (disable shake/bloom pulse), text scaling in the Codex, TalkBack labels on menus.
 - [ ] Analytics for the closed test: privacy-respecting event log (Firebase or a self-hosted alternative, **[GATE]**), with opt-in consent for minors (a high-school audience means GDPR-K / COPPA rules apply).
 - [ ] Distribution: Play Console internal test track → closed test. Target API = the current Play requirement, `minSdk` 24.
-- [ ] CI: GitHub Actions builds the debug APK, runs JVM tests + golden tests + lint on every PR, and uploads the APK as an artifact.
+- [ ] CI: GitHub Actions builds the debug APK, runs JVM tests + golden tests + lint on every PR, and uploads the APK as an artifact. *Partly done: `.github/workflows/android.yml` runs `:core-physics:test` + `:app:assembleDebug` and uploads the APK; lint still to add.*
 
 ---
+
+### 4.5 Android POC (done 2026-09-26) — follow-ups
+*What exists: `android/` (open it in Android Studio), welcome → scales → Quantum map → Tunnel 1 playable, best stars saved. See `android/README.md`.*
+- [ ] **User check in Android Studio** (emulator API 26+): sync, run, play Tunnel 1, stars kept after restart. Report sync/build errors.
+- [ ] Port the 6 other beta concepts to `:core-physics` (handlers + `GOLDEN_LEVELS`), with their in-flight controls (tap button, spin toggle, precision dial, rung launcher). Superposition needs the multi-body step (two ghosts).
+- [ ] Real bloom pass (¼-res FBO, 2 blurs) instead of additive halos, then the low-end phone spike (§4.2).
+- [ ] Reduce draw calls in `LevelScreen` (batch halos and shapes by blend mode) to stay under the 50-draw-call budget.
+- [ ] The DA asks for a narrow vertical box; the engine box is a unit square. Decide whether levels get a non-square box `[GATE]`.
+- [ ] Oscillations start at launch (the apparatus is idle before the shot). Confirm this reads well on device (links to the §0 phase-lock decision).
 
 ## Phase 5 — Repository architecture, skills & agents
 
@@ -304,7 +313,7 @@ Options, ranked for *this* game (2D, vector/glow, deterministic custom physics, 
 - [ ] `storytelling`: add the Codex template (§2.3), the scientist's voice guide with 5 good/bad examples, and a reading-level target.
 - [ ] **New** `physics-pedagogy` skill: the §2 tables, the "Dans la vraie physique…" rule, the Core/Enrichment labels, and the forbidden simplifications (e.g. "tunnel = having enough energy").
 - [ ] **New** `level-builder` skill: how to add a concept plugin, run validate/solve, read tolerance reports, regenerate golden files.
-- [ ] **New** `android-architecture` skill: created only at Stage 5 (it holds the §4.4 decisions once validated).
+- [x] **New** `android-architecture` skill: created only at Stage 5 (it holds the §4.4 decisions once validated). *Done with the POC.*
 - [ ] Every skill ends with a `## Statut` + `## Changelog` (date, decision, who validated).
 
 ### 5.4 Agents (create `.claude/agents/`) ⇄
@@ -312,7 +321,7 @@ Options, ranked for *this* game (2D, vector/glow, deterministic custom physics, 
 - [x] `level-designer`: writes concept builders/generators, runs `validate` and the tolerance checks, and never hand-places Photons.
 - [x] `level-qa`: runs the full pack validation + golden tests, and reports brittle levels (tolerance below band) and trivial solutions.
 - [x] `art-director`: loads `art-direction`; produces/reviews HTML/SVG style frames; checks contrast and colour-blind safety.
-- [ ] `android-dev` (Stage 5 only): Kotlin/libGDX with the performance budget from §4.4 as hard constraints.
+- [x] `android-dev` (Stage 5 only): Kotlin/libGDX with the performance budget from §4.4 as hard constraints. *Done.*
 - [x] Each agent's front-matter lists the skills to load and the **stage it's allowed to act on**, which enforces the stage-gate rule mechanically. *Done: stated in each agent's body (Claude Code front-matter has no stage field); golden tests in `level-qa` wait for §4.1.*
 
 ### 5.5 Workflow & automation
@@ -333,6 +342,6 @@ Options, ranked for *this* game (2D, vector/glow, deterministic custom physics, 
 5. [ ] **S5** → Validator upgrades (t_min, tolerance, concept-usage, 3-Photon proof) + regenerate the 7 beta levels with 3 Photons each.
 6. [ ] **S6** → Level viewer (HTML, reads `content/levels`), which replaces the hard-coded mockup levels; playtest the 7 levels. → **[GATE] Stage 3 validated**.
 7. [ ] **S7** Stage 4 audio (not detailed here, per the stage rule).
-8. [ ] **S8** → **[GATE] engine decision** → Android spike (§4.2) → `:core-physics` Kotlin port against the golden files.
+8. [ ] **S8** → **[GATE] engine decision** → Android spike (§4.2) → `:core-physics` Kotlin port against the golden files. *Engine decided; POC done for Tunnel 1 (§4.5), ahead of S7 audio at the user's request. Spike on a low-end phone still open.*
 9. [ ] **S9** → Android beta: game view, input, FX, Codex, save, closed-test distribution.
 10. [ ] **S10** `[FULL]` Atomic world spec (the start of the next scale cycle).

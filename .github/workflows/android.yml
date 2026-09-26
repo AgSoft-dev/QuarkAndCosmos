@@ -1,0 +1,28 @@
+name: android
+
+on:
+  push:
+    paths: ["android/**", "stage3-physics-engine/levels/**", "stage3-physics-engine/tests/golden/**", ".github/workflows/android.yml"]
+  pull_request:
+    paths: ["android/**", "stage3-physics-engine/levels/**", "stage3-physics-engine/tests/golden/**", ".github/workflows/android.yml"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: android
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+      # Physique Kotlin rejouée contre les trajectoires golden du moteur Python,
+      # puis APK de debug (le SDK Android est préinstallé sur ubuntu-latest).
+      - run: ./gradlew --no-daemon :core-physics:test :app:assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: quark-cosmos-debug-apk
+          path: android/app/build/outputs/apk/debug/*.apk

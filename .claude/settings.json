@@ -4,7 +4,8 @@
     "allow": [
       "Bash(python3 cli.py *)",
       "Bash(python3 -m pytest*)",
-      "Bash(pip install -e*)"
+      "Bash(pip install -e*)",
+      "Bash(./gradlew *)"
     ]
   },
   "hooks": {
