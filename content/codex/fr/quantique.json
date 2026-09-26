@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "scale": "quantique",
+  "lang": "fr",
+  "_comment": "Codex line shown after a level, keyed by concept id. Draft text: the tunnel line is scheduled for a physics fix (todo.md §2 / S4).",
+  "lines": {
+    "tunnel": "« Assez d'énergie, et même un mur n'est plus vraiment un mur. »",
+    "superposition": "« Tu as suivi les deux chemins à la fois, jusqu'à ce que je regarde... et que l'un des deux devienne réel. »",
+    "intrication": "« Actionne le levier ici, et là-bas, à distance, quelque chose bouge. Personne ne sait vraiment pourquoi ça va aussi vite. »",
+    "incertitude": "« Plus tu vises pile, moins tu sais à quelle vitesse tu iras. C'est le prix à payer pour être précis·e. »",
+    "quantification": "« Pas de réglage continu ici : seulement quelques crans d'énergie possibles, ni plus ni moins. »",
+    "spin": "« Ton spin détermine qui t'attire et qui te repousse — une boussole invisible. »",
+    "dualite": "« Onde ou particule ? Aujourd'hui, tu as choisi de te faufiler comme une onde. »"
+  }
+}

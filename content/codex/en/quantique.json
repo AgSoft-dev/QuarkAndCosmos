@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "scale": "quantique",
+  "lang": "en",
+  "_comment": "Codex line shown after a level, keyed by concept id. Draft text: the tunnel line is scheduled for a physics fix (todo.md §2 / S4).",
+  "lines": {
+    "tunnel": "“Enough energy, and even a wall isn't really a wall any more.”",
+    "superposition": "“You followed both paths at once, until I looked... and one of them became real.”",
+    "intrication": "“Pull the lever here, and over there, far away, something moves. Nobody really knows why it's that fast.”",
+    "incertitude": "“The more exactly you aim, the less you know how fast you'll go. That's the price of being precise.”",
+    "quantification": "“No smooth dial here: only a few possible energy notches, no more, no less.”",
+    "spin": "“Your spin decides who pulls you in and who pushes you away — an invisible compass.”",
+    "dualite": "“Wave or particle? Today, you chose to slip through like a wave.”"
+  }
+}

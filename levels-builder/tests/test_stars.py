@@ -1,0 +1,11 @@
+"""Star distribution by ray tracing (see solver/stars.py)."""
+from quarkcosmos_levels.solver.stars import target_shares
+
+
+def test_targets_follow_truncated_gaussian():
+    for d in (1, 2, 3):
+        t = target_shares(d)
+        assert 1 > t[1] > t[2] > t[3] > 0
+    # σ shrinks with difficulty: every tier gets tighter
+    for k in (1, 2, 3):
+        assert target_shares(1)[k] > target_shares(2)[k] > target_shares(3)[k]

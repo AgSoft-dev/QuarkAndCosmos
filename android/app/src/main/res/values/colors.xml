@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Colour contract — Quantum (art-direction skill). -->
+    <color name="qc_key">#F472B6</color>
+    <color name="qc_bg">#0A0612</color>
+    <color name="qc_icon_bg">#150D22</color>
+</resources>

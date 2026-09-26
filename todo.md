@@ -2,6 +2,8 @@
 
 > Working plan for the Android game and its Python level builder. It's built from an audit of `CLAUDE.md`, the 3 skills (`art-direction`, `storytelling`, `gameplay-mechanics`), the Stage 2 HTML mockups and the Stage 3 engine (`stage3-physics-engine/`) as of 2026-09-25.
 >
+> **Paths:** since S1 (2026-09-26) the repo follows the §5.1 layout. In done-notes written before that, read `stage3-physics-engine/engine/*.py` as `levels-builder/src/quarkcosmos_levels/{core,concepts,solver,export}/`, `levels/` as `content/levels/quantique/` (metas in `levels-builder/meta/`), `cli.py <cmd>` as `python3 -m quarkcosmos_levels <cmd>`, `stage1-art-direction/poc-v2/` as `design/art-direction-v2/`, `stage2-mockup/` as `design/mockups/`, and `level-engine.yml` as `python.yml`.
+>
 > **Rules for using this file**
 > - The stage-gating rule from `CLAUDE.md` still applies. Items tagged **[GATE]** need an explicit decision from the user before anything downstream starts. Items for a future stage stay planning-only until the current stage is validated.
 > - **Scope tags:** `[BETA]` = closed-test build (Quantum world only, 7 concepts, 7 levels). `[FULL]` = full release (4 other scales, intra-concept progression, cross-concept mix levels). Do `[BETA]` first, every time.
@@ -223,9 +225,9 @@ Each object gets a design sheet with: idle / hover / dragged / active / disabled
   - [ ] Adaptive search (coarse grid → refine near successes) to keep generation under ~2 s per level.
 - [ ] Generator: seeded procedural variations per template, auto Photon placement from the solution trails (§3.2), a difficulty knob mapped to the levers in §3.4.
 - [ ] Tooling:
-  - [ ] `cli.py render <level> --png` (matplotlib, dev dependency) draws the trails of the success/fail heatmap.
+  - [ ] `qc-levels render <level> --png` (matplotlib, dev dependency) draws the trails of the success/fail heatmap.
   - [ ] An HTML **level viewer** that loads `level.json`, replays the reference solution with the *same* physics (via the golden trajectories, §4.3) and exposes dials, which replaces the hard-coded mockup levels.
-  - [ ] `cli.py build-pack --world quantique` writes `levels/quantique/pack.json` + a manifest with a hash.
+  - [ ] `qc-levels build-pack --world quantique` writes `content/levels/quantique/pack.json` + a manifest with a hash.
 - [ ] Tests: unit tests per handler, golden trajectory files (`tests/golden/*.json`: params → trail, sampled every 10 steps), a regression test that every shipped level is still solvable with tolerance ≥ threshold.
 
 ### 4.2 Android app — engine selection `[GATE]` (Stage 5 — plan only until Stage 3 is validated)
@@ -239,11 +241,11 @@ Options, ranked for *this* game (2D, vector/glow, deterministic custom physics, 
 | Unity | 30+ MB | Ecosystem | Overkill, APK size, licensing history | Not recommended |
 | Flutter + Flame | ~10–15 MB | Fast UI | Dart physics port, custom shaders are limited | Possible, not preferred |
 
-- [ ] **[GATE]** Decide the engine. Recommended: **libGDX (game view) + a thin native Android shell** (Play services, haptics, settings), all Kotlin.
+- [x] **[GATE]** Decide the engine. Recommended: **libGDX (game view) + a thin native Android shell** (Play services, haptics, settings), all Kotlin. *Decided (2026-09-26): libGDX game view + Kotlin/Compose shell, `minSdk 26`. POC in `android/` (see §4.5).*
 - [ ] Spike (2 days, time-boxed): render the Quantum level with bloom + 200 particles on a low-end device (e.g. an Android Go-class phone with 2 GB RAM) and measure frame time.
 
 ### 4.3 Single source of truth for physics
-- [ ] Decision: **Python = authoring + validation; Kotlin = runtime**, with the same deterministic algorithm, kept in sync by **golden trajectory tests** run in both CI jobs (Python generates `tests/golden/*.json`, a Kotlin JUnit test replays it and asserts positions within 1e-6).
+- [x] Decision: **Python = authoring + validation; Kotlin = runtime**, with the same deterministic algorithm, kept in sync by **golden trajectory tests** run in both CI jobs (Python generates `tests/golden/*.json`, a Kotlin JUnit test replays it and asserts positions within 1e-6). *Done for the tunnel levels: `python3 cli.py golden` → `stage3-physics-engine/tests/golden/`, freshness checked by `tests/test_golden.py`, replayed by `android/core-physics` `GoldenTest`. Extend `GOLDEN_LEVELS` with each ported concept.*
 - [x] Specify the physics in `docs/physics-spec.md`: timestep, integration, collision order, event semantics, tap timing. Both implementations cite it. *Done: the Python engine is the reference; the spec describes its current behaviour, [GATE] fixes will update it.*
 - [ ] Alternative considered: running the Python engine on-device via Chaquopy. Rejected: APK size (+15 MB) and startup cost.
 
@@ -263,9 +265,18 @@ Options, ranked for *this* game (2D, vector/glow, deterministic custom physics, 
 - [ ] Accessibility: a colour-blind-safe palette variant, reduced motion (disable shake/bloom pulse), text scaling in the Codex, TalkBack labels on menus.
 - [ ] Analytics for the closed test: privacy-respecting event log (Firebase or a self-hosted alternative, **[GATE]**), with opt-in consent for minors (a high-school audience means GDPR-K / COPPA rules apply).
 - [ ] Distribution: Play Console internal test track → closed test. Target API = the current Play requirement, `minSdk` 24.
-- [ ] CI: GitHub Actions builds the debug APK, runs JVM tests + golden tests + lint on every PR, and uploads the APK as an artifact.
+- [ ] CI: GitHub Actions builds the debug APK, runs JVM tests + golden tests + lint on every PR, and uploads the APK as an artifact. *Partly done: `.github/workflows/android.yml` runs `:core-physics:test` + `:app:assembleDebug` and uploads the APK; lint still to add.*
 
 ---
+
+### 4.5 Android POC (done 2026-09-26) — follow-ups
+*What exists: `android/` (open it in Android Studio), welcome → scales → Quantum map → Tunnel 1 playable, best stars saved. See `android/README.md`.*
+- [ ] **User check in Android Studio** (emulator API 26+): sync, run, play Tunnel 1, stars kept after restart. Report sync/build errors. Also check the French build (system or per-app language) and the English/French layouts on a small screen.
+- [ ] Port the 6 other beta concepts to `:core-physics` (handlers + `GOLDEN_LEVELS`), with their in-flight controls (tap button, spin toggle, precision dial, rung launcher). Superposition needs the multi-body step (two ghosts).
+- [ ] Real bloom pass (¼-res FBO, 2 blurs) instead of additive halos, then the low-end phone spike (§4.2).
+- [ ] Reduce draw calls in `LevelScreen` (batch halos and shapes by blend mode) to stay under the 50-draw-call budget.
+- [ ] The DA asks for a narrow vertical box; the engine box is a unit square. Decide whether levels get a non-square box `[GATE]`.
+- [ ] Oscillations start at launch (the apparatus is idle before the shot). Confirm this reads well on device (links to the §0 phase-lock decision).
 
 ## Phase 5 — Repository architecture, skills & agents
 
@@ -278,8 +289,8 @@ Options, ranked for *this* game (2D, vector/glow, deterministic custom physics, 
   level-schema.md
   decisions/ADR-000x-*.md  # one ADR per GATE decision (engine, DA v2, physics fixes)
 /design/                   # Stage 1–2: style frames, mockups, reference board
-  mockups/                 # (move stage2-mockup/ here)
-/levels-builder/           # (rename stage3-physics-engine/) Python package
+  mockups/                 # (move stage2-mockup/ here) — done S1; art-direction-v2/ too
+/levels-builder/           # (rename stage3-physics-engine/) Python package — done S1
   src/quarkcosmos_levels/{core,concepts,solver,export,cli}/
   tests/ tests/golden/
 /content/
@@ -289,14 +300,14 @@ Options, ranked for *this* game (2D, vector/glow, deterministic custom physics, 
 /.claude/{skills,agents,settings.json}
 /.github/workflows/{python.yml,android.yml}
 ```
-- [ ] Rename folders from "stageN-" to a domain name (stages are a *process*, not an architecture). Keep the stage status in `CLAUDE.md`.
-- [ ] `content/` becomes the contract between the builder and the app. The app never imports the Python code.
+- [x] Rename folders from "stageN-" to a domain name (stages are a *process*, not an architecture). Keep the stage status in `CLAUDE.md`. *Done S1: `design/`, `levels-builder/` (package `quarkcosmos_levels`, `src/` layout with `core/concepts/solver/export`), `content/`, `docs/decisions/` (ADR-0001…0007), `docs/level-schema.md`. Codex lines are JSON (`content/codex/{en,fr}/quantique.json`), not YAML, so neither the builder nor the app needs a YAML parser.*
+- [x] `content/` becomes the contract between the builder and the app. The app never imports the Python code. *Done S1: `copyContent` copies `content/levels/quantique` + `content/codex` into the APK assets; level schema v3 (`codex_text` removed from levels).*
 
 ### 5.2 CLAUDE.md
-- [ ] Add a **"Current stage & status" table** (Stage 1 validated / 2 validated / 3 in progress…) so the stage-gate rule can actually be checked.
-- [ ] Add **commands**: how to run the builder, the tests and the viewer. Add the **definition of done** per PR (tests green, levels revalidated, skill updated if a design decision changed).
-- [ ] Add a **language convention**: design docs/skills in FR (current), code identifiers in EN, comments FR or EN but consistent per module. Today the code mixes both and drops accents (`Element oscillant` vs `Élément oscillant`).
-- [ ] Move the beta-scope concept list into `gameplay-mechanics` (single source) and have CLAUDE.md link to it. It's currently duplicated, and "8 concepts" is still stale in the skill.
+- [x] Add a **"Current stage & status" table** (Stage 1 validated / 2 validated / 3 in progress…) so the stage-gate rule can actually be checked.
+- [x] Add **commands**: how to run the builder, the tests and the viewer. Add the **definition of done** per PR (tests green, levels revalidated, skill updated if a design decision changed).
+- [x] Add a **language convention**: design docs/skills in FR (current), code identifiers in EN, comments FR or EN but consistent per module. Today the code mixes both and drops accents (`Element oscillant` vs `Élément oscillant`). *Superseded by the user's S1 decision ([ADR-0007](docs/decisions/ADR-0007-repo-english-app-bilingual.md)): the whole repo is in English (skills, agents, docs, comments translated); the app is in English + French (`res/values/`, `res/values-fr/`, `content/codex/<lang>/`).*
+- [x] Move the beta-scope concept list into `gameplay-mechanics` (single source) and have CLAUDE.md link to it. It's currently duplicated, and "8 concepts" is still stale in the skill. *Done S1.*
 
 ### 5.3 Skills (refine) ⇄
 - [ ] `art-direction` → v2 after the §1 gate. Split it into `SKILL.md` (rules) + `references/palette.md`, `references/objects.md`, `references/scales.md` so it loads lighter.
@@ -304,35 +315,35 @@ Options, ranked for *this* game (2D, vector/glow, deterministic custom physics, 
 - [ ] `storytelling`: add the Codex template (§2.3), the scientist's voice guide with 5 good/bad examples, and a reading-level target.
 - [ ] **New** `physics-pedagogy` skill: the §2 tables, the "Dans la vraie physique…" rule, the Core/Enrichment labels, and the forbidden simplifications (e.g. "tunnel = having enough energy").
 - [ ] **New** `level-builder` skill: how to add a concept plugin, run validate/solve, read tolerance reports, regenerate golden files.
-- [ ] **New** `android-architecture` skill: created only at Stage 5 (it holds the §4.4 decisions once validated).
-- [ ] Every skill ends with a `## Statut` + `## Changelog` (date, decision, who validated).
+- [x] **New** `android-architecture` skill: created only at Stage 5 (it holds the §4.4 decisions once validated). *Done with the POC.*
+- [x] Every skill ends with a `## Status` + `## Changelog` (date, decision, who validated). *Done S1.*
 
 ### 5.4 Agents (create `.claude/agents/`) ⇄
 - [x] `physics-reviewer`: read-only. Checks Codex text and mechanics against `physics-pedagogy`; flags scientific errors and jargon above high-school level.
 - [x] `level-designer`: writes concept builders/generators, runs `validate` and the tolerance checks, and never hand-places Photons.
 - [x] `level-qa`: runs the full pack validation + golden tests, and reports brittle levels (tolerance below band) and trivial solutions.
 - [x] `art-director`: loads `art-direction`; produces/reviews HTML/SVG style frames; checks contrast and colour-blind safety.
-- [ ] `android-dev` (Stage 5 only): Kotlin/libGDX with the performance budget from §4.4 as hard constraints.
+- [x] `android-dev` (Stage 5 only): Kotlin/libGDX with the performance budget from §4.4 as hard constraints. *Done.*
 - [x] Each agent's front-matter lists the skills to load and the **stage it's allowed to act on**, which enforces the stage-gate rule mechanically. *Done: stated in each agent's body (Claude Code front-matter has no stage field); golden tests in `level-qa` wait for §4.1.*
 
 ### 5.5 Workflow & automation
-- [x] `.claude/settings.json`: allow `python3 -m pytest`, `python3 cli.py *`, `ruff`, `./gradlew test`; add a SessionStart hook that installs dev dependencies for cloud sessions. *Done for the tools that exist today (`cli.py`, pytest, `pip install -e`); add `ruff` / `./gradlew test` when they are introduced.*
-- [ ] Pre-commit: ruff, mypy, JSON-schema validation of `content/levels/**`.
-- [ ] CI `python.yml`: lint + tests + `build-pack` + fail if any shipped level is unsolvable or below its tolerance band.
-- [ ] PR template: stage, scope tag (`BETA`/`FULL`), which skills were updated, screenshots/GIF for visual changes.
+- [x] `.claude/settings.json`: allow `python3 -m pytest`, `python3 cli.py *`, `ruff`, `./gradlew test`; add a SessionStart hook that installs dev dependencies for cloud sessions. *Done for the tools that exist today (`cli.py`, pytest, `pip install -e`); add `ruff` / `./gradlew test` when they are introduced.* *S1: now allows `python3 -m quarkcosmos_levels *`, `ruff check*` and `./gradlew *`; the hook installs the builder with its dev extras.*
+- [ ] Pre-commit: ruff, mypy, JSON-schema validation of `content/levels/**`. *(ruff config and CI done in S1; pre-commit hook, mypy and a JSON schema still to do.)*
+- [ ] CI `python.yml`: lint + tests + `build-pack` + fail if any shipped level is unsolvable or below its tolerance band. *Skeleton done S1: ruff + `check-codex` + pytest (which already fails on an unsolvable/brittle level or a stale pack). `build-pack` still to do.*
+- [x] PR template: stage, scope tag (`BETA`/`FULL`), which skills were updated, screenshots/GIF for visual changes. *Done S1: `.github/pull_request_template.md` (EN + FR screenshots).*
 - [ ] Label issues with `stage:1..5`, `scope:beta|full`, `area:da|physics|builder|android|narrative`.
 
 ---
 
 ## Suggested execution order (cloud sessions)
 
-1. [ ] **S1** Repo hygiene: restructure (§5.1), fix stale docs, CLAUDE.md status table, pyproject, CI skeleton. *(no design change)*
+1. [x] **S1** Repo hygiene: restructure (§5.1), fix stale docs, CLAUDE.md status table, pyproject, CI skeleton. *(no design change)* *Done 2026-09-26, plus (user request) repo translated to English and the app made bilingual EN/FR.*
 2. [ ] **S2** ⇄ Physics-core fixes + tests + golden files (§4.1 physics core).
 3. [x] **S3** ⇄ Art direction v2 style frames, 3 options (§1.1–1.2) → **[GATE] user picks**. *B + C background, Quarky v2, portrait.*
 4. [ ] **S4** ⇄ Physics pedagogy skill + Quantum concept fixes proposal (§2.2) → **[GATE] user approves**.
 5. [ ] **S5** → Validator upgrades (t_min, tolerance, concept-usage, 3-Photon proof) + regenerate the 7 beta levels with 3 Photons each.
 6. [ ] **S6** → Level viewer (HTML, reads `content/levels`), which replaces the hard-coded mockup levels; playtest the 7 levels. → **[GATE] Stage 3 validated**.
 7. [ ] **S7** Stage 4 audio (not detailed here, per the stage rule).
-8. [ ] **S8** → **[GATE] engine decision** → Android spike (§4.2) → `:core-physics` Kotlin port against the golden files.
+8. [ ] **S8** → **[GATE] engine decision** → Android spike (§4.2) → `:core-physics` Kotlin port against the golden files. *Engine decided; POC done for Tunnel 1 (§4.5), ahead of S7 audio at the user's request. Spike on a low-end phone still open.*
 9. [ ] **S9** → Android beta: game view, input, FX, Codex, save, closed-test distribution.
 10. [ ] **S10** `[FULL]` Atomic world spec (the start of the next scale cycle).

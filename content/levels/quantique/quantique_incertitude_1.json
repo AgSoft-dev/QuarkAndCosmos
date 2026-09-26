@@ -1,0 +1,80 @@
+{
+  "schema_version": 3,
+  "id": "quantique-incertitude-1",
+  "scale": "quantique",
+  "concept": "incertitude",
+  "difficulty": 1,
+  "launcher": {
+    "x": 0.1,
+    "y": 0.6
+  },
+  "target": {
+    "x": 0.85,
+    "y": 0.5,
+    "r": 0.03,
+    "motion": {
+      "axis": "y",
+      "amplitude": 0.02,
+      "period": 0.8
+    }
+  },
+  "obstacles": [],
+  "photons": [
+    {
+      "id": "p1",
+      "x": 0.179,
+      "y": 0.586,
+      "r": 0.03
+    },
+    {
+      "id": "p2",
+      "x": 0.326,
+      "y": 0.558,
+      "r": 0.03,
+      "motion": {
+        "axis": "y",
+        "amplitude": 0.08,
+        "period": 0.5,
+        "phase": 0.5027
+      }
+    },
+    {
+      "id": "p3",
+      "x": 0.385,
+      "y": 0.548,
+      "r": 0.03,
+      "motion": {
+        "axis": "y",
+        "amplitude": 0.08,
+        "period": 0.5,
+        "phase": 5.2779
+      }
+    }
+  ],
+  "max_wall_bounces": 1,
+  "param_space": {
+    "angle_deg": {
+      "type": "range",
+      "min": -15,
+      "max": 5,
+      "step": 0.5
+    },
+    "precision": {
+      "type": "choice",
+      "values": [
+        0.3,
+        0.5,
+        0.7,
+        0.8,
+        0.9,
+        1.0
+      ]
+    }
+  },
+  "hint": {
+    "params": {
+      "angle_deg": -15,
+      "precision": 0.7
+    }
+  }
+}

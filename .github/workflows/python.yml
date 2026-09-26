@@ -1,0 +1,26 @@
+name: python
+
+on:
+  push:
+    paths: ["levels-builder/**", "content/**", ".github/workflows/python.yml"]
+  pull_request:
+    paths: ["levels-builder/**", "content/**", ".github/workflows/python.yml"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: levels-builder
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -e ".[dev]"
+      - run: ruff check .
+      - run: python -m quarkcosmos_levels check-codex
+      # Solvability, 3 Photons, minimum tolerance, in-flight tap, golden
+      # trajectories, Codex in every language, and committed content/ + meta/
+      # identical to the generator output (see tests/).
+      - run: python -m pytest -q

@@ -1,33 +1,78 @@
 # Quark & Cosmos
 
-Jeu mobile Android de puzzle physique (nom de code provisoire). Le joueur traverse 5 échelles de l'univers (Quantique → Atomique/Moléculaire → Macro → Spatiale → Cosmologique), chaque loi physique devenant une mécanique de puzzle tactile.
+Android physics puzzle game (working title). The player travels through 5 scales of the universe (Quantum → Atomic/Molecular → Macro → Space → Cosmological); each law of physics becomes a touch puzzle mechanic.
 
-## Méthodologie
+## Method — stage gate
 
-Avancer strictement stage par stage (1: DA/UI-UX, 2: mockup HTML/JS, 3: moteur physique Python/CLI, 4: audio, 5: architecture Android). Ne jamais produire de code ou de spec pour une étape future tant que l'étape en cours n'est pas validée par l'utilisateur.
+Move strictly stage by stage: 1 art direction/UI-UX, 2 HTML/JS mockup, 3 Python physics engine & level builder, 4 audio, 5 Android architecture. Never produce code or a spec for a future stage until the current stage is validated by the user. Items tagged `[GATE]` in `todo.md` need an explicit user decision.
 
-## Portée de la version test fermée
+Exception decided by the user (2026-09-26, [ADR-0006](docs/decisions/ADR-0006-android-poc-before-audio.md)): the Android POC (Stage 5) comes **before** audio (Stage 4), which is still to do.
 
-Le premier build jouable (test fermé) se limite au **premier monde uniquement (échelle Quantique)**, ~1 niveau par concept ci-dessous (7 concepts → 7 niveaux, dans la fourchette 5-10). C'est une version allégée du modèle de progression complet (cf. `gameplay-mechanics`) : pas ou peu de montée en difficulté intra-concept, et **aucun niveau mixant plusieurs concepts** — cette richesse (progression complète + niveaux de mix inter-concepts) est réservée à la full release, pas à la beta.
+### Current stage & status
 
-Ordre d'introduction (numéros = ordre de jeu, pas de découverte physique) : on ouvre sur le concept le plus immédiat à lire (un seuil à franchir ou non) pour habituer le joueur au lancer en boîte fermée sans gravité, avant de lui demander de comprendre un choix de chemin.
+| Stage | Status | Where |
+|---|---|---|
+| 1 — Art direction / UI-UX | **Validated** (art direction v2, 2026-09-25) | `design/art-direction-v2/`, skill `art-direction` |
+| 2 — HTML/JS mockup | **Validated**, frozen | `design/mockups/` |
+| 3 — Physics engine & level builder | **In progress**: 7 concepts × 3 difficulties generated and validated; open: physics fixes (§2), level viewer, beta-scope `[GATE]` (S4–S6) | `levels-builder/`, `content/levels/` |
+| 4 — Audio | **Not started** | — |
+| 5 — Android | **POC done** ahead of stage 4: welcome, scales, Quantum map, Tunnel 1 playable, EN/FR; awaiting the user's emulator check | `android/`, skill `android-architecture` |
 
-1. Effet tunnel (barrière franchie sous condition de timing/jauge)
-2. Superposition d'états (une lame sépare Quarky en deux copies fantômes qui volent en même temps ; le tap « mesure » et Quarky devient la copie la plus proche du détecteur — la cible n'accepte qu'un Quarky mesuré, donc l'interaction n'est jamais optionnelle)
-3. Intrication quantique (paire liée à distance : agir sur l'un modifie l'autre instantanément)
-4. Principe d'incertitude de Heisenberg (précision de visée vs contrôle de vitesse)
-5. Quantification de l'énergie (lanceur à crans fixes, pas de réglage continu)
-6. Spin quantique (bascule binaire influençant l'interaction avec certains champs)
-7. Dualité onde-particule (bascule onde/particule ; le rebond en mode onde préfigure — sans la dupliquer — la réflexion classique qui sera pleinement enseignée en Macro avec les miroirs)
+Keep this table up to date in the PR that changes a stage's status.
 
-Décohérence a été retirée du périmètre de la beta (retour design : redondante avec la superposition/le détecteur n'apportait pas assez de valeur pédagogique propre). Elle reste une piste possible pour la full release si un angle plus distinct est trouvé.
+## Beta scope (closed test)
 
-Les 4 autres échelles restent hors périmètre de ce build. Toute décision de scope (Stage 3 génération de niveaux, Stage 5 architecture) doit prioriser cette portée avant d'étendre aux autres échelles.
+The first playable build (closed test) is limited to the **first world only (Quantum scale)**, ~1 level per concept (7 concepts → 7 levels). No level mixes concepts; intra-concept progression and mix levels are for the full release. The 7 concepts, their order and their mechanics are defined once, in the `gameplay-mechanics` skill. The other 4 scales are out of scope: any scope decision (level generation, Android architecture) serves this scope before extending to other scales.
+
+## Repository map
+
+| Path | What |
+|---|---|
+| `design/` | Stage 1–2 design artifacts (art direction v2 board, mockups) |
+| `levels-builder/` | Python package `quarkcosmos_levels`: simulation, level generator, validator, star placement, exporter, golden trajectories |
+| `content/` | The shipped pack, contract between the builder and the app: `levels/quantique/*.json`, `codex/<lang>/*.json` |
+| `android/` | Android app: `:core-physics` (Kotlin port), `:game` (libGDX), `:app` (Compose shell) |
+| `docs/` | `physics-spec.md` (deterministic sim contract), `level-schema.md`, `decisions/` (ADRs) |
+| `todo.md` | Roadmap and open `[GATE]` items |
+| `.claude/` | Skills, agents, settings |
+
+## Commands
+
+```bash
+# Level builder (Python ≥ 3.10, no runtime dependency)
+cd levels-builder && pip install -e ".[dev]"
+python3 -m quarkcosmos_levels generate-all     # regenerate content/levels + meta (~2-3 min)
+python3 -m quarkcosmos_levels golden           # golden trajectories for the Kotlin port
+python3 -m quarkcosmos_levels report           # difficulty report (reports/*.html)
+ruff check . && python3 -m pytest -q           # lint + tests (~2-3 min)
+
+# Android (JDK 17; the full app needs the Android SDK / Android Studio)
+cd android && ./gradlew :core-physics:test     # Kotlin physics vs goldens (no SDK needed)
+./gradlew :app:assembleDebug                   # debug APK
+```
+
+CI: `.github/workflows/python.yml` (ruff + pytest) and `android.yml` (golden replay + APK).
+
+## Definition of done (every PR)
+
+- Tests green: `ruff check . && pytest` for the builder; `:core-physics:test` when `android/` or goldens change.
+- Engine or template changed → levels, metas and goldens regenerated and committed.
+- Player-facing text added in **English and French**.
+- A design decision changed → the skill (with a Changelog line), an ADR if it closes a `[GATE]`, and `todo.md` updated.
+- The status table above updated if a stage moved.
+
+## Language convention
+
+- **The repository is in English**: code, identifiers, comments, docs, skills, agents, commit messages ([ADR-0007](docs/decisions/ADR-0007-repo-english-app-bilingual.md)).
+- **The app is in English and French**: Android strings in `res/values/` (English, default) and `res/values-fr/`; Codex lines in `content/codex/en/` and `content/codex/fr/`.
+- Data keys stay as they are, even when French (concept ids like `dualite`, level ids, obstacle ids).
+- Frozen design artifacts in `design/` keep their French on-screen demo text.
 
 ## Skills
 
-- `art-direction` — direction artistique validée (palette, personnage Quarky, règles visuelles, level design). À charger avant toute production visuelle ou mockup.
-- `storytelling` — univers narratif validé (prémisse, ton, rôle du/de la scientifique, intégration au Codex, ordre de progression Quantique → Cosmologique). À charger avant tout texte in-game.
-- `gameplay-mechanics` — boucle de jeu, contrôle d'orientation/puissance des objets, système à 3 étoiles. À charger avant toute spec de niveau ou de scoring.
+- `art-direction` — validated art direction (palette, Quarky, visual rules, level design). Load before any visual production or mockup.
+- `storytelling` — validated narrative universe (premise, tone, the scientist, Codex, Quantum → Cosmological order). Load before any in-game text.
+- `gameplay-mechanics` — beta concepts (single source), game loop, object control, in-flight action, 3-star system. Load before any level spec or scoring.
+- `android-architecture` — Android modules, Python ⇄ Kotlin determinism, EN/FR localisation, budgets. Load before any change to `android/`.
 
-D'autres skills/agents seront ajoutés au fil des stages (moteur physique, architecture Android, etc.) — le détail de chaque domaine vit dans son propre skill, pas ici.
+Agents in `.claude/agents/`: `art-director`, `level-designer`, `level-qa`, `physics-reviewer`, `android-dev`. Domain detail lives in its skill, not here.

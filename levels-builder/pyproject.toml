@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quarkcosmos-levels"
+version = "0.2.0"
+description = "Quark & Cosmos level builder: simplified physics engine, level generator, solvability validator and pack exporter"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[project.scripts]
+qc-levels = "quarkcosmos_levels.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"quarkcosmos_levels.export" = ["report_template.html"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+# ruff's default set (pyflakes + the pycodestyle errors that never fight a formatter)
+select = ["E4", "E7", "E9", "F"]

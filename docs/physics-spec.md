@@ -1,132 +1,132 @@
-# Spécification de la simulation — monde Quantique
+# Simulation spec — Quantum world
 
-Contrat déterministe que **toute** implémentation de la physique du jeu (runtime Android, visionneuse HTML, futures maquettes) doit reproduire pour que la solvabilité validée par le générateur reste vraie en jeu. Référence : `stage3-physics-engine/engine/` (`simulate.py`, `shapes.py`, `concepts.py`, `vec.py`). En cas d'écart entre ce document et le code Python, **le code fait foi** et ce document doit être corrigé dans la même PR.
+The deterministic contract that **every** implementation of the game's physics (Android runtime, HTML viewer, future mockups) must reproduce, so that the solvability validated by the builder stays true in the game. Reference: `levels-builder/src/quarkcosmos_levels/core/` (`simulate.py`, `shapes.py`, `vec.py`) and `concepts/handlers.py`. If this document and the Python code disagree, **the code wins** and this document must be fixed in the same PR.
 
-La maquette Stage 2 (`stage2-mockup/index.html`) a sa propre physique JS écrite à la main : elle **n'est pas** une implémentation de cette spec (cf. § « Écarts connus »).
+The Stage 2 mockup (`design/mockups/index.html`) has its own hand-written JS physics: it is **not** an implementation of this spec (see "Known drifts").
 
-Ce document décrit le comportement **actuel** du moteur, y compris ses simplifications. Les corrections prévues (effet tunnel, quantification à crans, rebond seulement en approche, collision continue) sont des décisions [GATE] de `todo.md` : elles modifieront cette spec quand elles seront validées.
+This document describes the engine's **current** behaviour, simplifications included. The planned fixes (tunnel effect, notched quantisation, bounce only when approaching, continuous collision) are [GATE] decisions in `todo.md`: they will change this spec once validated.
 
-## 1. Repère et unités
+## 1. Frame and units
 
-- Boîte fermée normalisée `[0, 1] × [0, 1]`, **sans gravité**. `y` croît vers le bas (convention écran : `wTop` a un `y` plus petit que `wBot`).
-- Temps en secondes simulées. Vitesses en unités de boîte par seconde.
-- Angles en degrés : `from_angle(a, m) = (m·cos a, m·sin a)`, `angle_of(v) = atan2(v.y, v.x)` en degrés. Avec `y` vers le bas, un angle positif vise vers le bas.
-- Flottants double précision (IEEE 754).
+- Normalised closed box `[0, 1] × [0, 1]`, **no gravity**. `y` grows downwards (screen convention: `wTop` has a smaller `y` than `wBot`).
+- Time in simulated seconds. Speeds in box units per second.
+- Angles in degrees: `from_angle(a, m) = (m·cos a, m·sin a)`, `angle_of(v) = atan2(v.y, v.x)` in degrees. With `y` pointing down, a positive angle aims downwards.
+- Double-precision floats (IEEE 754).
 
-## 2. Constantes
+## 2. Constants
 
-| Nom | Valeur | Rôle |
+| Name | Value | Role |
 |---|---|---|
-| `DT` | `0.01` | pas fixe, **jamais** calé sur le framerate |
-| `MAX_STEPS` | `300` | au-delà : échec `timeout` (~3 s de vol) |
-| `COLLISION_EPS` | `0.004` | marge ajoutée à tous les tests de contact |
-| `TAP_MIN_TIME` | `0.1` | instant minimal d'un tap recherché par le solveur |
-| `MAX_WALL_BOUNCES` | `1` | valeur par défaut de `max_wall_bounces` (le JSON v2 l'écrit toujours explicitement) |
-| `SEGMENT_HALF_THICKNESS` | `0.012` | demi-épaisseur d'un segment sans `r` |
-| rayon disque par défaut | `0.03` | obstacle disque sans `r` |
-| rayon cible par défaut | `0.045` | |
-| rayon Photon par défaut | `0.02` | |
-| seuil d'énergie par défaut | `0.6` | obstacle `barrier` sans `energy_threshold` |
+| `DT` | `0.01` | fixed step, **never** tied to the frame rate |
+| `MAX_STEPS` | `300` | beyond it: `timeout` failure (~3 s of flight) |
+| `COLLISION_EPS` | `0.004` | margin added to every contact test |
+| `TAP_MIN_TIME` | `0.1` | earliest tap instant searched by the solver |
+| `MAX_WALL_BOUNCES` | `1` | default `max_wall_bounces` (the shipped JSON always writes it explicitly) |
+| `SEGMENT_HALF_THICKNESS` | `0.012` | half-thickness of a segment without `r` |
+| default disc radius | `0.03` | disc obstacle without `r` |
+| default target radius | `0.045` | |
+| default Photon radius | `0.02` | |
+| default energy threshold | `0.6` | `barrier` obstacle without `energy_threshold` |
 
-Le rendu peut tourner à n'importe quel framerate : il accumule le temps réel et exécute autant de pas **entiers** de `DT` que nécessaire (le reste est reporté au frame suivant, jamais simulé en pas fractionnaire).
+The renderer may run at any frame rate: it accumulates real time and runs as many **whole** `DT` steps as needed (the remainder carries over to the next frame, never simulated as a fractional step).
 
-## 3. État initial (lancer)
+## 3. Initial state (launch)
 
-- Position : `launcher.(x, y)`.
-- Vitesse : `from_angle(angle_deg, power)` ; `power` vaut `1.0` s'il est absent des paramètres.
-- Cas `precision` (concept incertitude) :
-  - `snap = 2 + (1 − precision) · 28` ;
-  - `eff_angle = round(angle_deg / snap) · snap`, avec l'**arrondi bancaire** de Python (demi → pair ; en Kotlin `Math.rint`, pas `Math.round`) ;
-  - `power = max(0.15, 1.2 − precision)` ;
-  - vitesse `= from_angle(eff_angle, power)`.
-- `t = 0` au lâcher. **Toutes les oscillations sont calées sur cet instant** : le dispositif « démarre » avec le tir (décision encore ouverte dans `todo.md`, mais c'est la convention validée aujourd'hui).
-- État : `tapped = false`, `wall_bounces = 0`, `in_contact = ∅`, `collected = ∅`, `contacts = []`.
+- Position: `launcher.(x, y)`.
+- Velocity: `from_angle(angle_deg, power)`; `power` is `1.0` when absent from the parameters.
+- `precision` case (incertitude concept):
+  - `snap = 2 + (1 − precision) · 28`;
+  - `eff_angle = round(angle_deg / snap) · snap`, with Python's **banker's rounding** (half → even; in Kotlin `Math.rint`, not `Math.round`);
+  - `power = max(0.15, 1.2 − precision)`;
+  - velocity `= from_angle(eff_angle, power)`.
+- `t = 0` at release. **Every oscillation is phase-locked to this instant**: the apparatus "starts" with the shot (decision still open in `todo.md`, but it is today's validated convention).
+- State: `tapped = false`, `wall_bounces = 0`, `in_contact = ∅`, `collected = ∅`, `contacts = []`.
 
-## 4. Un pas de simulation — ordre strict
+## 4. One simulation step — strict order
 
-Pour `step = 0 … MAX_STEPS − 1`, avec `t = (step + 1) · DT` :
+For `step = 0 … MAX_STEPS − 1`, with `t = (step + 1) · DT`:
 
-1. **Déplacement** (Euler explicite, vitesse constante entre deux contacts) : `pos += vel · DT`.
-2. **Tap(s)** : les instants `tap_time`, `tap_time_2`… sont traités dans l'ordre ; chaque tap dont l'instant est atteint (`t ≥ tap_time_k`) met `tapped = true` et, si Quarky est en superposition, **mesure** (§7 bis). Un tap prend donc effet au premier pas dont la fin atteint l'instant du geste, **avant** les collisions de ce pas.
+1. **Move** (explicit Euler, constant velocity between two contacts): `pos += vel · DT`.
+2. **Tap(s)**: the instants `tap_time`, `tap_time_2`… are handled in order; every tap whose instant is reached (`t ≥ tap_time_k`) sets `tapped = true` and, if Quarky is in superposition, **measures** (§7 bis). A tap therefore takes effect at the first step whose end reaches the gesture's instant, **before** that step's collisions.
 
-Les étapes 3 à 6 s'appliquent à **chaque copie** de Quarky (une seule hors superposition), dans l'ordre de création des copies.
-3. **Parois de la boîte** : pour chaque axe, si `x ≤ 0` → `x = 0`, `vel.x = |vel.x|` ; si `x ≥ 1` → `x = 1`, `vel.x = −|vel.x|` (idem en `y`). Un pas qui touche une ou deux parois compte **un** rebond. Si `wall_bounces > max_wall_bounces` → échec `lost:too_many_wall_bounces`, fin immédiate.
-4. **Obstacles**, dans l'ordre du tableau `obstacles` (la vitesse sortant d'un handler est l'entrée du suivant) :
-   1. position effective `(ox, oy)` = oscillation de `motion` à l'instant `t` (§6) ;
-   2. si l'obstacle ne **touche** pas `pos` (§5) : le retirer de `in_contact`, passer au suivant ;
-   3. s'il est déjà dans `in_contact` : passer au suivant (**un handler par contact**, pas par pas) ;
-   4. sinon l'ajouter à `in_contact`, calculer l'obstacle effectif (position `(ox, oy)` ; `energy_threshold` oscillé par `threshold_motion`, §6) et appeler son handler (§7) → `(vel, event)` ;
-   5. si `type ≠ wall` : ajouter `(id, event)` à `contacts` ;
-   6. si `type = wall` : `wall_bounces += 1` ; si `> max_wall_bounces` → échec `lost:too_many_wall_bounces`, fin immédiate.
-5. **Photons** : pour chaque Photon non collecté, position oscillée à `t` ; collecté si `dist(pos, photon) < r + COLLISION_EPS` (inégalité stricte).
-6. **Cible** : position oscillée à `t` ; **succès** si `dist(pos, cible) < r + COLLISION_EPS`. Les Photons collectés à ce même pas comptent.
+Steps 3 to 6 apply to **each copy** of Quarky (only one outside superposition), in copy creation order.
+3. **Box walls**: for each axis, if `x ≤ 0` → `x = 0`, `vel.x = |vel.x|`; if `x ≥ 1` → `x = 1`, `vel.x = −|vel.x|` (same for `y`). A step touching one or two walls counts **one** bounce. If `wall_bounces > max_wall_bounces` → `lost:too_many_wall_bounces` failure, immediate end.
+4. **Obstacles**, in the order of the `obstacles` array (the velocity leaving one handler is the input of the next):
+   1. effective position `(ox, oy)` = `motion` oscillation at time `t` (§6);
+   2. if the obstacle does not **touch** `pos` (§5): remove it from `in_contact`, go to the next one;
+   3. if it is already in `in_contact`: go to the next one (**one handler per contact**, not per step);
+   4. otherwise add it to `in_contact`, compute the effective obstacle (position `(ox, oy)`; `energy_threshold` oscillated by `threshold_motion`, §6) and call its handler (§7) → `(vel, event)`;
+   5. if `type ≠ wall`: append `(id, event)` to `contacts`;
+   6. if `type = wall`: `wall_bounces += 1`; if `> max_wall_bounces` → `lost:too_many_wall_bounces` failure, immediate end.
+5. **Photons**: for each uncollected Photon, position oscillated at `t`; collected if `dist(pos, photon) < r + COLLISION_EPS` (strict inequality).
+6. **Target**: position oscillated at `t`; **success** if `dist(pos, target) < r + COLLISION_EPS`. Photons collected on that same step count.
 
-Après `MAX_STEPS` pas sans succès : échec `timeout`.
+After `MAX_STEPS` steps without success: `timeout` failure.
 
-`max_wall_bounces` compte les rebonds « subis » (parois de la boîte + obstacles `wall`). Les `mirror` sont des rebonds voulus et ne sont jamais comptés.
+`max_wall_bounces` counts "suffered" bounces (box walls + `wall` obstacles). `mirror` bounces are intended and never counted.
 
-## 5. Formes et contact (`shapes.py`)
+## 5. Shapes and contact (`shapes.py`)
 
-- **Disque** : `(x, y, r)`. Squelette = son centre.
-- **Segment plat** (présence de `length`) : centre `(x, y)`, longueur `length`, orientation `angle_deg` (défaut 0) ; extrémités `centre ± (cos a, sin a) · length/2`. Squelette = ce segment, épaisseur `2 · r` (défaut `SEGMENT_HALF_THICKNESS`).
-- `closest_point` : le centre pour un disque ; pour un segment, la projection de `pos` sur `[A, B]` bornée à `[0, 1]`.
-- **Contact** : `dist(pos, closest_point) < radius + COLLISION_EPS` (strict). Le rejet préalable par cercle englobant (`radius + EPS + length/2`) n'est qu'une optimisation, sans effet sur le résultat.
-- **Normale** : `pos − closest_point` (non normalisée ; `reflect` la normalise, et une normale nulle laisse la vitesse inchangée).
-- **Réflexion** : `v' = v − 2 (v·n̂) n̂`. Elle est appliquée **même si la particule s'éloigne déjà** (pas de test `v·n < 0`) et la position n'est **pas** repoussée hors de l'obstacle. Collision discrète (pas de balayage continu) : c'est le pas `DT` + `COLLISION_EPS` qui empêche de traverser les segments fins aux vitesses du jeu (`power ≤ 1`, soit ≤ 0,01 par pas).
+- **Disc**: `(x, y, r)`. Skeleton = its centre.
+- **Flat segment** (when `length` is present): centre `(x, y)`, length `length`, orientation `angle_deg` (default 0); end points `centre ± (cos a, sin a) · length/2`. Skeleton = that segment, thickness `2 · r` (default `SEGMENT_HALF_THICKNESS`).
+- `closest_point`: the centre for a disc; for a segment, the projection of `pos` on `[A, B]` clamped to `[0, 1]`.
+- **Contact**: `dist(pos, closest_point) < radius + COLLISION_EPS` (strict). The bounding-circle pre-rejection (`radius + EPS + length/2`) is only an optimisation, with no effect on the result.
+- **Normal**: `pos − closest_point` (not normalised; `reflect` normalises it, and a zero normal leaves the velocity unchanged).
+- **Reflection**: `v' = v − 2 (v·n̂) n̂`. It is applied **even if the particle is already moving away** (no `v·n < 0` test) and the position is **not** pushed out of the obstacle. Discrete collision (no continuous sweep): the `DT` step + `COLLISION_EPS` is what stops thin segments being crossed at game speeds (`power ≤ 1`, i.e. ≤ 0.01 per step).
 
-## 6. Oscillations (« élément oscillant »)
+## 6. Oscillations ("oscillating element")
 
-- `motion = {axis, amplitude, period, phase?}` sur un obstacle, la cible ou un Photon : la coordonnée `axis` (`"x"` ou `"y"`) vaut `base + amplitude · sin(2π · t / period + phase)`, `phase` = 0 par défaut.
-- `threshold_motion = {amplitude, period, phase?}` sur un obstacle à seuil : `energy_threshold(t) = base + amplitude · sin(2π · t / period + phase)`.
-- Toujours évaluées à `t = (step + 1) · DT` du pas en cours, jamais à l'instant de rendu.
+- `motion = {axis, amplitude, period, phase?}` on an obstacle, the target or a Photon: the `axis` coordinate (`"x"` or `"y"`) is `base + amplitude · sin(2π · t / period + phase)`, `phase` = 0 by default.
+- `threshold_motion = {amplitude, period, phase?}` on a threshold obstacle: `energy_threshold(t) = base + amplitude · sin(2π · t / period + phase)`.
+- Always evaluated at the current step's `t = (step + 1) · DT`, never at render time.
 
-## 7. Handlers (`concepts.py`)
+## 7. Handlers (`concepts/handlers.py`)
 
-Choix du handler : d'abord par `type` d'obstacle, sinon handler par défaut du concept du niveau, sinon `wall_reflect`.
+Handler choice: first by obstacle `type`, otherwise the level concept's default handler, otherwise `wall_reflect`.
 
-| `type` | Handler | Effet | Événement |
+| `type` | Handler | Effect | Event |
 |---|---|---|---|
-| `wall`, `mirror` | `wall_reflect` | réflexion (§5) | `bounce` |
-| `splitter` | `superposition_splitter` | lame plate : la copie courante garde sa vitesse (transmise), une nouvelle copie part avec la vitesse réfléchie (§5), cf. §7 bis | `transmit` (copie courante) / `reflect` (nouvelle copie) |
-| `detector` | — | aucun contact (Quarky le traverse) ; sert seulement à la mesure, §7 bis | — |
-| `barrier` | `tunnel_barrier` | si `‖v‖ ≥ energy_threshold(t)` : vitesse inchangée ; sinon réflexion | `pass` / `bounce` |
-| `gate` | `intrication_gate` | `tapped` : traverse ; sinon réflexion | `pass` / `bounce` |
-| `gate_anti` | `intrication_gate_anti` | `tapped` : réflexion ; sinon traverse | `bounce` / `pass` |
-| `pole` | `spin_pole` | `spin = spin_up` (paramètre, défaut `true`), inversé si `tapped` ; `attire = (spin ∧ pole = "+") ∨ (¬spin ∧ pole = "−")` ; `kick = kick_deg` (défaut 40) si attire, sinon `−kick_deg` ; nouvelle direction `angle_of(v) + kick`, norme conservée | `deflect` |
-| `surface` | `dualite_surface` | non `tapped` (particule) : réflexion → `bounce`. `tapped` (onde) : si `interference_offset_deg mod 360 = 180` → vitesse inchangée (transmission) ; sinon direction `angle_of(v_réfléchie) + offset` (défaut 15), norme conservée | `bounce` / `wave` |
+| `wall`, `mirror` | `wall_reflect` | reflection (§5) | `bounce` |
+| `splitter` | `superposition_splitter` | flat splitter: the current copy keeps its velocity (transmitted), a new copy leaves with the reflected velocity (§5), see §7 bis | `transmit` (current copy) / `reflect` (new copy) |
+| `detector` | — | no contact (Quarky passes through it); only used for the measurement, §7 bis | — |
+| `barrier` | `tunnel_barrier` | if `‖v‖ ≥ energy_threshold(t)`: velocity unchanged; otherwise reflection | `pass` / `bounce` |
+| `gate` | `intrication_gate` | `tapped`: passes; otherwise reflection | `pass` / `bounce` |
+| `gate_anti` | `intrication_gate_anti` | `tapped`: reflection; otherwise passes | `bounce` / `pass` |
+| `pole` | `spin_pole` | `spin = spin_up` (parameter, default `true`), flipped if `tapped`; `attracts = (spin ∧ pole = "+") ∨ (¬spin ∧ pole = "−")`; `kick = kick_deg` (default 40) if it attracts, otherwise `−kick_deg`; new direction `angle_of(v) + kick`, norm kept | `deflect` |
+| `surface` | `dualite_surface` | not `tapped` (particle): reflection → `bounce`. `tapped` (wave): if `interference_offset_deg mod 360 = 180` → velocity unchanged (transmission); otherwise direction `angle_of(v_reflected) + offset` (default 15), norm kept | `bounce` / `wave` |
 
-Handlers par défaut des concepts (obstacle d'un type non listé) : `superposition` → splitter, `tunnel` → barrier, `intrication` → gate, `spin` → pole, `dualite` → surface, `incertitude` / `quantification` → `wall_reflect`.
+Default handlers per concept (obstacle of an unlisted type): `superposition` → splitter, `tunnel` → barrier, `intrication` → gate, `spin` → pole, `dualite` → surface, `incertitude` / `quantification` → `wall_reflect`.
 
-### 7 bis. Superposition (copies fantômes)
+### 7 bis. Superposition (ghost copies)
 
-- Au contact d'une lame `splitter`, Quarky devient deux copies. Chaque copie a sa position, sa vitesse, ses `in_contact`, `contacts`, `wall_bounces` et Photons (copiés au moment de la séparation). Une copie qui touche une autre lame se sépare à son tour.
-- **Mesure** = un tap pendant que plusieurs copies existent : on garde la copie la plus proche d'un `detector` (distance au squelette du détecteur, à sa position oscillée ; égalité → la première créée). Les autres disparaissent **avec leurs Photons**. On ajoute `(id du détecteur, "measure")` aux contacts de la survivante. Un tap sans superposition ne mesure rien.
-- La **cible** n'accepte qu'un Quarky mesuré : tant qu'il y a plusieurs copies, l'étape 6 est sautée.
-- **Décohérence** : si une copie dépasse `max_wall_bounces` pendant la superposition, tout le lancer échoue (`lost:decoherence`).
+- On contact with a `splitter`, Quarky becomes two copies. Each copy has its own position, velocity, `in_contact`, `contacts`, `wall_bounces` and Photons (copied at the moment of the split). A copy touching another splitter splits in turn.
+- **Measurement** = a tap while several copies exist: the copy closest to a `detector` is kept (distance to the detector's skeleton, at its oscillated position; tie → the first created). The others vanish **with their Photons**. `(detector id, "measure")` is appended to the survivor's contacts. A tap without superposition measures nothing.
+- The **target** only accepts a measured Quarky: while there are several copies, step 6 is skipped.
+- **Decoherence**: if a copy exceeds `max_wall_bounces` during the superposition, the whole launch fails (`lost:decoherence`).
 
-Le jeu n'a pas besoin de `must_contact` ni du journal `contacts` pour jouer : ils ne servent qu'au validateur (anti-contournement). Les événements restent utiles côté jeu pour déclencher les effets visuels/sonores.
+The game doesn't need `must_contact` or the `contacts` log to play: they only serve the validator (anti-bypass). The events are still useful on the game side to trigger visual/sound effects.
 
-## 8. Tap et paramètres
+## 8. Tap and parameters
 
-- **Un tap par vol**, sauf en superposition où chaque lame peut demander sa mesure (`tap_time_2`, strictement après `tap_time`). Chaque instant de tap est un paramètre comme l'angle : le solveur le cherche sur la grille de `param_space`, **sans jamais descendre sous `TAP_MIN_TIME`** (un tap au lancer = réglage pré-tir déguisé). **Décision game design (validée) :** côté jeu, un tap avant `TAP_MIN_TIME` est ignoré (le geste reste disponible pour la suite du vol), ce qui garantit que tout lancer jouable est un lancer que le validateur a vérifié.
-- En jeu, l'instant du tap est le temps simulé écoulé depuis le lâcher au moment où l'entrée est traitée ; il est quantifié au pas (§4.2).
-- La solvabilité, les tolérances et les étoiles sont **mesurées sur la grille** `param_space` (`range` : de `min` à `max` par `step`, valeurs arrondies à 4 décimales ; `choice` : liste). Des dials continus restent jouables, mais seuls les points de grille sont garantis.
+- **One tap per flight**, except in superposition where each splitter may ask for its own measurement (`tap_time_2`, strictly after `tap_time`). Each tap instant is a parameter like the angle: the solver searches it on the `param_space` grid, **never below `TAP_MIN_TIME`** (a tap at launch = a disguised pre-launch setting). **Game design decision (validated):** in the game, a tap before `TAP_MIN_TIME` is ignored (the gesture stays available for the rest of the flight), which guarantees that every playable launch is one the validator checked.
+- In the game, the tap instant is the simulated time elapsed since release when the input is handled; it is quantised to the step (§4.2).
+- Solvability, tolerances and stars are **measured on the grid** `param_space` (`range`: from `min` to `max` by `step`, values rounded to 4 decimals; `choice`: list). Continuous dials stay playable, but only grid points are guaranteed.
 
-## 9. Données consommées (JSON v2)
+## 9. Data consumed by the game
 
-Le jeu lit `levels/<nom>.json` (`schema_version` = 2) : `launcher`, `target`, `obstacles`, `photons`, `max_wall_bounces`, `param_space`, `hint.params` (solution de référence, pour l'indice « premier segment » après 5 échecs), plus `id`, `scale`, `concept`, `difficulty`, `codex_text`. Il refuse un `schema_version` qu'il ne connaît pas. `levels/meta/*.meta.json` est réservé aux outils de dev. Détail : `stage3-physics-engine/README.md`.
+The game reads `content/levels/quantique/<name>.json` (`schema_version` = 3). Field reference: [`docs/level-schema.md`](level-schema.md). It refuses a `schema_version` it doesn't know. `levels-builder/meta/*.meta.json` is reserved for dev tools. Player-facing text is not in the level: the Codex lines are in `content/codex/<lang>/`.
 
-## 10. Vérifier une implémentation
+## 10. Checking an implementation
 
-- Tolérance attendue : positions à `1e-6` près. `sin`, `cos`, `atan2`, `hypot` peuvent différer d'un ulp entre bibliothèques mathématiques ; un tir qui frôle un bord peut donc basculer, d'où l'exigence de tolérance ≥ 5 % par niveau.
-- Méthode prévue (§4.3 de `todo.md`) : trajectoires de référence générées par le moteur Python (`tests/golden/*.json` : paramètres → trace échantillonnée) et rejouées par l'implémentation cible. Tant qu'elles n'existent pas, rejouer `hint.params` de chaque niveau doit atteindre la cible avec les Photons de `reference_solution.photon_ids` (méta).
+- Expected tolerance: positions within `1e-6`. `sin`, `cos`, `atan2`, `hypot` may differ by one ulp between math libraries; a shot grazing an edge can therefore flip, hence the ≥ 5% tolerance requirement per level.
+- Method ([ADR-0005](decisions/ADR-0005-golden-trajectories.md)): reference trajectories generated by the Python engine (`levels-builder/tests/golden/*.golden.json`: parameters → position at every step, outcome, Photons, contacts) and replayed by the target implementation (`android/core-physics` `GoldenTest`). For a level without golden files yet, replaying each level's `hint.params` must reach the target with the Photons of `reference_solution.photon_ids` (meta).
 
-## 11. Écarts connus de la maquette Stage 2
+## 11. Known drifts of the Stage 2 mockup
 
-La maquette (`stage2-mockup/index.html`, `quantiqueSubstep`) diverge de ce contrat, entre autres :
-- marge Photon/cible `0.012` au lieu de `COLLISION_EPS = 0.004` ;
-- murs internes en chaînes de disques, testés **à chaque pas** (pas « une fois par contact ») ;
-- dernier sous-pas de chaque frame fractionnaire (`min(SIM_DT, reste)`) au lieu de pas entiers ;
-- `max_wall_bounces` codé en dur à 1, niveau codé en dur (pas de lecture du JSON).
+The mockup (`design/mockups/index.html`, `quantiqueSubstep`) diverges from this contract, among others:
+- Photon/target margin `0.012` instead of `COLLISION_EPS = 0.004`;
+- internal walls as chains of discs, tested **at every step** (not "once per contact");
+- last sub-step of each frame is fractional (`min(SIM_DT, remainder)`) instead of whole steps;
+- `max_wall_bounces` hard-coded to 1, level hard-coded (no JSON reading).
 
-Elle reste une maquette d'intention visuelle ; la remplacer par une visionneuse qui lit les JSON exportés est prévu (`todo.md` §4.1, outil « level viewer »).
+It remains a mockup of visual intent; replacing it with a viewer that reads the exported JSON is planned (`todo.md` §4.1, "level viewer" tool).

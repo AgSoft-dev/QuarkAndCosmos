@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Player-facing strings. values/ = English (default), values-fr/ = French.
+  Every key must exist in both files. Codex lines are not here: they live in
+  content/codex/<lang>/ and are copied into the assets at build time.
+-->
+<resources>
+    <string name="app_name" translatable="false">Quark &amp; Cosmos</string>
+    <!-- Folder of the Codex lines to load (content/codex/<lang>/). -->
+    <string name="codex_lang">en</string>
+
+    <!-- Common -->
+    <string name="back">Back</string>
+    <plurals name="stars_out_of_3">
+        <item quantity="one">%1$d star out of 3</item>
+        <item quantity="other">%1$d stars out of 3</item>
+    </plurals>
+
+    <!-- Welcome -->
+    <string name="welcome_instrument">DETECTOR · CAVITY 01</string>
+    <string name="welcome_tagline">Born at the heart of an experiment, Quarky sets off to explore the universe — from the infinitely small to the infinitely large.</string>
+    <string name="welcome_play">Play</string>
+    <string name="welcome_build">POC · INTERNAL TEST</string>
+
+    <!-- Scales -->
+    <string name="worlds_title">The scales</string>
+    <string name="worlds_caption">From the infinitely small to the infinitely large</string>
+    <string name="worlds_locked">The %1$s scale will open in a future version.</string>
+    <string name="worlds_levels_done">%1$d/%2$d LEVELS</string>
+    <string name="worlds_soon">SOON</string>
+
+    <string name="world_quantique">Quantum</string>
+    <string name="world_quantique_instrument">Detector cavity</string>
+    <string name="world_atomique">Atomic &amp; molecular</string>
+    <string name="world_atomique_instrument">Electron cloud</string>
+    <string name="world_macro">Macro</string>
+    <string name="world_macro_instrument">The lab</string>
+    <string name="world_spatiale">Space</string>
+    <string name="world_spatiale_instrument">Beyond the Earth</string>
+    <string name="world_cosmologique">Cosmological</string>
+    <string name="world_cosmologique_instrument">Curved space-time</string>
+
+    <!-- Quantum world map -->
+    <string name="map_title">Quantum world</string>
+    <string name="map_locked">%1$s: this level isn’t playable in the POC yet.</string>
+    <string name="map_node">Level %1$d, %2$s</string>
+    <string name="map_node_locked">Level %1$d, %2$s, locked</string>
+    <string name="level_subtitle">Quantum · level %1$d</string>
+
+    <string name="concept_tunnel">Tunnel effect</string>
+    <string name="concept_superposition">Superposition</string>
+    <string name="concept_intrication">Entanglement</string>
+    <string name="concept_incertitude">Uncertainty</string>
+    <string name="concept_quantification">Quantisation</string>
+    <string name="concept_spin">Spin</string>
+    <string name="concept_dualite">Wave–particle duality</string>
+
+    <!-- Level screen (libGDX, passed through GameText) -->
+    <string name="game_flash_pass">Tunnel effect: enough energy, Quarky gets through!</string>
+    <string name="game_flash_blocked">Energy below the threshold: the barrier sends Quarky back.</string>
+    <string name="game_readings">INSTRUMENT READINGS</string>
+    <string name="game_angle">ANGLE</string>
+    <string name="game_energy">QUARKY’S ENERGY</string>
+    <string name="game_threshold">BARRIER THRESHOLD</string>
+    <string name="game_passes">PASSES</string>
+    <string name="game_blocked">BLOCKED</string>
+    <string name="game_aim_help">Pull Quarky back, then let go. The barrier’s threshold starts oscillating at release.</string>
+    <string name="game_hint">Hint: the violet dotted line shows the start of the reference path.</string>
+    <string name="game_result">INSTRUMENT READING</string>
+    <string name="game_outcome_win">Target reached</string>
+    <string name="game_outcome_timeout">Time’s up</string>
+    <string name="game_outcome_lost">One bounce too many</string>
+    <string name="game_msg_perfect">Three Photons in a single flight: a perfect path!</string>
+    <string name="game_msg_win">A Photon is still waiting: there is a finer path.</string>
+    <string name="game_msg_timeout">Quarky lingered on the way. A more direct shot?</string>
+    <string name="game_msg_lost">Quarky bounced off the cavity wall. Adjust the energy and try again!</string>
+    <string name="game_codex_signature">— LAB LOGBOOK</string>
+    <string name="game_retry">RETRY</string>
+    <string name="game_map">MAP</string>
+    <string name="game_next">CONTINUE</string>
+</resources>

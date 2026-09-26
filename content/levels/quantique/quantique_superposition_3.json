@@ -1,0 +1,131 @@
+{
+  "schema_version": 3,
+  "id": "quantique-superposition-3",
+  "scale": "quantique",
+  "concept": "superposition",
+  "difficulty": 3,
+  "launcher": {
+    "x": 0.3,
+    "y": 0.9
+  },
+  "target": {
+    "x": 0.62,
+    "y": 0.12,
+    "r": 0.05
+  },
+  "obstacles": [
+    {
+      "id": "S1",
+      "type": "splitter",
+      "x": 0.3,
+      "y": 0.55,
+      "length": 0.2828,
+      "angle_deg": -45.0
+    },
+    {
+      "id": "couvercle",
+      "type": "wall",
+      "x": 0.285,
+      "y": 0.35,
+      "length": 0.27,
+      "angle_deg": 0.0
+    },
+    {
+      "id": "S2",
+      "type": "splitter",
+      "x": 0.62,
+      "y": 0.55,
+      "length": 0.2828,
+      "angle_deg": -45.0
+    },
+    {
+      "id": "D",
+      "type": "detector",
+      "x": 0.55,
+      "y": 0.42,
+      "length": 0.06,
+      "angle_deg": 90.0
+    },
+    {
+      "id": "cloison",
+      "type": "wall",
+      "x": 0.46,
+      "y": 0.81,
+      "length": 0.38,
+      "angle_deg": 90.0
+    }
+  ],
+  "photons": [
+    {
+      "id": "p1",
+      "x": 0.48,
+      "y": 0.55,
+      "r": 0.03,
+      "motion": {
+        "axis": "y",
+        "amplitude": 0.08,
+        "period": 0.5,
+        "phase": 4.5239
+      }
+    },
+    {
+      "id": "p2",
+      "x": 0.613,
+      "y": 0.41,
+      "r": 0.03,
+      "motion": {
+        "axis": "x",
+        "amplitude": 0.08,
+        "period": 0.5,
+        "phase": 0.377
+      }
+    },
+    {
+      "id": "p3",
+      "x": 0.617,
+      "y": 0.29,
+      "r": 0.03,
+      "motion": {
+        "axis": "x",
+        "amplitude": 0.08,
+        "period": 0.5,
+        "phase": 4.7752
+      }
+    }
+  ],
+  "max_wall_bounces": 0,
+  "param_space": {
+    "angle_deg": {
+      "type": "range",
+      "min": -94,
+      "max": -84,
+      "step": 1
+    },
+    "power": {
+      "type": "range",
+      "min": 0.4,
+      "max": 0.8,
+      "step": 0.1
+    },
+    "tap_time": {
+      "type": "range",
+      "min": 0.3,
+      "max": 1.4,
+      "step": 0.1
+    },
+    "tap_time_2": {
+      "type": "range",
+      "min": 0.8,
+      "max": 2.6,
+      "step": 0.1
+    }
+  },
+  "hint": {
+    "params": {
+      "angle_deg": -91,
+      "power": 0.8,
+      "tap_time": 0.5,
+      "tap_time_2": 0.8
+    }
+  }
+}

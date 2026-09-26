@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quark &amp; Cosmos — Éléments du monde Quantique</title>
+<style>
+  :root{
+    --bg:#05070c;
+    --panel:#0b0e17;
+    --border:#232a3d;
+    --text:#e2e8f0;
+    --muted:#8ea0bd;
+    --pink:#f472b6;
+  }
+  *{box-sizing:border-box;}
+  html,body{ margin:0; padding:0; background:#0a0d16; color:var(--text); font-family:-apple-system,'Segoe UI',sans-serif; }
+  #page{ max-width:1100px; margin:0 auto; padding:32px 20px 60px; }
+  h1{ font-size:20px; margin:0 0 4px; }
+  .sub{ font-size:12px; color:var(--muted); margin-bottom:28px; max-width:640px; line-height:1.5; }
+  .grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:18px; }
+  .card{ background:var(--panel); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
+  .card canvas{ display:block; width:100%; height:180px; background:#05070c; }
+  .card .info{ padding:14px 16px 16px; }
+  .card .num{ font-size:10px; color:var(--pink); letter-spacing:.08em; font-weight:600; }
+  .card h2{ font-size:14px; margin:4px 0 6px; }
+  .card p{ font-size:11.5px; color:var(--muted); line-height:1.55; margin:0; }
+  .legend{ margin-top:30px; display:flex; gap:20px; flex-wrap:wrap; font-size:11px; color:var(--muted); }
+  .legend span.sw{ display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; vertical-align:-1px; }
+</style>
+</head>
+<body>
+<div id="page">
+  <h1>Monde Quantique — design des éléments interactifs</h1>
+  <div class="sub">
+    Chaque objet suit la règle des deux couches (cf. skill <code>art-direction</code>) : le corps de l'objet est
+    "matière" (illustré, dégradé, volume) ; les indices de trajectoire/champ restent fins et pointillés
+    ("physique invisible"). Palette Quantique unique (rose/magenta) — la distinction entre objets vient de la
+    forme et du comportement, pas de la couleur.
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="legend">
+    <div><span class="sw" style="background:#f472b6"></span>Couche matière (objet, corps illustré)</div>
+    <div><span class="sw" style="background:rgba(244,114,182,0.35)"></span>Couche physique (trajectoire / champ, fin et pointillé)</div>
+    <div><span class="sw" style="background:#facc15"></span>Photon / cible</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const CARDS = [
+    { id:'tunnel', num:'01 — Effet tunnel', title:'Barrière d\'énergie', desc:'Membrane cristalline qui se fissure de lumière quand Quarky s\'en approche. Assez de vitesse : elle cède et laisse passer. Pas assez : elle rebondit comme un mur plein.' },
+    { id:'superposition', num:'02 — Superposition', title:'Prisme en Y (dédoublement)', desc:'Une bouche large se resserre en un col étroit, ouvre sur un cœur cristallin, puis se divise en deux tubes visibles. Un seul chemin d\'entrée, deux sorties possibles.' },
+    { id:'intrication', num:'03 — Intrication', title:'Paire liée (deux jumeaux)', desc:'Deux cristaux identiques : l\'un dans le niveau (la porte), l\'autre près du lanceur (le témoin, réglé avant le tir). Ce ne sont pas deux objets reliés par un mécanisme — ce sont LE MÊME état, affiché à deux endroits : basculer le témoin bascule la porte, instantanément, à distance.' },
+    { id:'incertitude', num:'04 — Incertitude', title:'Cadran précision / vitesse', desc:'Un cadran pré-lancer : plus l\'aiguille va vers "précis", plus la puissance disponible se réduit. Le compromis est visible, pas juste raconté.' },
+    { id:'quantification', num:'05 — Quantification', title:'Lanceur à crans', desc:'Le rail de tir n\'est plus continu : des crans lumineux marquent les seuls niveaux d\'énergie possibles, façon cliquet.' },
+    { id:'spin', num:'06 — Spin quantique', title:'Pôle magnétique', desc:'Un orbe polarisé (+/-). Selon le spin choisi avant le tir, Quarky est attiré ou repoussé — les arcs de champ (fins, pointillés) changent de sens selon l\'état.' },
+    { id:'dualite', num:'07 — Dualité onde-particule', title:'Surface bascule onde/particule', desc:'En mode particule : rebond net, surface opaque. En mode onde : la surface se couvre d\'un motif d\'interférence et dévie légèrement la trajectoire — écho de la réflexion enseignée plus tard en Macro.' },
+  ];
+
+  function buildGrid(){
+    const grid = document.getElementById('grid');
+    CARDS.forEach(c=>{
+      const card = document.createElement('div'); card.className='card';
+      const canvas = document.createElement('canvas'); canvas.width=560; canvas.height=360;
+      const info = document.createElement('div'); info.className='info';
+      info.innerHTML = `<div class="num">${c.num}</div><h2>${c.title}</h2><p>${c.desc}</p>`;
+      card.appendChild(canvas); card.appendChild(info);
+      grid.appendChild(card);
+      try {
+        DRAW[c.id](canvas.getContext('2d'), canvas.width, canvas.height);
+      } catch(e){
+        const err = document.createElement('div');
+        err.style.cssText = 'color:#f87171;font-size:11px;padding:8px;white-space:pre-wrap;';
+        err.textContent = 'ERREUR ' + c.id + ': ' + e.message;
+        card.appendChild(err);
+      }
+    });
+  }
+
+  function hexToRgb(hex){ hex=hex.replace('#',''); return {r:parseInt(hex.substring(0,2),16),g:parseInt(hex.substring(2,4),16),b:parseInt(hex.substring(4,6),16)}; }
+  function mix(a,b,t){ const A=hexToRgb(a),B=hexToRgb(b); return `rgb(${Math.round(A.r+(B.r-A.r)*t)},${Math.round(A.g+(B.g-A.g)*t)},${Math.round(A.b+(B.b-A.b)*t)})`; }
+  function lighten(hex,t){ return mix(hex,'#ffffff',t); }
+  function darken(hex,t){ return mix(hex,'#000000',t); }
+  const PINK = '#f472b6';
+
+  function bg(ctx,w,h){
+    ctx.fillStyle = '#05070c'; ctx.fillRect(0,0,w,h);
+    ctx.strokeStyle = '#141b2c'; ctx.lineWidth=1; ctx.strokeRect(1,1,w-2,h-2);
+  }
+
+  function drawQuarky(ctx,x,y,scale){
+    ctx.save(); ctx.translate(x,y); ctx.scale(scale,scale);
+    ctx.beginPath(); ctx.ellipse(0,26,17,5,0,0,Math.PI*2); ctx.fillStyle='rgba(0,0,0,0.35)'; ctx.fill();
+    const grad = ctx.createRadialGradient(-6,-10,2,0,0,26);
+    grad.addColorStop(0,'#ffffff'); grad.addColorStop(0.18, lighten(PINK,0.5)); grad.addColorStop(0.6, PINK); grad.addColorStop(1, darken(PINK,0.35));
+    ctx.beginPath();
+    ctx.moveTo(0,-24); ctx.bezierCurveTo(13,-24,17,-9,15,3); ctx.bezierCurveTo(13,17,7,24,0,24);
+    ctx.bezierCurveTo(-7,24,-13,17,-15,3); ctx.bezierCurveTo(-17,-9,-13,-24,0,-24); ctx.closePath();
+    ctx.fillStyle = grad; ctx.fill();
+    ctx.lineWidth=1.5; ctx.strokeStyle='#f9a8d4'; ctx.stroke();
+    ctx.fillStyle = darken(PINK,0.75);
+    ctx.beginPath(); ctx.arc(-6,-2,5,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(6,-2,5,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#fff';
+    ctx.beginPath(); ctx.arc(-4.5,-3.5,1.4,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(7.5,-3.5,1.4,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+  }
+
+  function dashedLine(ctx,x1,y1,x2,y2,color,width){
+    ctx.strokeStyle=color; ctx.lineWidth=width||1; ctx.setLineDash([3,5]);
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke(); ctx.setLineDash([]);
+  }
+
+  const DRAW = {};
+
+  DRAW.tunnel = function(ctx,w,h){
+    bg(ctx,w,h);
+    drawQuarky(ctx, w*0.16, h*0.55, 1);
+    // barrier: crystalline vertical membrane, glowing cracks
+    const bx = w*0.55, bw=w*0.09, by=h*0.14, bh=h*0.72;
+    const g = ctx.createLinearGradient(bx,0,bx+bw,0);
+    g.addColorStop(0,'rgba(244,114,182,0.12)'); g.addColorStop(0.5,'rgba(244,114,182,0.55)'); g.addColorStop(1,'rgba(244,114,182,0.12)');
+    ctx.beginPath(); ctx.roundRect(bx,by,bw,bh,10); ctx.fillStyle=g; ctx.fill();
+    ctx.strokeStyle='rgba(251,207,232,0.7)'; ctx.lineWidth=1.5; ctx.stroke();
+    // glowing core + cracks
+    ctx.strokeStyle='#fbcfe8'; ctx.lineWidth=1;
+    for(let i=0;i<5;i++){
+      const yy = by+bh*(0.15+i*0.18);
+      ctx.beginPath(); ctx.moveTo(bx+bw*0.5, yy); ctx.lineTo(bx+bw*0.5+(i%2?10:-10), yy+14); ctx.stroke();
+    }
+    // energy threshold (physics overlay)
+    dashedLine(ctx, w*0.16, h*0.55, bx, h*0.55, 'rgba(244,114,182,0.4)', 1.5);
+    ctx.fillStyle='#8ea0bd'; ctx.font='11px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('seuil de vitesse à franchir', bx+bw/2, by-10);
+    // target
+    const tx=w*0.87, ty=h*0.28;
+    const tg = ctx.createRadialGradient(tx-4,ty-4,1,tx,ty,14);
+    tg.addColorStop(0,'#fff3b0'); tg.addColorStop(0.6,'#facc15'); tg.addColorStop(1,'#a16207');
+    ctx.beginPath(); ctx.arc(tx,ty,14,0,Math.PI*2); ctx.fillStyle=tg; ctx.fill();
+  };
+
+  DRAW.superposition = function(ctx,w,h){
+    bg(ctx,w,h);
+    const spx=w*0.52, spy=h*0.5, spr=42;
+    const mouthX=w*0.10, mouthHalf=h*0.34, neckX=w*0.38, neckHalf=16;
+    function wing(sign){
+      ctx.beginPath();
+      ctx.moveTo(mouthX, spy+sign*mouthHalf);
+      ctx.quadraticCurveTo(neckX-14, spy+sign*mouthHalf*0.55, neckX, spy+sign*neckHalf);
+      ctx.lineTo(spx, spy+sign*spr*0.92);
+      ctx.quadraticCurveTo(neckX, spy+sign*mouthHalf*0.7, mouthX, spy+sign*mouthHalf*1.3);
+      ctx.closePath();
+    }
+    const wg = ctx.createLinearGradient(mouthX,0,spx,0);
+    wg.addColorStop(0,'rgba(244,114,182,0.05)'); wg.addColorStop(0.7,'rgba(244,114,182,0.28)'); wg.addColorStop(1,'rgba(244,114,182,0.42)');
+    [-1,1].forEach(s=>{ wing(s); ctx.fillStyle=wg; ctx.fill(); ctx.strokeStyle='rgba(251,207,232,0.4)'; ctx.lineWidth=1; ctx.stroke(); });
+    const sg = ctx.createRadialGradient(spx-6,spy-6,2,spx,spy,spr);
+    sg.addColorStop(0,'#fbcfe8'); sg.addColorStop(0.55,'#f472b6'); sg.addColorStop(1,'#9d174d');
+    ctx.beginPath(); ctx.arc(spx,spy,spr,0,Math.PI*2); ctx.fillStyle=sg; ctx.fill();
+    ctx.strokeStyle='#f472b6'; ctx.lineWidth=1.5; ctx.stroke();
+    [-35,35].forEach(deg=>{
+      const rad=deg*Math.PI/180, ex=spx+Math.cos(rad)*140, ey=spy+Math.sin(rad)*140;
+      const tg=ctx.createLinearGradient(spx,spy,ex,ey);
+      tg.addColorStop(0,'rgba(244,114,182,0.7)'); tg.addColorStop(1,'rgba(244,114,182,0)');
+      ctx.strokeStyle=tg; ctx.lineWidth=11; ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(spx,spy); ctx.lineTo(ex,ey); ctx.stroke();
+    });
+    drawQuarky(ctx, mouthX-16, spy, 0.85);
+  };
+
+  // 6-pointed crystal: dark core = "closed" (blocks), bright core = "open"
+  // (lets through). BOTH crystals (witness + gate) ALWAYS share the same
+  // state — it is not a mechanism (lever -> gate), but one single state
+  // shown in two places at once.
+  function gem(ctx,cx,cy,r,open){
+    ctx.beginPath();
+    for(let i=0;i<6;i++){
+      const a = -Math.PI/2 + i*Math.PI/3;
+      const rr = i%2===0 ? r : r*0.6;
+      const x = cx+Math.cos(a)*rr, y = cy+Math.sin(a)*rr;
+      i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    }
+    ctx.closePath();
+    const g = ctx.createRadialGradient(cx-r*0.3,cy-r*0.3,1,cx,cy,r);
+    g.addColorStop(0,'#ffffff'); g.addColorStop(0.35,'#fbcfe8'); g.addColorStop(0.75,'#f472b6'); g.addColorStop(1,'#7c1450');
+    ctx.fillStyle=g; ctx.fill();
+    ctx.strokeStyle='#fbcfe8'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx,cy,r*0.34,0,Math.PI*2);
+    ctx.fillStyle = open ? '#fff7fb' : '#3d0a26';
+    ctx.fill();
+    if (open){ ctx.strokeStyle='rgba(255,255,255,0.8)'; ctx.lineWidth=1; ctx.stroke(); }
+  }
+
+  DRAW.intrication = function(ctx,w,h){
+    bg(ctx,w,h);
+    drawQuarky(ctx, w*0.13, h*0.5, 1);
+
+    // witness (small, near the launcher — set BEFORE the shot by the player)
+    const wx=w*0.30, wy=h*0.72, wr=17;
+    gem(ctx, wx, wy, wr, false);
+
+    // gate (large, in the level — blocks the way while closed)
+    const gx=w*0.68, gy=h*0.40, gr=40;
+    gem(ctx, gx, gy, gr, false);
+
+    // correlation link: thin dotted line with glowing dots that seem to
+    // "travel" both ways at once (physics layer — not a mechanical cable, a
+    // shared state)
+    ctx.strokeStyle='rgba(244,114,182,0.4)'; ctx.lineWidth=1.3; ctx.setLineDash([2,5]);
+    ctx.beginPath(); ctx.moveTo(wx+wr, wy-6); ctx.lineTo(gx-gr*0.6, gy+gr*0.5); ctx.stroke();
+    ctx.setLineDash([]);
+    [0.25,0.5,0.75].forEach(t=>{
+      const px = wx+wr + (gx-gr*0.6-(wx+wr))*t, py = wy-6 + (gy+gr*0.5-(wy-6))*t;
+      ctx.beginPath(); ctx.arc(px,py,2.4,0,Math.PI*2); ctx.fillStyle='#fbcfe8'; ctx.fill();
+    });
+
+    ctx.fillStyle='#8ea0bd'; ctx.font='11px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('témoin (réglé avant le tir)', wx, wy+wr+20);
+    ctx.fillText('porte (dans le niveau)', gx, gy+gr+20);
+    ctx.fillText('même état, à distance — pas un mécanisme', (wx+gx)/2, h*0.90);
+  };
+
+  DRAW.incertitude = function(ctx,w,h){
+    bg(ctx,w,h);
+    drawQuarky(ctx, w*0.20, h*0.56, 1);
+    // precision/speed dial
+    const cx=w*0.68, cy=h*0.48, r=70;
+    // solid "impossible" arc (trade-off zone) in the background
+    ctx.beginPath(); ctx.arc(cx,cy,r,Math.PI*1.0,Math.PI*1.9);
+    ctx.strokeStyle='rgba(244,114,182,0.18)'; ctx.lineWidth=16; ctx.stroke();
+    // precision arc (narrow, bright) vs speed arc (wide, dim)
+    ctx.beginPath(); ctx.arc(cx,cy,r,Math.PI*1.0,Math.PI*1.45);
+    ctx.strokeStyle='rgba(251,207,232,0.85)'; ctx.lineWidth=16; ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx,cy,r,Math.PI*1.45,Math.PI*1.9);
+    ctx.strokeStyle='rgba(157,23,77,0.55)'; ctx.lineWidth=16; ctx.stroke();
+    // needle
+    const needleAngle = Math.PI*1.45;
+    ctx.strokeStyle='#fff'; ctx.lineWidth=2.5; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+Math.cos(needleAngle)*r*0.85, cy+Math.sin(needleAngle)*r*0.85); ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx,cy,6,0,Math.PI*2); ctx.fillStyle='#fbcfe8'; ctx.fill();
+    ctx.fillStyle='#8ea0bd'; ctx.font='10.5px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('précis / lent', cx-r*0.75, cy-r*0.55);
+    ctx.fillText('rapide / imprécis', cx+r*0.85, cy-r*0.55);
+    ctx.fillText('réglage avant le tir (pas un obstacle)', cx, cy+r+22);
+  };
+
+  DRAW.quantification = function(ctx,w,h){
+    bg(ctx,w,h);
+    // notched rail
+    const lx=w*0.16, ly0=h*0.18, ly1=h*0.82;
+    ctx.strokeStyle='#1a2436'; ctx.lineWidth=10; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(lx,ly0); ctx.lineTo(lx,ly1); ctx.stroke();
+    const steps=5;
+    for(let i=0;i<steps;i++){
+      const yy = ly0 + (ly1-ly0)*(i/(steps-1));
+      const active = i===2;
+      ctx.beginPath(); ctx.arc(lx,yy,active?9:6,0,Math.PI*2);
+      const g = ctx.createRadialGradient(lx-2,yy-2,1,lx,yy,active?9:6);
+      g.addColorStop(0, active?'#fff':'#fbcfe8'); g.addColorStop(1, active?'#f472b6':'rgba(244,114,182,0.5)');
+      ctx.fillStyle=g; ctx.fill();
+      if(active){ ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke(); }
+    }
+    drawQuarky(ctx, lx, ly0+(ly1-ly0)*(2/(steps-1)), 0.9);
+    ctx.fillStyle='#8ea0bd'; ctx.font='11px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('crans d\'énergie fixes — pas de réglage continu', w*0.16, ly1+26);
+    // threshold barrier, same language as tunnel but closer
+    const bx=w*0.55, bw=w*0.08, by=h*0.28, bh=h*0.5;
+    const bg2 = ctx.createLinearGradient(bx,0,bx+bw,0);
+    bg2.addColorStop(0,'rgba(244,114,182,0.1)'); bg2.addColorStop(0.5,'rgba(244,114,182,0.5)'); bg2.addColorStop(1,'rgba(244,114,182,0.1)');
+    ctx.beginPath(); ctx.roundRect(bx,by,bw,bh,8); ctx.fillStyle=bg2; ctx.fill();
+    ctx.strokeStyle='rgba(251,207,232,0.6)'; ctx.lineWidth=1.5; ctx.stroke();
+    const tx=w*0.85, ty=h*0.5;
+    const tg = ctx.createRadialGradient(tx-4,ty-4,1,tx,ty,14);
+    tg.addColorStop(0,'#fff3b0'); tg.addColorStop(0.6,'#facc15'); tg.addColorStop(1,'#a16207');
+    ctx.beginPath(); ctx.arc(tx,ty,14,0,Math.PI*2); ctx.fillStyle=tg; ctx.fill();
+  };
+
+  DRAW.spin = function(ctx,w,h){
+    bg(ctx,w,h);
+    drawQuarky(ctx, w*0.16, h*0.6, 0.95);
+    const px=w*0.55, py=h*0.42, pr=30;
+    const pg = ctx.createRadialGradient(px-6,py-6,2,px,py,pr);
+    pg.addColorStop(0,'#fff'); pg.addColorStop(0.35,'#fbcfe8'); pg.addColorStop(0.7,'#f472b6'); pg.addColorStop(1,'#7c1450');
+    ctx.beginPath(); ctx.arc(px,py,pr,0,Math.PI*2); ctx.fillStyle=pg; ctx.fill();
+    ctx.strokeStyle='#fbcfe8'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.fillStyle='#4a0d2e'; ctx.font='bold 22px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('+', px, py-1);
+    ctx.textBaseline='alphabetic';
+    // field arcs (physics, thin, dotted): attraction (curving towards the pole)
+    ctx.strokeStyle='rgba(244,114,182,0.5)'; ctx.lineWidth=1.3; ctx.setLineDash([2,4]);
+    for(let i=0;i<3;i++){
+      const r0 = pr+16+i*14;
+      ctx.beginPath(); ctx.arc(px,py,r0, Math.PI*0.75, Math.PI*1.35); ctx.stroke();
+    }
+    ctx.setLineDash([]);
+    // arrow showing the attraction
+    ctx.fillStyle='#8ea0bd'; ctx.font='11px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('spin ↑ = attiré · spin ↓ = repoussé', px, py+pr+34);
+    const tx=w*0.87, ty=h*0.68;
+    const tg = ctx.createRadialGradient(tx-4,ty-4,1,tx,ty,14);
+    tg.addColorStop(0,'#fff3b0'); tg.addColorStop(0.6,'#facc15'); tg.addColorStop(1,'#a16207');
+    ctx.beginPath(); ctx.arc(tx,ty,14,0,Math.PI*2); ctx.fillStyle=tg; ctx.fill();
+  };
+
+  DRAW.dualite = function(ctx,w,h){
+    bg(ctx,w,h);
+    drawQuarky(ctx, w*0.16, h*0.5, 1);
+    const sx=w*0.56, sy0=h*0.16, sy1=h*0.84;
+    // surface: top half "particle mode" (opaque), bottom half "wave mode" (interference)
+    const sw=16;
+    const pg = ctx.createLinearGradient(sx-sw,0,sx+sw,0);
+    pg.addColorStop(0,'#7c1450'); pg.addColorStop(0.5,'#f472b6'); pg.addColorStop(1,'#7c1450');
+    ctx.beginPath(); ctx.roundRect(sx-sw/2, sy0, sw, (sy1-sy0)*0.48, 6); ctx.fillStyle=pg; ctx.fill();
+    // bottom: interference pattern (bands) on a translucent background
+    ctx.save();
+    ctx.beginPath(); ctx.roundRect(sx-sw/2, sy0+(sy1-sy0)*0.52, sw, (sy1-sy0)*0.48, 6); ctx.clip();
+    ctx.fillStyle='rgba(244,114,182,0.15)'; ctx.fillRect(sx-sw, sy0+(sy1-sy0)*0.52, sw*2, (sy1-sy0)*0.48);
+    for(let i=0;i<10;i++){
+      const yy = sy0+(sy1-sy0)*0.52 + i*7;
+      ctx.strokeStyle = i%2? 'rgba(251,207,232,0.7)' : 'rgba(157,23,77,0.5)';
+      ctx.lineWidth=2.5;
+      ctx.beginPath(); ctx.moveTo(sx-sw, yy); ctx.lineTo(sx+sw, yy); ctx.stroke();
+    }
+    ctx.restore();
+    ctx.strokeStyle='rgba(251,207,232,0.5)'; ctx.lineWidth=1; ctx.strokeRect(sx-sw/2, sy0, sw, sy1-sy0);
+    ctx.fillStyle='#8ea0bd'; ctx.font='10.5px sans-serif'; ctx.textAlign='left';
+    ctx.fillText('mode particule', sx+18, sy0+(sy1-sy0)*0.24);
+    ctx.fillText('mode onde', sx+18, sy0+(sy1-sy0)*0.76);
+    // trajectories: sharp bounce (top) vs slightly deflected (bottom)
+    dashedLine(ctx, w*0.16, h*0.5, sx-sw/2, sy0+(sy1-sy0)*0.24, 'rgba(244,114,182,0.35)',1.3);
+    dashedLine(ctx, sx-sw/2, sy0+(sy1-sy0)*0.24, w*0.16, sy0+(sy1-sy0)*0.05, 'rgba(244,114,182,0.35)',1.3);
+    const tx=w*0.88, ty=h*0.42;
+    const tg = ctx.createRadialGradient(tx-4,ty-4,1,tx,ty,14);
+    tg.addColorStop(0,'#fff3b0'); tg.addColorStop(0.6,'#facc15'); tg.addColorStop(1,'#a16207');
+    ctx.beginPath(); ctx.arc(tx,ty,14,0,Math.PI*2); ctx.fillStyle=tg; ctx.fill();
+  };
+
+  buildGrid();
+})();
+</script>
+</body>
+</html>
