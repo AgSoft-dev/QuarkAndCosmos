@@ -1,6 +1,6 @@
 """
-Simplified ("popularised") collision rules per quantum concept (see the
-gameplay-mechanics skill for the 7 beta concepts).
+Base collision rules and handler lookup. Concept-specific handlers live in
+their plugin module (concepts/<concept>.py, see concepts/__init__.py).
 
 Every handler has the signature:
     handler(obstacle: dict, pos: Vec2, vel: Vec2, params: dict, state: dict) -> (Vec2, str)
@@ -30,136 +30,32 @@ def wall_reflect(obstacle, pos, vel, params, state):
     return _bounce(obstacle, pos, vel)
 
 
-def superposition_splitter(obstacle, pos, vel, params, state):
-    """
-    (Flat) beam splitter: on contact Quarky enters superposition. It goes
-    straight on (transmitted copy) AND reflects (reflected copy) — two ghost
-    copies flying at the same time (see simulate._Body). The tap is the
-    measurement: Quarky collapses onto the copy closest to a detector, the
-    other fades out with its Photons. The target only accepts a measured
-    Quarky, and a copy that crashes before the measurement breaks the
-    superposition (decoherence: the launch fails).
-    Deliberate simplification: a real measurement is random; here the timing
-    and the detector make it deterministic and playable (see the Codex page).
-    """
-    return vel, "split"
-
-
 def reflect_velocity(obstacle, pos, vel):
     """Velocity of the copy reflected by a beam splitter."""
     return vec.reflect(vel, shapes.normal(obstacle, pos))
 
 
-def tunnel_barrier(obstacle, pos, vel, params, state):
-    """
-    Deterministic tunnel crossing. The barrier is taller than any launch
-    energy, so the particle never goes *over* it; `energy_threshold` is the
-    tunnel threshold: the lowest speed at which it gets *through*. In real
-    physics the crossing is a probability that rises with the energy and
-    falls fast with the thickness; the game turns it into a sharp rule
-    (ADR-0008, physics-pedagogy skill). Below the threshold it bounces like
-    a classical wall.
-    """
-    if vec.mag(vel) >= obstacle.get("energy_threshold", 0.6):
-        return vel, "pass"
-    return _bounce(obstacle, pos, vel)
-
-
-def intrication_gate(obstacle, pos, vel, params, state):
-    """
-    Gate linked to an identical "witness" (see the gameplay-mechanics skill —
-    "Action triggered in flight"): the player taps ONCE during the flight
-    (instant = params["tap_time"], searched by the solver like any other
-    parameter), which flips both objects — witness and gate — at the same
-    instant. Before the tap: gate closed (blocks like a wall). After: open
-    (lets through).
-    """
-    if state.get("tapped", False):
-        return vel, "pass"
-    return _bounce(obstacle, pos, vel)
-
-
-def intrication_gate_anti(obstacle, pos, vel, params, state):
-    """
-    Anti-correlated partner of an entangled gate: open BEFORE the tap, closed
-    after. The same gesture opens one gate and closes another — two entangled
-    objects whose states are always opposite (a popularisation of the
-    anti-correlated measurements of an entangled pair). It creates a tap
-    window: this gate must be crossed BEFORE tapping.
-    """
-    if state.get("tapped", False):
-        return _bounce(obstacle, pos, vel)
-    return vel, "pass"
-
-
-def spin_pole(obstacle, pos, vel, params, state):
-    """
-    Spin polarity (+/-) deciding whether the obstacle attracts or repels.
-    Pre-launch setting (spin_up = starting polarity, see gameplay-mechanics)
-    AND in-flight action: a tap (params["tap_time"]) flips the polarity once
-    during the flight — two variables combine to aim for the right contact at
-    the right instant.
-    """
-    spin_up = params.get("spin_up", True)
-    if state.get("tapped", False):
-        spin_up = not spin_up
-    pole = obstacle.get("pole", "+")
-    attract = (spin_up and pole == "+") or (not spin_up and pole == "-")
-    kick = obstacle.get("kick_deg", 40)
-    kick = kick if attract else -kick
-    ang = vec.angle_of(vel) + kick
-    return vec.from_angle(ang, vec.mag(vel)), "deflect"
-
-
-def dualite_surface(obstacle, pos, vel, params, state):
-    """
-    Wave/particle toggle IN FLIGHT (see gameplay-mechanics — "Action
-    triggered in flight"): Quarky starts in particle mode (classical bounce),
-    and a tap during the flight (params["tap_time"]) switches it to wave mode
-    for the rest of the path (bounce + interference offset, which foreshadows
-    without duplicating the real reflection lesson taught at the Macro scale,
-    see the storytelling skill).
-    """
-    vel2, _ = _bounce(obstacle, pos, vel)
-    if state.get("tapped", False):
-        offset = obstacle.get("interference_offset_deg", 15)
-        if offset % 360 == 180:
-            # 180° = pure transmission: the wave crosses the surface without
-            # changing direction, whatever the incidence (otherwise, on a
-            # tilted surface, "bounce + 180°" sends back a mirror image of the
-            # direction, unreadable for the player).
-            return vel, "wave"
-        ang = vec.angle_of(vel2) + offset
-        return vec.from_angle(ang, vec.mag(vel2)), "wave"
-    return vel2, "bounce"
-
-
-# Registry: concept -> default handler for its specific obstacles.
-# Concepts without a dedicated obstacle (incertitude, quantification) only
-# use wall_reflect on the box walls.
-HANDLERS = {
-    "superposition": superposition_splitter,
-    "tunnel": tunnel_barrier,
-    "intrication": intrication_gate,
-    "incertitude": wall_reflect,
-    "quantification": wall_reflect,
-    "spin": spin_pole,
-    "dualite": dualite_surface,
+# Base obstacle types, shared by every concept.
+_BASE = {
+    "wall": wall_reflect,
+    # flat mirror: a lab instrument (an intended bounce, never counted as a
+    # "suffered" bounce, unlike the walls)
+    "mirror": wall_reflect,
 }
+_by_type = None
 
 
-def handler_for(concept, obstacle_type):
-    """An obstacle can override the concept's handler through its own type."""
-    specific = {
-        "wall": wall_reflect,
-        # flat mirror: a lab instrument (an intended bounce, never counted as
-        # a "suffered" bounce, unlike the walls)
-        "mirror": wall_reflect,
-        "splitter": superposition_splitter,
-        "barrier": tunnel_barrier,
-        "gate": intrication_gate,
-        "gate_anti": intrication_gate_anti,
-        "pole": spin_pole,
-        "surface": dualite_surface,
-    }
-    return specific.get(obstacle_type, HANDLERS.get(concept, wall_reflect))
+def handler_for(concept_id, obstacle_type):
+    """Handler of an obstacle: its type's (base or owned by a concept), else
+    the level concept's default handler, else a plain bounce."""
+    global _by_type
+    from . import concept, obstacle_handlers  # lazy: concept modules import this one
+    if _by_type is None:
+        _by_type = dict(_BASE, **obstacle_handlers())
+    handler = _by_type.get(obstacle_type)
+    if handler is not None:
+        return handler
+    try:
+        return concept(concept_id).DEFAULT_HANDLER
+    except KeyError:
+        return wall_reflect
