@@ -28,6 +28,8 @@ class LevelInfo(
     /** Codex line shown after a win (content/codex/<lang>/), empty if none. */
     val codex: String = "",
     val text: GameText = GameText(),
+    /** Show the aiming guided tour (first slingshot level, not yet completed). */
+    val tutorial: Boolean = false,
 )
 
 /**
@@ -59,4 +61,7 @@ class GameText(
     val retry: String = "RETRY",
     val map: String = "MAP",
     val next: String = "CONTINUE",
+    val tourEnergy: String = "Pull left: energy",
+    val tourAim: String = "Slide up/down: aim",
+    val tourLaunch: String = "Let go: launch",
 )

@@ -53,6 +53,10 @@ import kotlin.math.sqrt
  * - Flight: the physics (`:core-physics`) advances in whole DT steps, the
  *   render interpolates between the last two states. The apparatus "starts"
  *   with the shot: every oscillation starts from t = 0 at release (spec §3).
+ * - Guided tour ([LevelInfo.tutorial]): a ghost finger plays the gesture in a
+ *   loop (pull left → slide up/down → let go) with faded arrows and short labels,
+ *   driving the launcher's readings. The first touch hides it; it comes back
+ *   after [TOUR_IDLE] s without input until the first launch.
  * - Result: read as an instrument reading in the bottom panel, never as a
  *   pop-up over the play area.
  * - Text: every player-facing string comes from [LevelInfo.text] (localised by the shell).
@@ -138,6 +142,14 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
     private val burstC = IntArray(6)
     private var burstI = 0
 
+    // guided tour of the slingshot
+    private var tourOn = info.tutorial
+    private var tourT = 0f
+    private var launched = false
+    private var lastInput = 0f
+    private val restAngle = aimAngle
+    private val restPower = aimPower
+
     private val buttons = ArrayList<Button>()
     private val touch = Vector2()
 
@@ -185,7 +197,9 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
 
     private fun onDown(x: Float, y: Float) {
         buttons.firstOrNull { it.hit(x, y) }?.let { press(it.id); return }
+        lastInput = time
         if (phase == Phase.AIM && y > boxBottom - 40 && y < boxTop + 20) {
+            if (tourOn) stopTour()
             dragging = true
             armed = false
             dragStart.set(x, y)
@@ -195,6 +209,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
 
     private fun onDrag(x: Float, y: Float) {
         if (!dragging) return
+        lastInput = time
         // pull to the left = energy; slide up/down = aim (physics angle, y pointing down)
         val dx = dragStart.x - x
         val dy = dragStart.y - y
@@ -228,6 +243,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
     // ======================================================================
 
     private fun launch() {
+        launched = true
         sim = Simulation(level, mapOf("angle_deg" to aimAngle, "power" to aimPower), this)
         prevX = level.launcher.x
         prevY = level.launcher.y
@@ -263,7 +279,11 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
 
     private fun update(dt: Float) {
         when (phase) {
-            Phase.AIM -> clock = 0f
+            Phase.AIM -> {
+                clock = 0f
+                if (tourOn) updateTour(dt)
+                else if (info.tutorial && !launched && !dragging && time - lastInput > TOUR_IDLE) { tourOn = true; tourT = 0f }
+            }
             Phase.FLIGHT -> {
                 val s = sim ?: return
                 acc += dt
@@ -376,6 +396,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         quarky.draw(pose, time)
         drawBursts()
         drawForeground()
+        drawTour()
         buttons.clear()
         drawTopBar()
         drawPanel()
@@ -862,6 +883,115 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         b.draw(cv.grain, 0f, 0f, w, h, o / 128f, 0f, o / 128f + w / 128f, h / 128f)
     }
 
+    // --- guided tour (first slingshot level) ------------------------------------
+
+    private fun stopTour() {
+        tourOn = false
+        aimAngle = restAngle
+        aimPower = restPower
+    }
+
+    /** Finger start, in virtual units: lower right of the box, clear of the launcher line. */
+    private fun tourStartX() = boxX + boxS * .92f
+    private fun tourStartY() = boxBottom + boxS * .24f
+
+    private fun ease(t: Float) = t.coerceIn(0f, 1f).let { it * it * (3 - 2 * it) }
+
+    /** The demo drives the real readings: the launcher gauge, the aim guide and the panel follow the finger. */
+    private fun updateTour(dt: Float) {
+        tourT = (tourT + dt) % TOUR_PERIOD
+        val pullF = ease((tourT - T_PULL) / (T_AIM - T_PULL - .2f)) * TOUR_PULL_F
+        val swing = if (tourT in T_AIM..T_LAUNCH) sin((tourT - T_AIM) / (T_LAUNCH - T_AIM) * TAU) else 0f
+        aimPower = ParamGrid.snap(powerSpec, powerMin + pullF * (powerMax - powerMin))
+        aimAngle = ParamGrid.snap(angleSpec, (restAngle - swing * TOUR_SWING / DEG_PER_UNIT).coerceIn(angleMin, angleMax))
+        if (tourT < T_PULL || tourT > T_END) { aimAngle = restAngle; aimPower = restPower }
+    }
+
+    private fun drawTour() {
+        if (!tourOn || phase != Phase.AIM) return
+        val f = fonts ?: return
+        val t = tourT
+        val fadeIn = ease(t / .4f)
+        val fadeOut = 1 - ease((t - T_END) / .5f)
+        val a = fadeIn * fadeOut
+        if (a <= .01f) return
+        val sx = tourStartX()
+        val sy = tourStartY()
+        val pullLen = DEAD_ZONE + TOUR_PULL_F * PULL_RANGE
+        val ex = sx - pullLen
+        // finger position along the demo
+        val pullF = ease((t - T_PULL) / (T_AIM - T_PULL - .2f))
+        val swing = if (t in T_AIM..T_LAUNCH) sin((t - T_AIM) / (T_LAUNCH - T_AIM) * TAU) else 0f
+        val fx = sx - pullF * pullLen
+        val fy = sy - swing * TOUR_SWING
+        val step = when {
+            t < T_AIM -> 0
+            t < T_LAUNCH -> 1
+            else -> 2
+        }
+        // 1. faded arrow to the left (energy)
+        val a1 = a * if (step == 0) .9f else .3f
+        tourArrow(sx - 4, sy, ex - 10, sy, a1)
+        tourLabel(f, txt.tourEnergy, (sx + ex) / 2, sy + 28, a1)
+        // 2. faded double arrow up/down (aim)
+        if (t >= T_AIM - .3f) {
+            val a2 = a * ease((t - T_AIM + .3f) / .3f) * if (step == 1) .9f else .3f
+            tourArrow(ex - 26, sy, ex - 26, sy + TOUR_SWING + 14, a2)
+            tourArrow(ex - 26, sy, ex - 26, sy - TOUR_SWING - 14, a2)
+            tourLabel(f, txt.tourAim, ex - 26, sy - TOUR_SWING - 34, a2)
+        }
+        // 3. let go: the finger lifts, the label sits by the launcher
+        if (step == 2) {
+            val a3 = a * ease((t - T_LAUNCH) / .3f)
+            val lx = px(level.launcher.x)
+            val ly = py(level.launcher.y)
+            tourLabel(f, txt.tourLaunch, lx + 40, ly - LAUNCHER_R - 30, a3)
+        }
+        // ghost finger: press ripple, then lifts (grows and fades) on release
+        val lift = ease((t - T_LAUNCH) / .5f)
+        val press = ease((t - .15f) / .3f)
+        val fr = 12f * (1 + .35f * lift) * (1.15f - .15f * press)
+        val fa = a * (1 - lift)
+        cv.disc(fx, fy, fr, Pal.hud, .18f * fa)
+        cv.ring(fx, fy, fr, 1.6f, Pal.hud, .7f * fa)
+        if (t < T_PULL + .4f) cv.ring(fx, fy, fr + 14 * ease((t - .2f) / .5f), 1f, Pal.hud, .4f * a * (1 - ease((t - .2f) / .5f)))
+        if (step == 2) cv.ring(fx, fy, fr + 18 * lift, 1f, Pal.hud, .35f * a * (1 - lift))
+    }
+
+    /** Dotted arrow, fading from its tail to its head (HUD layer, not physics). */
+    private fun tourArrow(x0: Float, y0: Float, x1: Float, y1: Float, a: Float) {
+        if (a <= .01f) return
+        val dx = x1 - x0
+        val dy = y1 - y0
+        val len = sqrt(dx * dx + dy * dy)
+        val ux = dx / len
+        val uy = dy / len
+        var d = 0f
+        while (d < len - 8) {
+            cv.disc(x0 + ux * d, y0 + uy * d, 1.5f, Pal.hud, a * (.25f + .75f * d / len))
+            d += 8f
+        }
+        val hx = x1
+        val hy = y1
+        cv.line(hx, hy, hx - ux * 9 - uy * 6, hy - uy * 9 + ux * 6, 1.6f, Pal.hud, a)
+        cv.line(hx, hy, hx - ux * 9 + uy * 6, hy - uy * 9 - ux * 6, 1.6f, Pal.hud, a)
+    }
+
+    /** Short label in a dark pill, centred on (x, y), kept inside the box. */
+    private fun tourLabel(f: Fonts, s: String, x: Float, y: Float, a: Float) {
+        if (a <= .01f) return
+        layout.setText(f.monoSmall, s)
+        val pw = layout.width + 18
+        val ph = layout.height + 14
+        val cx = x.coerceIn(boxX + pw / 2 + 4, boxX + boxS - pw / 2 - 4)
+        val sh = cv.shapes()
+        cv.color(Pal.bezel, .88f * a)
+        sh.rect(cx - pw / 2, y - ph / 2, pw, ph)
+        cv.line(cx - pw / 2, y - ph / 2, cx + pw / 2, y - ph / 2, 1f, Pal.hudMuted, .5f * a)
+        TOUR_TEXT.set(Pal.hud).a = a
+        text(f.monoSmall, s, cx, y + layout.height / 2, TOUR_TEXT, Align.center)
+    }
+
     // --- HUD (bezel) -----------------------------------------------------------
 
     private fun drawTopBar() {
@@ -1054,6 +1184,15 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         const val PULL_RANGE = 150f
         /** Vertical drag (virtual units) per degree of aim. */
         const val DEG_PER_UNIT = 6f
+        // guided tour timeline (s): press, pull, aim, let go, pause
+        const val TOUR_PERIOD = 7f
+        const val T_PULL = .5f
+        const val T_AIM = 2.6f
+        const val T_LAUNCH = 4.8f
+        const val T_END = 6f
+        const val TOUR_PULL_F = .6f
+        const val TOUR_SWING = 30f
+        const val TOUR_IDLE = 6f
         const val OUTRO = .8f
         const val TRAIL = 512
         const val TRAIL_DRAWN = 45
@@ -1062,6 +1201,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         val RAY_END = Color()
         val SCAN = Color()
         val SCAN_END = Color()
+        val TOUR_TEXT = Color()
 
         fun fmt(v: Double) = String.format(java.util.Locale.ROOT, "%.2f", v)
         fun signed(v: Double) = if (v > 0) "+${v.toInt()}" else if (v < 0) "−${(-v).toInt()}" else "0"

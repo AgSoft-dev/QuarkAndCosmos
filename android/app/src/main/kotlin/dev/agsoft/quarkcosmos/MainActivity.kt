@@ -53,7 +53,9 @@ private fun QuarkApp() {
                 Screen.WELCOME -> WelcomeScreen(onPlay = { screen = Screen.WORLDS })
                 Screen.WORLDS -> WorldsScreen(best, onBack = back, onOpen = { screen = Screen.QUANTUM_MAP })
                 Screen.QUANTUM_MAP -> QuantumMapScreen(best, onBack = back, onPlay = { node, i ->
-                    context.startActivity(GameActivity.intent(context, node, i))
+                    // guided tour of the slingshot on the first level until it is completed
+                    val tutorial = i == 0 && best[node.levelId ?: ""] == null
+                    context.startActivity(GameActivity.intent(context, node, i, tutorial))
                 })
             }
         }

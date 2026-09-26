@@ -78,4 +78,8 @@
     <string name="game_retry">RETRY</string>
     <string name="game_map">MAP</string>
     <string name="game_next">CONTINUE</string>
+    <!-- Aiming guided tour (first slingshot level) -->
+    <string name="game_tour_energy">Pull left: energy</string>
+    <string name="game_tour_aim">Slide up/down: aim</string>
+    <string name="game_tour_launch">Let go: launch</string>
 </resources>

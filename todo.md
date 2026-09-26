@@ -194,7 +194,7 @@ Each object gets a design sheet with: idle / hover / dragged / active / disabled
 - [ ] Touch: drag target ≥ 48 dp, drag starts from anywhere near Quarky (a 2× radius), cancel by dragging back to the origin.
 
 ### 3.4 Progression across scales
-- [ ] Beta: 7 levels, linear, a Codex page per level. Onboarding in level 1 uses **no text**: a ghost hand shows the drag once.
+- [ ] Beta: 7 levels, linear, a Codex page per level. Onboarding in level 1 uses **no text**: a ghost hand shows the drag once. *POC (user request 2026-09-26): a looping ghost-finger tour on Tunnel 1 with faded arrows and three short labels (energy / aim / let go), shown until the level is first completed.*
 - [ ] Full: per world, `N concepts × (1 intro + 2–3 ramp) + 3–5 mix levels + 1 showcase level` (the showcase is a setpiece at the end of the world, before the scale-change cinematic).
 - [ ] Difficulty levers the generator can tune: preview length, tolerance window width, oscillation amplitude/period, obstacle count, Photon placement tier.
 - [ ] Hints: after 5 fails, offer the reference solution's *first segment* (read from the shipped `hint.params`). No ads-for-hints in the beta.

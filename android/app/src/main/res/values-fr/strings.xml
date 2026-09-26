@@ -72,4 +72,8 @@
     <string name="game_retry">REJOUER</string>
     <string name="game_map">CARTE</string>
     <string name="game_next">CONTINUER</string>
+    <!-- Aiming guided tour (first slingshot level) -->
+    <string name="game_tour_energy">Tire à gauche\u00A0: énergie</string>
+    <string name="game_tour_aim">Glisse haut/bas\u00A0: visée</string>
+    <string name="game_tour_launch">Relâche\u00A0: lancer</string>
 </resources>

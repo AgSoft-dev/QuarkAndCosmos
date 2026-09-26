@@ -29,6 +29,7 @@ class GameActivity : AndroidApplication(), GameHost {
             subtitle = intent.getStringExtra(EXTRA_SUBTITLE) ?: "",
             codex = codexLine(intent.getStringExtra(EXTRA_CONCEPT)),
             text = gameText(),
+            tutorial = intent.getBooleanExtra(EXTRA_TUTORIAL, false),
         )
         val config = AndroidApplicationConfiguration().apply {
             useImmersiveMode = true
@@ -72,6 +73,9 @@ class GameActivity : AndroidApplication(), GameHost {
         retry = getString(R.string.game_retry),
         map = getString(R.string.game_map),
         next = getString(R.string.game_next),
+        tourEnergy = getString(R.string.game_tour_energy),
+        tourAim = getString(R.string.game_tour_aim),
+        tourLaunch = getString(R.string.game_tour_launch),
     )
 
     // Called from the libGDX render thread.
@@ -100,12 +104,15 @@ class GameActivity : AndroidApplication(), GameHost {
         private const val EXTRA_CONCEPT = "level_concept"
         private const val EXTRA_TITLE = "level_title"
         private const val EXTRA_SUBTITLE = "level_subtitle"
+        private const val EXTRA_TUTORIAL = "level_tutorial"
 
-        fun intent(context: Context, node: LevelNode, index: Int) =
+        /** [tutorial]: show the aiming guided tour (first level, not completed yet). */
+        fun intent(context: Context, node: LevelNode, index: Int, tutorial: Boolean = false) =
             Intent(context, GameActivity::class.java)
                 .putExtra(EXTRA_FILE, node.file)
                 .putExtra(EXTRA_CONCEPT, node.concept)
                 .putExtra(EXTRA_TITLE, context.getString(node.title))
                 .putExtra(EXTRA_SUBTITLE, context.getString(R.string.level_subtitle, index + 1))
+                .putExtra(EXTRA_TUTORIAL, tutorial)
     }
 }
