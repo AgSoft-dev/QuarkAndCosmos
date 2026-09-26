@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Quark &amp; Cosmos — the four future worlds (style frames, [FULL] scope)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --page:#0b0910; --panel:#120e18; --panel2:#18121f; --line:#2a2233; --line2:#3b3047;
+    --text:#efe7f3; --muted:#a898b3; --faint:#8a7c95;
+    --key:#f472b6; --accent:#67e8f9;
+    --mono:"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --ui:"Fira Sans", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{background:var(--page); color:var(--text)}
+  body{margin:0; background:var(--page); color:var(--text); font:15px/1.55 var(--ui); overflow-x:hidden}
+  .wrap{max-width:1500px; margin:0 auto; padding:48px 28px 96px}
+  .eyebrow{font:500 11px/1.4 var(--mono); letter-spacing:.16em; text-transform:uppercase; color:var(--key)}
+  h1{font-weight:600; font-size:clamp(28px,4vw,44px); line-height:1.08; margin:14px 0; letter-spacing:-.015em}
+  h1 span{color:var(--muted); font-weight:400}
+  .lede{color:var(--muted); max-width:860px; margin:0; font-size:16px}
+  .lede b{color:var(--text); font-weight:500}
+  .decision{margin-top:26px; display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px; max-width:1100px}
+  .decision > div{border:1px solid var(--line); background:var(--panel); border-radius:14px; padding:14px 16px}
+  .decision .k{font:500 10.5px/1.3 var(--mono); letter-spacing:.12em; text-transform:uppercase; color:var(--faint)}
+  .decision .v{margin-top:6px; font-size:14px}
+  section{margin-top:80px}
+  .sec-head{display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 14px; margin-bottom:6px}
+  .sec-num{font:500 12px/1 var(--mono); color:var(--key); letter-spacing:.1em}
+  h2{font-size:24px; font-weight:600; margin:0}
+  .sec-intro{color:var(--muted); max-width:900px; margin:8px 0 24px}
+  .sec-intro code,.note code,td code{font:12px var(--mono); color:var(--text); background:var(--panel2); padding:1px 5px; border-radius:5px}
+  .toolbar{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:-6px 0 24px}
+  .toolbar .lbl{font:500 11px/1 var(--mono); color:var(--faint); letter-spacing:.1em; text-transform:uppercase}
+  button{font:500 12px/1 var(--mono); color:var(--text); background:var(--panel2); border:1px solid var(--line); border-radius:999px; padding:9px 13px; cursor:pointer; min-height:34px}
+  button:hover{border-color:var(--line2)}
+  button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  .seg{display:inline-flex; border:1px solid var(--line); border-radius:999px; overflow:hidden; background:var(--panel2)}
+  .seg button{border:0; border-radius:0; background:transparent}
+  .seg button + button{border-left:1px solid var(--line)}
+  .seg button[aria-pressed="true"]{background:#2a1830; color:#fff; box-shadow:inset 0 -2px 0 var(--key)}
+  /* five-column grid: Quantum reference + 4 worlds */
+  .cols{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:16px}
+  @media (max-width:1250px){ .cols{grid-template-columns:repeat(3,minmax(0,1fr))} }
+  @media (max-width:820px){ .cols{grid-template-columns:repeat(2,minmax(0,1fr))} }
+  @media (max-width:520px){ .cols{grid-template-columns:1fr} }
+  .col{background:var(--panel); border:1px solid var(--line); border-radius:16px; overflow:hidden; min-width:0; display:flex; flex-direction:column}
+  .col.ref{border-style:dashed}
+  .col-h{padding:12px 14px; border-bottom:1px solid var(--line)}
+  .col-h .tag{font:500 10px/1.3 var(--mono); letter-spacing:.12em; text-transform:uppercase}
+  .col-h h3{margin:3px 0 0; font-size:16px; font-weight:600}
+  .col-h p{margin:2px 0 0; font-size:12px; color:var(--muted)}
+  .col-b{padding:12px 14px; font-size:12.5px; color:var(--muted)}
+  .col-b b{color:var(--text); font-weight:500}
+  .col canvas{display:block; width:100%}
+  .sw{display:grid; grid-template-columns:34px 1fr; gap:4px 10px; align-items:center; margin:0 0 8px}
+  .sw i{display:block; width:34px; height:26px; border-radius:6px; border:1px solid rgba(255,255,255,.12)}
+  .sw span{font:11px/1.3 var(--mono); color:var(--muted)}
+  .sw span b{display:block; font:500 11.5px var(--ui); color:var(--text)}
+  .kv{margin:0; padding:0; list-style:none}
+  .kv li{padding:6px 0; border-top:1px solid var(--line)}
+  .kv li:first-child{border-top:0}
+  .kv .k{display:block; font:500 10px/1.3 var(--mono); letter-spacing:.1em; text-transform:uppercase; color:var(--faint)}
+  .phones{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:18px}
+  @media (max-width:1400px){ .phones{grid-template-columns:repeat(3,minmax(0,1fr))} }
+  @media (max-width:900px){ .phones{grid-template-columns:repeat(2,minmax(0,1fr))} }
+  @media (max-width:560px){ .phones{grid-template-columns:1fr} }
+  .phone-card{display:flex; flex-direction:column; align-items:center; min-width:0}
+  .phone-card h3{margin:0 0 2px; font-size:15px; font-weight:600; align-self:stretch}
+  .phone-card .sub{font-size:12px; color:var(--muted); margin:0 0 10px; align-self:stretch; min-height:34px}
+  .phone{width:100%; max-width:300px; border-radius:38px; padding:7px; background:linear-gradient(160deg,#211a29,#08060b 55%); box-shadow:0 0 0 1px #2c2433, 0 30px 60px -30px rgba(0,0,0,.9)}
+  .phone canvas{display:block; width:100%; border-radius:31px; background:#050308}
+  .phone.small{max-width:210px; border-radius:30px; padding:5px}
+  .phone.small canvas{border-radius:25px}
+  .probe{font:11px/1.45 var(--mono); color:var(--faint); margin:8px 0 0; align-self:stretch}
+  .probe .ok{color:#86efac} .probe .ko{color:#fb923c}
+  .notes{margin:10px 0 0; padding:0; list-style:none; font-size:12.5px; color:var(--muted); align-self:stretch}
+  .notes li{padding:6px 0; border-top:1px solid var(--line)}
+  .notes li b{color:var(--text); font-weight:500}
+  .tbl-wrap{overflow-x:auto; border:1px solid var(--line); border-radius:14px; background:var(--panel)}
+  table{border-collapse:collapse; width:100%; font-size:12.5px}
+  th,td{text-align:left; padding:8px 11px; border-bottom:1px solid var(--line); vertical-align:middle}
+  th{font:500 10px/1.3 var(--mono); letter-spacing:.1em; text-transform:uppercase; color:var(--faint)}
+  tr:last-child td{border-bottom:0}
+  td.num{font-family:var(--mono); white-space:nowrap}
+  .pill{display:inline-block; font:600 10.5px/1 var(--mono); padding:4px 7px; border-radius:999px}
+  .pass{background:rgba(134,239,172,.12); color:#86efac}
+  .fail{background:rgba(251,146,60,.14); color:#fb923c}
+  .chip{display:inline-block; width:14px; height:14px; border-radius:4px; vertical-align:-2px; border:1px solid rgba(255,255,255,.15)}
+  .subhead{font:500 11px/1 var(--mono); color:var(--faint); letter-spacing:.12em; text-transform:uppercase; margin:30px 0 12px}
+  .note{font-size:12.5px; color:var(--muted); margin-top:10px; max-width:980px}
+  .honesty{margin-top:24px; font-size:13px; color:var(--faint); max-width:980px; border-left:2px solid var(--line2); padding-left:14px}
+  .honesty b{color:var(--muted); font-weight:500}
+  .physgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px}
+  .physgrid svg{display:block; width:100%; height:auto; background:#07050c}
+  footer{margin-top:80px; color:var(--faint); font-size:12px; border-top:1px solid var(--line); padding-top:20px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Design exploration · [FULL] scope · not part of the Quantum beta</div>
+  <h1>Quark &amp; Cosmos <span>— the four future worlds, seen through their instruments</span></h1>
+  <p class="lede">Style frames for <b>Atomic/Molecular</b>, <b>Macro</b>, <b>Space</b> and <b>Cosmological</b>, built with the validated art direction v2 (flat <b>B</b> matter + cinematic <b>C</b> background, Quarky v2, HUD = eyepiece, portrait) and set side by side with <b>Quantum</b>, the validated and implemented reference column. Level content uses the core mechanics of <code style="font:12.5px var(--mono)">todo.md</code> §2.2 “Full-release worlds”.</p>
+  <div class="decision">
+    <div><div class="k">Status</div><div class="v">Exploration only. Nothing here changes the beta scope (Quantum, 7 levels) or any validated choice.</div></div>
+    <div><div class="k">Needs a [GATE]</div><div class="v">Colour contracts, instruments, force registry and mutations: see <code style="font:12px var(--mono)">design/worlds/README.md</code> (open questions).</div></div>
+    <div><div class="k">Physics</div><div class="v">Trajectories, field lines and contours below are computed in the page (Coulomb, energy, Newton, lensing). Mockup physics is not the reference: <code style="font:12px var(--mono)">docs/physics-spec.md</code> is.</div></div>
+  </div>
+</header>
+
+<section id="overview">
+  <div class="sec-head"><span class="sec-num">01</span><h2>The five scales at a glance</h2></div>
+  <p class="sec-intro">One instrument per scale; the HUD is its eyepiece. Composition goes from fixed and tight (Quantum, Atomic) to lateral tracking (Macro), free zoom (Space) and zoom + distortion (Cosmological), as set by the art-direction skill.</p>
+  <div class="cols" id="overview-cols"></div>
+</section>
+
+<section id="contracts">
+  <div class="sec-head"><span class="sec-num">02</span><h2>Colour contracts</h2></div>
+  <p class="sec-intro">Same format as Quantum: key + complementary accent + deep background + threshold/danger + derived colour + HUD text pair. Photon energies are always <b>key (4 rays) → derived (6 rays) → accent (8 rays)</b>. WCAG ratios are computed live below (and listed in the README); the worst case is the text on the solid eyepiece bezel.</p>
+  <div class="cols" id="contract-cols"></div>
+  <div class="subhead">HUD text contrast (WCAG 2.x, computed in the page)</div>
+  <div class="tbl-wrap"><table id="contrast-table"><thead><tr><th>World</th><th>Text</th><th>On</th><th>Ratio</th><th>≥ 4.5:1</th></tr></thead><tbody></tbody></table></div>
+</section>
+
+<section id="instruments">
+  <div class="sec-head"><span class="sec-num">03</span><h2>Instruments and C-style backgrounds</h2></div>
+  <p class="sec-intro">Each background is three parallax layers (distant bokeh → fringes/fog → foreground dust) with grain and vignette at 3 %, no high-frequency detail behind the play area. The probe measures the background's mean luminance against the matter layer of the matching level screen (rule: ≤ 20 %).</p>
+  <div class="cols" id="bg-cols"></div>
+</section>
+
+<section id="quarky">
+  <div class="sec-head"><span class="sec-num">04</span><h2>Quarky's mutations</h2></div>
+  <p class="sec-intro">Same DNA everywhere: jelly membrane, glowing core, big dark eyes with a white highlight, gummy highlight, ~1.5 px outline. The Macro form is canonical; the other four are mutations of it. Real-size tests at 48 px and 32 px (CSS pixels, no scaling).</p>
+  <div class="cols" id="quarky-cols"></div>
+</section>
+
+<section id="screens">
+  <div class="sec-head"><span class="sec-num">05</span><h2>Level screens — portrait 390 × 844</h2></div>
+  <p class="sec-intro">Same skeleton as the Android <code>LevelScreen</code>: top bar (back, 3 Photon counters, title, reset), the instrument's play area, and the bottom “instrument readings” panel. Demo loop: aim → flight → Photons → portal, and the setting's reaction to the outcome.</p>
+  <div class="toolbar">
+    <span class="lbl">Panel language</span>
+    <div class="seg" role="group" aria-label="Panel language"><button type="button" data-lang="en" aria-pressed="true">EN</button><button type="button" data-lang="fr" aria-pressed="false">FR</button></div>
+    <span class="lbl">Outcome</span>
+    <div class="seg" role="group" aria-label="Outcome"><button type="button" data-mode="win" aria-pressed="true">Success</button><button type="button" data-mode="fail" aria-pressed="false">Failure</button></div>
+  </div>
+  <div class="phones" id="screen-phones"></div>
+  <div class="subhead">Panel labels, English and French (width measured in JetBrains Mono 10 px, 1.4 px spacing; available width 206 px)</div>
+  <div class="tbl-wrap"><table id="fit-table"><thead><tr><th>World</th><th>English</th><th class="num">px</th><th>French</th><th class="num">px</th><th>Fits</th></tr></thead><tbody></tbody></table></div>
+  <p class="honesty" id="screen-honesty"></p>
+</section>
+
+<section id="menus">
+  <div class="sec-head"><span class="sec-num">06</span><h2>Scales screen and world maps</h2></div>
+  <p class="sec-intro">The scales list keeps the Compose layout (tile = emblem + magnitude + name + instrument, dotted journey thread between tiles); the emblem becomes the world's Quarky mutation. Each world map keeps the Quantum map's vocabulary (portal-ring nodes, dotted path solid up to the current node, Quarky on the current node) but its path follows the world's topology.</p>
+  <div class="phones" id="menu-phones"></div>
+</section>
+
+<section id="forces">
+  <div class="sec-head"><span class="sec-num">07</span><h2>Force registry — one force = one colour + one line style, everywhere</h2></div>
+  <p class="sec-intro">Game-wide: a force keeps its colour and its line style in every world. Every style is unique, so the style alone identifies a force with any colour vision. The checks below are computed in the page.</p>
+  <div class="tbl-wrap"><table id="force-table"><thead><tr><th>Force / phenomenon</th><th>Colour</th><th>Line style</th><th>Glyph double</th><th>Q</th><th>A</th><th>M</th><th>S</th><th>C</th></tr></thead><tbody></tbody></table></div>
+  <div class="subhead">Checks</div>
+  <div class="tbl-wrap"><table id="force-check"><thead><tr><th>World</th><th>Forces on screen</th><th>Closest pair (normal / deutan / protan ΔE76)</th><th>Styles distinct</th></tr></thead><tbody></tbody></table></div>
+  <p class="note" id="force-note"></p>
+</section>
+
+<section id="physics">
+  <div class="sec-head"><span class="sec-num">08</span><h2>Physics check (high-school level)</h2></div>
+  <p class="sec-intro">What each screen shows, the rule the player can predict before launching, and where the game will have to say “In real physics…”.</p>
+  <div class="physgrid" id="phys-cards"></div>
+</section>
+
+<footer>Quark &amp; Cosmos — design/worlds · Canvas 2D, one bloom pass per view (¼ resolution, 2 blurs), rendering paused off-screen, still frame when “reduce motion” is on. Fonts: JetBrains Mono and Fira Sans (OFL).</footer>
+</div>
+
+<script>
+(() => {
+'use strict';
+const TAU = Math.PI * 2;
+const RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MONO = '"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace';
+const UI = '"Fira Sans", "Segoe UI", system-ui, Roboto, sans-serif';
+const $ = s => document.querySelector(s);
+
+/* ---------------- colour utils ---------------- */
+function hx(h){ h = h.replace('#',''); return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)]; }
+function toHex(c){ return '#' + c.map(v => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2,'0')).join(''); }
+function mix(a, b, t){ const A = hx(a), B = hx(b); return toHex(A.map((v,i) => v + (B[i] - v) * t)); }
+const RC = new Map();
+function rgba(h, a){ let c = RC.get(h); if (!c){ c = hx(h); RC.set(h, c); } a = a < 0 ? 0 : a > 1 ? 1 : a; return `rgba(${c[0]},${c[1]},${c[2]},${a.toFixed(3)})`; }
+const clamp = (x, a = 0, b = 1) => x < a ? a : x > b ? b : x;
+const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 - 2 * t); };
+const lerp = (a, b, t) => a + (b - a) * t;
+function hash(n){ const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); }
+const lin = v => { v /= 255; return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+const unlin = v => 255 * (v <= 0.0031308 ? 12.92 * v : 1.055 * Math.pow(v, 1 / 2.4) - 0.055);
+function lumRGB(r, g, b){ return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b); }
+function lum(h){ const c = hx(h); return lumRGB(c[0], c[1], c[2]); }
+function contrast(a, b){ const A = lum(a), B = lum(b); return (Math.max(A, B) + .05) / (Math.min(A, B) + .05); }
+// Machado 2009, severity 1.0, applied in linear RGB
+const CVD = {
+  deutan: [[0.367322,0.860646,-0.227968],[0.280085,0.672501,0.047413],[-0.011820,0.042940,0.968881]],
+  protan: [[0.152286,1.052583,-0.204868],[0.114503,0.786281,0.099216],[-0.003882,-0.048116,1.051998]]
+};
+function sim(h, kind){ if (!kind) return h; const c = hx(h).map(lin); const M = CVD[kind]; return toHex(M.map(r => unlin(clamp(r[0]*c[0] + r[1]*c[1] + r[2]*c[2])))); }
+function lab(h){
+  const [r,g,b] = hx(h).map(lin);
+  const X = (0.4124*r + 0.3576*g + 0.1805*b) / 0.95047, Y = 0.2126*r + 0.7152*g + 0.0722*b, Z = (0.0193*r + 0.1192*g + 0.9505*b) / 1.08883;
+  const f = t => t > 0.008856 ? Math.cbrt(t) : 7.787 * t + 16/116;
+  return [116*f(Y) - 16, 500*(f(X) - f(Y)), 200*(f(Y) - f(Z))];
+}
+function dE(a, b){ const A = lab(a), B = lab(b); return Math.hypot(A[0]-B[0], A[1]-B[1], A[2]-B[2]); }
+
+/* ---------------- colour contracts (Quantum = validated reference) ---------------- */
+const WORLDS = [
+  { id:'q', ref:true, name:{en:'Quantum', fr:'Quantique'}, mag:'10⁻¹⁵ m',
+    key:'#f472b6', accent:'#67e8f9', bg:'#0a0612', danger:'#fb923c', mid:'#c4b5fd', hud:'#f7eef9', muted:'#b9a7c9', bezel:'#150d22',
+    bgTop:'#17061d', bgBot:'#040a14', ink:'#1a0820', metal:'#2b1c3a', shade:'#3a0a2e',
+    instrument:{en:'Detector cavity', fr:'Cavité du détecteur'}, instrumentLong:'Particle detector cavity / bubble chamber',
+    topology:'Closed narrow box', gravity:'None', obstacle:'Barrier / tunnel', camera:'Fixed, tight',
+    concepts:'Tunnel · Superposition · Entanglement · Uncertainty · Quantisation · Spin · Duality',
+    mutation:'2–3 flickering ghost phase copies, no solid pupils (superposition copies).' },
+  { id:'a', name:{en:'Atomic & molecular', fr:'Atomique & moléculaire'}, mag:'10⁻⁹ m',
+    key:'#facc15', accent:'#60a5fa', bg:'#0c0a05', danger:'#fb7185', mid:'#86efac', hud:'#fdf8e8', muted:'#c8bd9a', bezel:'#17130a',
+    bgTop:'#161006', bgBot:'#05070d', ink:'#1c1402', metal:'#2e2614', shade:'#5a4204',
+    instrument:{en:'Tunnelling microscope', fr:'Microscope à effet tunnel'}, instrumentLong:'Scanning tunnelling microscope (STM): the tip feels the electron cloud',
+    topology:'Radial / orbital around a nucleus', gravity:'Central attraction (Coulomb)', obstacle:'+ / − ions', camera:'Fixed, tight, centred on the nucleus',
+    concepts:'Coulomb’s law · Electron energy levels · Van der Waals · Covalent bonds (enrichment)',
+    mutation:'An orbiting electron ring + a blue satellite carrying Quarky’s charge (− glyph).' },
+  { id:'m', name:{en:'Macro', fr:'Macro'}, mag:'1 m',
+    key:'#4ade80', accent:'#f0abfc', bg:'#050d09', danger:'#fb923c', mid:'#fde68a', hud:'#effbf3', muted:'#a7c4b1', bezel:'#0b1a12',
+    bgTop:'#08160e', bgBot:'#03070a', ink:'#04200f', metal:'#1c2e24', shade:'#0f5a2a',
+    instrument:{en:'Bench camera', fr:'Caméra de paillasse'}, instrumentLong:'High-speed camera on the lab bench (chronophotography), metric ruler in the frame',
+    topology:'Horizontal corridor (lateral tracking)', gravity:'Fixed, downwards (g)', obstacle:'Spring / mirror / electromagnet', camera:'Lateral tracking',
+    concepts:'Energy conservation · Springs (Hooke) · Reflection & refraction · Electromagnet (Lorentz) · Collisions',
+    mutation:'Canonical form: no extra part. Quarky is seen whole for the first time.' },
+  { id:'s', name:{en:'Space', fr:'Spatiale'}, mag:'10⁹ m',
+    key:'#a78bfa', accent:'#fcd34d', bg:'#07050f', danger:'#f87171', mid:'#f9a8d4', hud:'#f3effd', muted:'#b4a9d0', bezel:'#120d22',
+    bgTop:'#0f0a1e', bgBot:'#03040a', ink:'#150a2e', metal:'#261d3d', shade:'#3b2380',
+    instrument:{en:'Tracking telescope', fr:'Télescope de suivi'}, instrumentLong:'Tracking telescope with reticle: follows Quarky beyond the Earth',
+    topology:'Open plane, no floor', gravity:'Several wells', obstacle:'Giant planet (gravity assist)', camera:'Free zoom',
+    concepts:'Universal gravitation & Kepler · Gravity assist · Angular momentum · Orbital / escape velocity',
+    mutation:'Mini solar-sail fins + a star trail.' },
+  { id:'c', name:{en:'Cosmological', fr:'Cosmologique'}, mag:'10²² m',
+    key:'#818cf8', accent:'#fde68a', bg:'#04040c', danger:'#fb923c', mid:'#f0abfc', hud:'#eef0ff', muted:'#a9aed6', bezel:'#0b0c1f',
+    bgTop:'#0a0a1f', bgBot:'#020308', ink:'#0c0e2e', metal:'#1e2040', shade:'#2c2f8a',
+    instrument:{en:'Interferometer array', fr:'Réseau d’interféromètres'}, instrumentLong:'Radio interferometer + gravitational-wave observatory: it sees space-time itself',
+    topology:'The grid itself is curved', gravity:'Warps space-time', obstacle:'Opaque black hole (lensing)', camera:'Zoom + distortion',
+    concepts:'Gravitational lensing (enrichment) · Expansion & redshift · Dark matter (enrichment)',
+    mutation:'Slightly skewed silhouette, stretched towards the mass (tidal).' }
+];
+const WBY = Object.fromEntries(WORLDS.map(w => [w.id, w]));
+for (const w of WORLDS){ w.energy = [w.key, w.mid, w.accent]; w.keyHi = mix(w.key, '#ffffff', .5); w.accentHi = mix(w.accent, '#ffffff', .45); }
+const RAYS = [4, 6, 8];
+
+/* ---------------- force registry (game-wide) ---------------- */
+const FORCES = [
+  { id:'traj',  en:'Predicted trajectory (Δt-spaced dots)', col:'#ffffff', style:'dots',     styleName:'round dots, one per equal time step', glyph:'—', w:'qamsc' },
+  { id:'wave',  en:'Probability wave',          col:'#f472b6', style:'sine',     styleName:'sine wiggle', glyph:'ψ', w:'q' },
+  { id:'mag',   en:'Magnetic field',            col:'#67e8f9', style:'arrows',   styleName:'solid + travelling filled arrowheads (⊙ when out of the screen)', glyph:'N / S, ⊙ ⊗', w:'qm' },
+  { id:'ent',   en:'Entanglement',              col:'#c4b5fd', style:'filament', styleName:'twisted double filament', glyph:'∞', w:'q' },
+  { id:'thr',   en:'Threshold / limit (not a force)', col:null,  style:'longdash', styleName:'long dashes 10/4 + hatching on the matter', glyph:'hatching', w:'qamsc' },
+  { id:'elec',  en:'Electric field (Coulomb)',  col:'#fde047', style:'chevrons', styleName:'solid + open chevrons, from + to −', glyph:'+ / −', w:'a' },
+  { id:'iso',   en:'Equipotential / well contour', col:'#94a3b8', style:'dashdot', styleName:'dash-dot', glyph:'—', w:'as' },
+  { id:'vdw',   en:'Van der Waals (short range)', col:'#5eead4', style:'comb',   styleName:'short comb teeth hugging the surface', glyph:'⋮', w:'a' },
+  { id:'grav',  en:'Gravity field',             col:'#93c5fd', style:'dashchev', styleName:'short dashes 3/4 + hollow chevrons towards the mass', glyph:'g ↓', w:'msc' },
+  { id:'spring',en:'Elastic force (spring)',    col:'#86efac', style:'zigzag',   styleName:'zigzag', glyph:'⌇', w:'m' },
+  { id:'light', en:'Light ray',                 col:'#fef3c7', style:'ticks',    styleName:'solid + wavefront ticks', glyph:'☼', w:'mc' },
+  { id:'hubble',en:'Expansion (Hubble flow)',   col:'#fca5a5', style:'growdash', styleName:'dashes that lengthen with distance', glyph:'↗', w:'c' }
+];
+const FBY = Object.fromEntries(FORCES.map(f => [f.id, f]));
+// forces drawn on each level screen (for the co-occurrence check)
+const ON_SCREEN = { q:['traj','thr'], a:['traj','thr','elec','iso'], m:['traj','thr','grav','spring'], s:['traj','thr','grav','iso'], c:['traj','thr','grav','light'] };
+
+/* ---------------- drawing helpers ---------------- */
+function disc(c, x, y, r){ c.beginPath(); c.arc(x, y, Math.max(0, r), 0, TAU); }
+function halo(c, x, y, r0, r1, col, a){ if (a <= .003) return; const g = c.createRadialGradient(x, y, r0, x, y, r1); g.addColorStop(0, rgba(col, a)); g.addColorStop(1, rgba(col, 0)); c.fillStyle = g; disc(c, x, y, r1); c.fill(); }
+function glint(c, x, y, s, col, a){ if (s <= .05 || a <= 0) return; c.fillStyle = rgba(col, a); c.beginPath(); c.moveTo(x, y - s); c.quadraticCurveTo(x, y, x + s, y); c.quadraticCurveTo(x, y, x, y + s); c.quadraticCurveTo(x, y, x - s, y); c.quadraticCurveTo(x, y, x, y - s); c.fill(); }
+function txt(c, s, x, y, o = {}){
+  c.font = `${o.w || 400} ${o.size || 10}px ${o.font || MONO}`;
+  c.fillStyle = o.col || '#ffffff'; c.textAlign = o.align || 'left'; c.textBaseline = o.base || 'alphabetic';
+  if ('letterSpacing' in c) c.letterSpacing = (o.ls || 0) + 'px';
+  c.fillText(s, x, y);
+  if ('letterSpacing' in c) c.letterSpacing = '0px';
+}
+function arrowHead(c, x, y, ang, s){ c.beginPath(); c.moveTo(x + Math.cos(ang) * s, y + Math.sin(ang) * s); c.lineTo(x + Math.cos(ang + 2.5) * s, y + Math.sin(ang + 2.5) * s); c.lineTo(x + Math.cos(ang - 2.5) * s, y + Math.sin(ang - 2.5) * s); c.closePath(); c.fill(); }
+function wrapText(c, s, x, y, w, lh, o){
+  c.font = `${o.w || 400} ${o.size || 12}px ${o.font || UI}`;
+  const words = s.split(' '); let line = ''; let yy = y;
+  for (const wd of words){ const test = line ? line + ' ' + wd : wd; if (c.measureText(test).width > w && line){ txt(c, line, x, yy, o); line = wd; yy += lh; } else line = test; }
+  if (line) txt(c, line, x, yy, o);
+  return yy + lh;
+}
+/* polyline walker: calls cb(x, y, ux, uy, s) every `step` px of arc length */
+function walk(pts, step, cb, offset = 0){
+  let s = 0, next = ((offset % step) + step) % step;
+  for (let i = 1; i < pts.length; i++){
+    const [ax, ay] = pts[i-1], [bx, by] = pts[i]; const L = Math.hypot(bx - ax, by - ay); if (L < 1e-6) continue;
+    const ux = (bx - ax) / L, uy = (by - ay) / L;
+    while (next <= s + L){ const d = next - s; cb(ax + ux * d, ay + uy * d, ux, uy, next); next += step; }
+    s += L;
+  }
+  return s;
+}
+function strokePts(c, pts){ c.beginPath(); pts.forEach((p, i) => i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])); c.stroke(); }
+
+/* one force = one colour + one line style (physics layer: thin, ≤ 1 px) */
+function fline(c, pts, fid, a, t, colOverride){
+  const f = FBY[fid]; const col = colOverride || f.col; if (!pts || pts.length < 2 || a <= 0) return;
+  c.save(); c.lineCap = 'round'; c.lineJoin = 'round'; c.lineWidth = 1; c.strokeStyle = rgba(col, a); c.fillStyle = rgba(col, a);
+  switch (f.style){
+    case 'dots': pts.forEach(p => { disc(c, p[0], p[1], 1.3); c.fill(); }); break;
+    case 'longdash': c.lineWidth = 1.2; c.setLineDash([10, 4]); c.lineDashOffset = -t * 10; strokePts(c, pts); break;
+    case 'dashdot': c.lineWidth = .8; c.setLineDash([6, 3, 1.5, 3]); strokePts(c, pts); break;
+    case 'dashchev':
+      c.lineWidth = .9; c.setLineDash([3, 4]); c.lineDashOffset = -t * 14; strokePts(c, pts); c.setLineDash([]);
+      walk(pts, 30, (x, y, ux, uy) => { const nx = -uy, ny = ux; c.beginPath(); c.moveTo(x - ux * 4 + nx * 3.5, y - uy * 4 + ny * 3.5); c.lineTo(x, y); c.lineTo(x - ux * 4 - nx * 3.5, y - uy * 4 - ny * 3.5); c.stroke(); }, t * 14 + 14);
+      break;
+    case 'chevrons':
+      c.lineWidth = .9; strokePts(c, pts);
+      walk(pts, 26, (x, y, ux, uy) => { const nx = -uy, ny = ux; c.beginPath(); c.moveTo(x - ux * 3 + nx * 3, y - uy * 3 + ny * 3); c.lineTo(x + ux * 1.5, y + uy * 1.5); c.lineTo(x - ux * 3 - nx * 3, y - uy * 3 - ny * 3); c.stroke(); }, t * 16 + 10);
+      break;
+    case 'arrows':
+      strokePts(c, pts); walk(pts, 30, (x, y, ux, uy) => arrowHead(c, x, y, Math.atan2(uy, ux), 3), t * 30);
+      break;
+    case 'ticks':
+      c.lineWidth = 1; strokePts(c, pts);
+      walk(pts, 9, (x, y, ux, uy) => { c.beginPath(); c.moveTo(x - uy * 2.6, y + ux * 2.6); c.lineTo(x + uy * 2.6, y - ux * 2.6); c.stroke(); }, t * 18);
+      break;
+    case 'zigzag': {
+      const zz = []; let k = 0; walk(pts, 4, (x, y, ux, uy) => { const o = (k++ % 2 ? 1 : -1) * 3; zz.push([x - uy * o, y + ux * o]); }); strokePts(c, zz); break; }
+    case 'sine': {
+      const ss = []; walk(pts, 2, (x, y, ux, uy, s) => { const o = Math.sin(s * .2 - t * 9) * 4; ss.push([x - uy * o, y + ux * o]); }); strokePts(c, ss); break; }
+    case 'filament': {
+      for (const ph of [0, Math.PI]){ const ss = []; walk(pts, 2, (x, y, ux, uy, s) => { const o = Math.sin(s * .15 + ph - t * 4) * 2.5; ss.push([x - uy * o, y + ux * o]); }); strokePts(c, ss); } break; }
+    case 'comb':
+      walk(pts, 4, (x, y, ux, uy) => { c.beginPath(); c.moveTo(x, y); c.lineTo(x - uy * 4, y + ux * 4); c.stroke(); });
+      break;
+    case 'growdash': {
+      let s0 = 0; const total = walk(pts, 1e9, () => {}); let on = true; let seg = [];
+      walk(pts, 2, (x, y, ux, uy, s) => { const len = 2 + 10 * (s / Math.max(1, total)); if (s - s0 > (on ? len : 4)){ if (on && seg.length > 1) strokePts(c, seg); seg = []; on = !on; s0 = s; } if (on) seg.push([x, y]); });
+      if (on && seg.length > 1) strokePts(c, seg);
+      const e = pts[pts.length - 1], p = pts[pts.length - 2]; arrowHead(c, e[0], e[1], Math.atan2(e[1] - p[1], e[0] - p[0]), 3);
+      break; }
+  }
+  c.restore();
+}
+
+/* ---------------- Stage: 3 layers + a single bloom pass ---------------- */
+const FILTER_OK = (() => { try { const c = document.createElement('canvas').getContext('2d'); c.filter = 'blur(2px)'; return c.filter === 'blur(2px)'; } catch(e){ return false; } })();
+function mk(w, h){ const c = document.createElement('canvas'); c.width = Math.max(1, w); c.height = Math.max(1, h); return c; }
+const STAGES = []; const BY_CANVAS = new Map();
+const io = 'IntersectionObserver' in window ? new IntersectionObserver(es => { for (const e of es){ const s = BY_CANVAS.get(e.target); if (s){ s.visible = e.isIntersecting; if (s.visible) s.render(); } } }, { rootMargin:'150px' }) : null;
+class Stage {
+  constructor(canvas, lw, lh, hooks, o = {}){
+    this.canvas = canvas; this.ctx = canvas.getContext('2d'); this.lw = lw; this.lh = lh; this.h = hooks;
+    this.fixed = o.css || 0; this.time = o.t0 || 0; this.visible = !io; this.W = 0; this.bloomA = o.bloom ?? .18; this.physBloom = .08;
+    this.grain = o.grain ?? .03; this.vignette = o.vignette ?? .03; this.animated = o.animated ?? true;
+    STAGES.push(this); BY_CANVAS.set(canvas, this); if (io) io.observe(canvas);
+    this.resize();
+    if ('ResizeObserver' in window) new ResizeObserver(() => { if (this.resize()) this.render(); }).observe(canvas);
+  }
+  resize(){
+    const cssW = this.fixed || this.canvas.clientWidth; if (!cssW) return false;
+    if (!this.fixed) this.canvas.style.height = (cssW * this.lh / this.lw) + 'px';
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const W = Math.round(cssW * dpr), H = Math.round(cssW * this.lh / this.lw * dpr);
+    if (W === this.W && H === this.H) return false;
+    Object.assign(this, { W, H, k: W / this.lw });
+    this.canvas.width = W; this.canvas.height = H;
+    this.bgL = mk(W, H); this.bc = this.bgL.getContext('2d');
+    this.phys = mk(W, H); this.pc = this.phys.getContext('2d');
+    this.matter = mk(W, H); this.mc = this.matter.getContext('2d');
+    const bw = Math.ceil(W / 4), bh = Math.ceil(H / 4);
+    this.b1 = mk(bw, bh); this.b1c = this.b1.getContext('2d'); this.b2 = mk(bw, bh); this.b2c = this.b2.getContext('2d');
+    return true;
+  }
+  prep(c){ c.setTransform(1,0,0,1,0,0); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over'; c.clearRect(0, 0, this.W, this.H); c.setTransform(this.k,0,0,this.k,0,0); }
+  render(){
+    if (!this.W && !this.resize()) return;
+    const { ctx, W, H, k, h } = this; const t = this.time;
+    if (h.update) h.update(t, this);
+    for (const c of [this.bc, this.pc, this.mc]) this.prep(c);
+    if (h.bg) h.bg(this.bc, t, this);
+    if (h.phys) h.phys(this.pc, t, this);
+    if (h.matter) h.matter(this.mc, t, this);
+    ctx.setTransform(1,0,0,1,0,0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.clearRect(0, 0, W, H);
+    ctx.drawImage(this.bgL, 0, 0); ctx.drawImage(this.phys, 0, 0); ctx.drawImage(this.matter, 0, 0);
+    if (this.bloomA > 0) this.bloom();
+    ctx.setTransform(k,0,0,k,0,0);
+    if (h.fore) h.fore(ctx, t, this);
+    this.finish();
+    if (h.hud) h.hud(ctx, t, this);
+  }
+  bloom(){
+    const { b1, b2, b1c, b2c, ctx, W, H } = this; const bw = b1.width, bh = b1.height; const px = this.k / 4;
+    b1c.setTransform(1,0,0,1,0,0); b1c.filter = 'none'; b1c.globalCompositeOperation = 'source-over'; b1c.clearRect(0, 0, bw, bh);
+    b1c.globalAlpha = this.physBloom / this.bloomA; b1c.drawImage(this.phys, 0, 0, bw, bh);   // physics: bloomed less
+    b1c.globalAlpha = 1; b1c.drawImage(this.matter, 0, 0, bw, bh);
+    b2c.clearRect(0, 0, bw, bh);
+    if (FILTER_OK){
+      b2c.filter = `blur(${(4 * px).toFixed(2)}px)`; b2c.drawImage(b1, 0, 0); b2c.filter = 'none';
+      b1c.clearRect(0, 0, bw, bh); b1c.filter = `blur(${(9 * px).toFixed(2)}px)`; b1c.drawImage(b2, 0, 0); b1c.filter = 'none';
+    }
+    ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = this.bloomA; ctx.drawImage(b1, 0, 0, W, H);
+    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  }
+  finish(){
+    const c = this.ctx, w = this.lw, h = this.lh;
+    if (this.vignette > 0){ const g = c.createRadialGradient(w/2, h/2, Math.min(w,h) * .35, w/2, h/2, Math.hypot(w,h) * .55); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, `rgba(0,0,0,${this.vignette})`); c.fillStyle = g; c.fillRect(0, 0, w, h); }
+    if (this.grain > 0){ if (!this.gp) this.gp = c.createPattern(NOISE, 'repeat'); c.save(); c.globalAlpha = this.grain; c.translate(-((this.time * 997) % 128), -((this.time * 613) % 128)); c.fillStyle = this.gp; c.fillRect(0, 0, w + 128, h + 128); c.restore(); }
+  }
+  /* mean relative luminance of the background inside rect vs. of the opaque matter pixels */
+  probe(rect){
+    try {
+      const k = this.k; const x = Math.round(rect[0] * k), y = Math.round(rect[1] * k), w = Math.round(rect[2] * k), h = Math.round(rect[3] * k);
+      const b = this.bc.getImageData(x, y, w, h).data; let sb = 0, nb = 0;
+      for (let i = 0; i < b.length; i += 16){ sb += lumRGB(b[i], b[i+1], b[i+2]) * b[i+3] / 255; nb++; }
+      const m = this.mc.getImageData(x, y, w, h).data; let sm = 0, nm = 0;
+      for (let i = 0; i < m.length; i += 8){ if (m[i+3] > 200){ sm += lumRGB(m[i], m[i+1], m[i+2]); nm++; } }
+      return { bg: sb / nb, matter: nm ? sm / nm : 0 };
+    } catch(e){ return null; }
+  }
+}
+const NOISE = (() => { const n = mk(128, 128); const x = n.getContext('2d'); const d = x.createImageData(128, 128); let s = 99; for (let i = 0; i < d.data.length; i += 4){ s = (Math.imul(s, 1664525) + 1013904223) >>> 0; const v = s / 4294967296 * 255; d.data[i] = d.data[i+1] = d.data[i+2] = v; d.data[i+3] = 255; } x.putImageData(d, 0, 0); return n; })();
+
+/* ---------------- Quarky v2 (flat B) + mutations ---------------- */
+function blobPath(c, R, t, w){
+  const n = 30, pts = [];
+  for (let i = 0; i < n; i++){ const a = i / n * TAU; const r = R * (1 + w * (.035 * Math.sin(3 * a + t * 2.6) + .024 * Math.sin(5 * a - t * 3.1) + .014 * Math.sin(2 * a + t * 1.3))); pts.push([Math.cos(a) * r, Math.sin(a) * r]); }
+  c.beginPath();
+  for (let i = 0; i <= n; i++){ const p = pts[i % n], q = pts[(i + 1) % n]; const mx = (p[0] + q[0]) / 2, my = (p[1] + q[1]) / 2; if (i === 0) c.moveTo(mx, my); else c.quadraticCurveTo(p[0], p[1], mx, my); }
+  c.closePath();
+}
+function eyes(c, R, t, o, W, ghost){
+  const type = o.eyes || 'normal'; const lx = (o.lookX || 0) * R * .09, ly = (o.lookY || 0) * R * .07;
+  const ex = R * .34, ey = -R * .1 + ly, ew = R * .17, eh = R * .25; const ink = W.ink;
+  const blink = (type === 'normal' && ((t + (o.seed || 0)) % 3.9) < .13) ? .14 : 1;
+  c.save(); c.lineCap = 'round';
+  for (const s of [-1, 1]){
+    const cx = s * ex + lx, cy = ey;
+    if (type === 'happy'){ c.strokeStyle = ink; c.lineWidth = Math.max(1, R * .085); c.beginPath(); c.arc(cx, cy + eh * .35, ew * 1.05, Math.PI * 1.12, Math.PI * 1.88); c.stroke(); continue; }
+    let w = ew, hh = eh * blink; if (type === 'wide'){ w *= 1.14; hh *= 1.2; }
+    if (ghost){ c.strokeStyle = ink; c.lineWidth = Math.max(.8, R * .05); c.beginPath(); c.ellipse(cx, cy, w, hh, 0, 0, TAU); c.stroke(); continue; }
+    c.fillStyle = ink; c.beginPath(); c.ellipse(cx, cy, w, hh, 0, 0, TAU); c.fill();
+    if (blink > .5){ c.fillStyle = 'rgba(255,255,255,.95)'; disc(c, cx + w * .32, cy - hh * .36, w * .42); c.fill(); c.fillStyle = 'rgba(255,255,255,.6)'; disc(c, cx - w * .3, cy + hh * .38, w * .17); c.fill(); }
+  }
+  c.strokeStyle = ink; c.fillStyle = ink; c.lineWidth = Math.max(.9, R * .065); const my = R * .3 + ly;
+  if ((o.mouth || 'smile') === 'smile'){ c.beginPath(); c.arc(lx, my - R * .06, R * .12, Math.PI * .18, Math.PI * .82); c.stroke(); }
+  else { c.beginPath(); c.ellipse(lx, my, R * .07, R * .09, 0, 0, TAU); c.fill(); }
+  c.restore();
+}
+function membrane(c, R, t, W, o, ghost){
+  const key = W.key;
+  blobPath(c, R, t + (o.seed || 0), 1);
+  c.save(); c.clip();
+  c.fillStyle = ghost ? rgba(key, .35) : W.shade; c.fillRect(-R * 2, -R * 2, R * 4, R * 4);
+  if (!ghost){ c.fillStyle = key; disc(c, -R * .15, -R * .17, R * .98); c.fill(); c.fillStyle = mix(key, '#ffffff', .55); disc(c, R * .06, R * .4, R * .32); c.fill(); c.fillStyle = 'rgba(255,255,255,.85)'; disc(c, R * .06, R * .42, R * .14); c.fill(); }
+  c.restore();
+  c.lineWidth = 1.5; c.strokeStyle = ghost ? rgba(key, .7) : mix(key, '#ffffff', .35); c.stroke();
+  if (!ghost){ c.fillStyle = '#ffffff'; c.beginPath(); c.ellipse(-R * .42, -R * .5, R * .22, R * .1, -.6, 0, TAU); c.fill(); }
+}
+/* o: { R, eyes, mouth, lookX, lookY, stretch, ang, alpha, vx, vy, skewTo:[dx,dy] } */
+function drawQuarky(c, x, y, t, W, o = {}){
+  const R = o.R || 13; const a = o.alpha ?? 1; if (a <= .01) return;
+  c.save(); c.translate(x, y); c.globalAlpha = a;
+  halo(c, 0, 0, R * .3, R * 1.8, W.key, .14);
+  const id = W.id;
+  // --- behind the body
+  if (id === 'q'){ // phase copies: offset, flickering, no solid pupils
+    for (let i = 0; i < 2; i++){ const f = .25 + .3 * Math.max(0, Math.sin(t * 9.1 + i * 3.3) * Math.sin(t * 3.7 + i)); const dx = (i ? -1 : 1) * R * .9, dy = (i ? .4 : -.5) * R;
+      c.save(); c.translate(dx, dy); c.globalAlpha = a * f; membrane(c, R * .92, t + i, W, o, true); eyes(c, R * .92, t, o, W, true); c.restore(); }
+  }
+  if (id === 'a'){ // back half of the electron ring
+    c.save(); c.rotate(-.45); c.strokeStyle = rgba(W.mid, .55); c.lineWidth = 1.2; c.beginPath(); c.ellipse(0, 0, R * 1.75, R * .55, 0, Math.PI, TAU); c.stroke(); c.restore();
+  }
+  if (id === 's'){ // solar-sail fins + star trail
+    const ang = Math.atan2(o.vy || 0, o.vx || 1); c.save(); c.rotate(ang);
+    for (const s of [-1, 1]){ c.fillStyle = rgba(W.mid, .85); c.beginPath(); c.moveTo(-R * .2, s * R * .55); c.lineTo(-R * 1.25, s * R * 1.45); c.lineTo(-R * 1.05, s * R * .55); c.closePath(); c.fill(); c.strokeStyle = mix(W.mid, '#ffffff', .4); c.lineWidth = 1; c.stroke(); c.strokeStyle = rgba(W.ink, .5); c.beginPath(); c.moveTo(-R * .6, s * R * .75); c.lineTo(-R * 1.1, s * R * 1.1); c.stroke(); }
+    for (let i = 0; i < 4; i++){ const d = R * (1.7 + i * .9); glint(c, -d, Math.sin(t * 6 + i * 2) * R * .25, R * (.34 - i * .06), i % 2 ? W.accent : '#ffffff', .8 - i * .17); }
+    c.restore();
+  }
+  // --- body (squash & stretch; Cosmological: tidal skew towards the mass)
+  c.save();
+  const st = o.stretch || 0, ang = o.ang || 0;
+  c.rotate(ang); c.scale(1 + st, 1 / (1 + st)); c.rotate(-ang);
+  if (id === 'c'){ const sk = o.skew ?? .22; const d = o.skewTo || [1, .3]; const a2 = Math.atan2(d[1], d[0]); c.rotate(a2); c.transform(1 + sk * .35, 0, sk, 1 - sk * .15, 0, 0); c.rotate(-a2); }
+  membrane(c, R, t, W, o, false);
+  eyes(c, R, t, o, W, false);
+  c.restore();
+  // --- in front of the body
+  if (id === 'a'){
+    c.save(); c.rotate(-.45); c.strokeStyle = rgba(W.mid, .9); c.lineWidth = 1.3; c.beginPath(); c.ellipse(0, 0, R * 1.75, R * .55, 0, 0, Math.PI); c.stroke();
+    const ph = t * 2.2; const sx = Math.cos(ph) * R * 1.75, sy = Math.sin(ph) * R * .55; const front = Math.sin(ph) > 0;
+    c.restore();
+    const cr = Math.cos(-.45), sr = Math.sin(-.45); const px = sx * cr - sy * sr, py = sx * sr + sy * cr; const r2 = R * .36;
+    if (!front) c.globalAlpha = a * .7;
+    c.fillStyle = mix(W.accent, '#0b1b3a', .35); disc(c, px, py, r2); c.fill(); c.fillStyle = W.accent; disc(c, px - r2 * .15, py - r2 * .15, r2 * .9); c.fill();
+    c.strokeStyle = mix(W.accent, '#ffffff', .4); c.lineWidth = 1; disc(c, px, py, r2); c.stroke();
+    c.strokeStyle = '#0b1b3a'; c.lineWidth = Math.max(1, r2 * .28); c.beginPath(); c.moveTo(px - r2 * .5, py); c.lineTo(px + r2 * .5, py); c.stroke();
+    c.globalAlpha = a;
+  }
+  c.restore();
+}
+
+/* ---------------- matter objects (flat B) ---------------- */
+function flatDisc(c, x, y, r, col, shade, o = {}){
+  c.save(); disc(c, x, y, r); c.save(); c.clip(); c.fillStyle = shade; c.fillRect(x - r, y - r, 2 * r, 2 * r); c.fillStyle = col; disc(c, x - r * .15, y - r * .17, r * .97); c.fill();
+  if (o.facet){ c.fillStyle = rgba('#ffffff', .12); c.beginPath(); c.moveTo(x - r, y - r * .2); c.lineTo(x + r * .1, y - r); c.lineTo(x + r, y - r); c.lineTo(x - r, y + r * .5); c.closePath(); c.fill(); }
+  c.restore(); c.lineWidth = 1.5; c.strokeStyle = o.rim || mix(col, '#ffffff', .35); c.stroke();
+  if (!o.noDot){ c.fillStyle = '#ffffff'; c.beginPath(); c.ellipse(x - r * .42, y - r * .5, r * .2, r * .09, -.6, 0, TAU); c.fill(); }
+  c.restore();
+}
+function drawPhoton(c, x, y, t, W, e, i, o = {}){
+  const col = W.energy[e]; const k = o.k || 1;
+  halo(c, x, y, 0, 11 * k, col, .3);
+  const n = RAYS[e];
+  c.save(); c.strokeStyle = rgba(mix(col, '#ffffff', .3), .8); c.lineWidth = .9;
+  for (let j = 0; j < n; j++){ const an = j / n * TAU + t * .4; c.beginPath(); c.moveTo(x + Math.cos(an) * 6 * k, y + Math.sin(an) * 6 * k); c.lineTo(x + Math.cos(an) * 9.5 * k, y + Math.sin(an) * 9.5 * k); c.stroke(); }
+  const d = 3.8 * k * 1.41;
+  c.fillStyle = col; c.beginPath(); c.moveTo(x, y - d); c.lineTo(x + d, y); c.lineTo(x, y + d); c.lineTo(x - d, y); c.closePath(); c.fill();
+  c.fillStyle = 'rgba(255,255,255,.75)'; c.beginPath(); c.moveTo(x, y - d); c.lineTo(x - d, y); c.lineTo(x, y); c.closePath(); c.fill();
+  for (let j = 0; j < 3; j++){ const cyc = t * 1.3 + i * .37 + j * .33; const n2 = Math.floor(cyc), ph = cyc - n2; const an = hash(n2 * 7 + j + i) * TAU; const dd = (6 + hash(n2 * 3 + j + i * 2) * 8) * k; glint(c, x + Math.cos(an) * dd, y + Math.sin(an) * dd, Math.sin(ph * Math.PI) * 3.2, '#ffffff', .95 * Math.sin(ph * Math.PI)); }
+  c.restore();
+}
+function drawPortal(c, x, y, t, W, r, flare = 0){
+  halo(c, x, y, 0, r * 3.6, W.key, .12 + .3 * flare);
+  c.save(); c.fillStyle = rgba(W.key, .12); disc(c, x, y, r * 2.35); c.fill();
+  const rings = [[1.15, 3, .7, 2.2, W.key], [1.62, 5, -.45, 1.5, W.mid], [2.12, 9, .28, 1, W.accent]];
+  rings.forEach(([rf, n, sp, lw, col], i) => { const rr = r * rf * (1 + .035 * Math.sin(t * 2 + i * 1.3)); const rot = t * sp * (1 + flare * 5); const seg = TAU / n; c.strokeStyle = col; c.lineWidth = lw; for (let j = 0; j < n; j++){ c.beginPath(); c.arc(x, y, rr, rot + j * seg, rot + j * seg + seg * .62); c.stroke(); } });
+  const cr = r * (.95 + .08 * Math.sin(t * 3)) * (1 + flare * .7);
+  c.fillStyle = W.key; disc(c, x, y, cr * .8); c.fill(); c.fillStyle = '#ffffff'; disc(c, x, y, cr * .42); c.fill();
+  c.restore();
+}
+/* accelerator-ring launcher (Quantum vocabulary), ang in radians (screen), en 0..1 */
+function drawLauncher(c, x, y, t, W, ang, en, o = {}){
+  const rr = o.r || 22;
+  c.save();
+  if (o.panels){ for (const s of [-1, 1]){ c.save(); c.translate(x + s * (rr + 16), y); c.fillStyle = W.metal; c.fillRect(-10, -6, 20, 12); c.strokeStyle = rgba(W.accent, .6); c.lineWidth = 1; c.strokeRect(-10, -6, 20, 12); c.beginPath(); c.moveTo(0, -6); c.lineTo(0, 6); c.moveTo(-10, 0); c.lineTo(10, 0); c.stroke(); c.restore(); } }
+  c.strokeStyle = W.metal; c.lineWidth = 6.5; disc(c, x, y, rr); c.stroke();
+  c.strokeStyle = rgba(mix(W.key, '#ffffff', .2), .35 + .5 * en); c.lineWidth = 1.2; disc(c, x, y, rr); c.stroke();
+  for (let i = 0; i < 8; i++){ const a = i / 8 * TAU + ang + TAU / 16; c.save(); c.translate(x + Math.cos(a) * rr, y + Math.sin(a) * rr); c.rotate(a); c.fillStyle = mix(W.metal, W.key, .12); c.fillRect(-4.6, -3.2, 9.2, 6.4); c.restore(); }
+  const span = 1.6, a0 = ang + Math.PI - span / 2;
+  c.lineWidth = 3.4; c.strokeStyle = rgba(W.key, .2); c.beginPath(); c.arc(x, y, rr + 9, a0, a0 + span); c.stroke();
+  c.strokeStyle = rgba(W.key, .95); c.beginPath(); c.arc(x, y, rr + 9, a0, a0 + span * Math.max(.02, en)); c.stroke();
+  const cx = Math.cos(ang), cy = Math.sin(ang), nx = -cy, ny = cx;
+  c.fillStyle = W.metal; c.beginPath();
+  c.moveTo(x + cx * (rr + 1) + nx * 5.5, y + cy * (rr + 1) + ny * 5.5); c.lineTo(x + cx * (rr + 12) + nx * 3.4, y + cy * (rr + 12) + ny * 3.4);
+  c.lineTo(x + cx * (rr + 12) - nx * 3.4, y + cy * (rr + 12) - ny * 3.4); c.lineTo(x + cx * (rr + 1) - nx * 5.5, y + cy * (rr + 1) - ny * 5.5); c.closePath(); c.fill();
+  c.strokeStyle = rgba(W.keyHi, .5 + .5 * en); c.lineWidth = 1.4; c.beginPath(); c.moveTo(x + cx * (rr + 12) + nx * 3.4, y + cy * (rr + 12) + ny * 3.4); c.lineTo(x + cx * (rr + 12) - nx * 3.4, y + cy * (rr + 12) - ny * 3.4); c.stroke();
+  c.restore();
+}
+
+/* =====================================================================
+   SCENES — one per world. Coordinates are box-local px (box = 358 wide).
+   Each path sample: { x, y, t, vx, vy, ... } at 1/120 s.
+   ===================================================================== */
+const BOX_X = 16, BOX_TOP = 92, BOX_W = 358;
+const SAMPLE = 1 / 120;
+function sampleAt(path, t){ const i = clamp(Math.floor(t / SAMPLE), 0, path.length - 1); return path[i]; }
+function dotsOf(path, dt, until){ const out = []; const n = Math.round(dt / SAMPLE); for (let i = 0; i < path.length && (until == null || i <= until); i += n) out.push([path[i].x, path[i].y]); return out; }
+function indexAtT(path, t){ return clamp(Math.round(t / SAMPLE), 0, path.length - 1); }
+
+/* ---------------- Quantum (reference: Tunnel 1 geometry) ---------------- */
+const SCENE_Q = {
+  W: WBY.q, boxH: 358,
+  title:{en:'Tunnel effect', fr:'Effet tunnel'}, sub:{en:'Quantum · level 1', fr:'Quantique · niveau 1'},
+  build(){
+    const L = [35.8, 179], P = [307.9, 179], v = 180; const mk = (stopX) => { const p = []; let x = L[0], t = 0, dir = 1, back = 0;
+      while (t < 3){ p.push({ x, y: L[1] - (x - L[0]) * .0, t, vx: v * dir, vy: 0 }); x += v * dir * SAMPLE; t += SAMPLE;
+        if (stopX != null && dir > 0 && x >= stopX){ dir = -1; } if (dir < 0){ back += v * SAMPLE; if (back > 40) break; } if (dir > 0 && x >= P[0]) break; }
+      return p; };
+    this.launcher = L; this.portal = P; this.portalR = 9.8; this.ang = 0;
+    this.path = mk(null); this.failPath = mk(171);
+    this.photons = [{ x: 107, y: 179, e: 0 }, { x: 222, y: 179, e: 1 }, { x: 262, y: 179, e: 2 }];
+  },
+  thr(t){ return .60 + .45 * Math.sin(t * TAU / 1.0); },
+  bg(c, t, S){ // interference fringes in the cavity
+    for (let x = -34 + (Math.sin(t * .4) * 17 % 34); x < 358; x += 34){ const e = Math.exp(-Math.pow((x + 8 - 179) / 115, 2)); c.fillStyle = rgba(this.W.key, .04 * e * (S.fringeLock ? 1.9 : 1)); c.fillRect(Math.max(0, x), 0, 17, 358); }
+  },
+  phys(c, t, S){ if (S.phase === 'aim') fline(c, dotsOf(this.path, .05, 60), 'traj', .6, t); },
+  matter(c, t, S){
+    const W = this.W; const open = S.phase === 'flight' ? this.thr(S.ft) <= .45 || S.outcome === 'win' : false;
+    c.fillStyle = W.metal; c.fillRect(175, 0, 8, 143); c.fillRect(175, 215, 8, 143);
+    c.strokeStyle = rgba(W.key, .75); c.lineWidth = .75; c.beginPath(); c.moveTo(175.4, 0); c.lineTo(175.4, 143); c.moveTo(175.4, 215); c.lineTo(175.4, 358); c.stroke();
+    const col = open ? W.accent : mix(W.key, W.danger, .6);
+    c.fillStyle = rgba(col, open ? .16 : .3); c.fillRect(172, 143, 14, 72); c.strokeStyle = col; c.lineWidth = 1; c.strokeRect(172.5, 143.5, 13, 71);
+    if (!open){ c.save(); c.beginPath(); c.rect(172, 143, 14, 72); c.clip(); c.strokeStyle = rgba(col, .6); for (let y = 136; y < 225; y += 8){ c.beginPath(); c.moveTo(172, y + 10); c.lineTo(186, y); c.stroke(); } c.restore(); }
+  },
+  readouts(S, L){
+    const en = .45, thr = this.thr(S.ft || 0);
+    return { rows: [
+      { label: L === 'fr' ? 'ÉNERGIE DE QUARKY' : 'QUARKY’S ENERGY', value: en.toFixed(2), v: en / 1.1, col: this.W.key },
+      { label: L === 'fr' ? 'SEUIL TUNNEL' : 'TUNNEL THRESHOLD', value: thr.toFixed(2), v: thr / 1.1, band: [.15 / 1.1, 1.05 / 1.1], col: this.W.danger, dash: true,
+        tag: en >= thr ? (L === 'fr' ? 'PASSE' : 'PASSES') : (L === 'fr' ? 'BLOQUE' : 'BLOCKED'), tagCol: en >= thr ? this.W.accent : this.W.danger } ],
+      help: L === 'fr' ? 'Tire vers la gauche pour l’énergie, glisse vers le haut ou le bas pour viser, puis relâche.' : 'Pull left for energy, slide up or down to aim, then let go.' };
+  },
+  failTitle:{en:'One bounce too many', fr:'Rebond de trop'}
+};
+
+/* ---------------- Atomic: Coulomb around a nucleus ---------------- */
+const SCENE_A = {
+  W: WBY.a, boxH: 358,
+  title:{en:'Coulomb’s law', fr:'Loi de Coulomb'}, sub:{en:'Atomic · level 2', fr:'Atomique · niveau 2'},
+  K: 1.46e6, eps: 6, capture: 34,
+  build(){
+    this.N = { x: 179, y: 179, q: 3 };
+    this.ions = [{ x: 295, y: 255, q: .35 }, { x: 70, y: 110, q: -.35 }];
+    this.charges = [this.N, ...this.ions];
+    this.launcher = [179, 318]; this.ang = 0;
+    const mkPath = (vx, tEnd) => {
+      const p = []; let x = 179, y = 318, u = vx, w = 0, t = 0;
+      const acc = (x, y) => { let ax = 0, ay = 0; for (const q of this.charges){ const dx = x - q.x, dy = y - q.y; const d = Math.pow(dx * dx + dy * dy + this.eps * this.eps, 1.5); ax += -1 * this.K * q.q * dx / d; ay += -1 * this.K * q.q * dy / d; } return [ax, ay]; };
+      let a = acc(x, y); const dt = 1 / 240; let k = 0;
+      while (t <= tEnd){
+        if (k % 2 === 0) p.push({ x, y, t, vx: u, vy: w });
+        x += u * dt + .5 * a[0] * dt * dt; y += w * dt + .5 * a[1] * dt * dt;
+        const a2 = acc(x, y); u += .5 * (a[0] + a2[0]) * dt; w += .5 * (a[1] + a2[1]) * dt; a = a2; t += dt; k++;
+        if (Math.hypot(x - 179, y - 179) < this.capture || x < 4 || x > 354 || y < 4 || y > 354) break;
+      }
+      return p;
+    };
+    this.path = mkPath(124, 1.85); this.failPath = mkPath(56, 3);
+    const last = this.path[this.path.length - 1]; this.portal = [last.x, last.y]; this.portalR = 10;
+    const T = last.t;
+    this.photons = [.22, .45, .63].map((f, i) => { const s = sampleAt(this.path, T * f); return { x: s.x, y: s.y, e: [0, 1, 2][i] }; });
+    // equipotentials through each Photon (polar bisection around the nucleus)
+    this.iso = this.photons.map(ph => { const lvl = this.V(ph.x, ph.y); const pts = [];
+      for (let a = 0; a <= 360; a += 3){ const ca = Math.cos(a * Math.PI / 180), sa = Math.sin(a * Math.PI / 180); let lo = 22, hi = 330;
+        if ((this.V(179 + ca * lo, 179 + sa * lo) - lvl) * (this.V(179 + ca * hi, 179 + sa * hi) - lvl) > 0) continue;
+        for (let it = 0; it < 30; it++){ const m = (lo + hi) / 2; if (this.V(179 + ca * m, 179 + sa * m) > lvl) lo = m; else hi = m; }
+        pts.push([179 + ca * lo, 179 + sa * lo]); }
+      return pts; });
+    // field lines (from + to −), short, around the charges
+    this.field = [];
+    const E = (x, y) => { let ex = 0, ey = 0; for (const q of this.charges){ const dx = x - q.x, dy = y - q.y; const d = Math.pow(dx * dx + dy * dy + 1, 1.5); ex += q.q * dx / d; ey += q.q * dy / d; } return [ex, ey]; };
+    const trace = (x, y, sgn, maxLen) => { const pts = [[x, y]]; let len = 0; while (len < maxLen){ const [ex, ey] = E(x, y); const m = Math.hypot(ex, ey) || 1; x += sgn * 3 * ex / m; y += sgn * 3 * ey / m; len += 3; pts.push([x, y]); if (x < 0 || x > 358 || y < 0 || y > 358) break; if (Math.hypot(x - 70, y - 110) < 11) break; } return pts; };
+    for (let i = 0; i < 10; i++){ const a = i / 10 * TAU + .3; this.field.push(trace(179 + Math.cos(a) * 20, 179 + Math.sin(a) * 20, 1, 44)); }
+    for (let i = 0; i < 6; i++){ const a = i / 6 * TAU; this.field.push(trace(295 + Math.cos(a) * 13, 255 + Math.sin(a) * 13, 1, 40)); }
+    for (let i = 0; i < 6; i++){ const a = i / 6 * TAU + .5; this.field.push(trace(70 + Math.cos(a) * 13, 110 + Math.sin(a) * 13, -1, 40).reverse()); }
+  },
+  V(x, y){ let v = 0; for (const q of this.charges){ v += q.q / Math.sqrt((x - q.x) ** 2 + (y - q.y) ** 2 + this.eps * this.eps); } return v; },
+  bg(c, t){ // out-of-focus atomic lattice as the STM would see it (very low luminance, low frequency)
+    for (let r = -1; r < 8; r++) for (let q = -1; q < 7; q++){ const x = q * 62 + (r % 2) * 31 + Math.sin(t * .1) * 4, y = r * 54 + 10; halo(c, x, y, 0, 30, this.W.key, .035); }
+  },
+  phys(c, t, S){
+    const W = this.W;
+    this.iso.forEach(p => fline(c, p, 'iso', .5, t));
+    this.field.forEach(p => fline(c, p, 'elec', .32, t));
+    const ring = []; for (let a = 0; a <= 64; a++) ring.push([179 + Math.cos(a / 64 * TAU) * this.capture, 179 + Math.sin(a / 64 * TAU) * this.capture]);
+    fline(c, ring, 'thr', .75, t, W.danger);
+    if (S.phase === 'aim') fline(c, dotsOf(this.path, .05, 70), 'traj', .6, t);
+  },
+  matter(c, t){
+    const W = this.W;
+    // radial rails of the ion emitters (distance setting) with notches
+    for (const io of this.ions){ const dx = io.x - 179, dy = io.y - 179, L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L;
+      c.strokeStyle = W.metal; c.lineWidth = 4; c.beginPath(); c.moveTo(179 + ux * 48, 179 + uy * 48); c.lineTo(179 + ux * (L + 26), 179 + uy * (L + 26)); c.stroke();
+      c.strokeStyle = rgba(W.muted, .5); c.lineWidth = 1; for (let d = 60; d < L + 24; d += 14){ c.beginPath(); c.moveTo(179 + ux * d - uy * 4, 179 + uy * d + ux * 4); c.lineTo(179 + ux * d + uy * 4, 179 + uy * d - ux * 4); c.stroke(); } }
+    // nucleus: flat nucleon cluster (protons: key + glyph; neutrons: muted)
+    const nuc = [[-6, -5, 1], [6, -4, 0], [0, 5, 1], [-8, 6, 0], [8, 7, 1], [1, -12, 0]];
+    for (const [dx, dy, p] of nuc) flatDisc(c, 179 + dx, 179 + dy, 7.5, p ? W.key : mix(W.muted, W.bg, .35), p ? W.shade : '#3d3624', { noDot: !p });
+    c.strokeStyle = W.ink; c.lineWidth = 1.4; for (const [dx, dy, p] of nuc) if (p){ c.beginPath(); c.moveTo(179 + dx - 3, 179 + dy); c.lineTo(179 + dx + 3, 179 + dy); c.moveTo(179 + dx, 179 + dy - 3); c.lineTo(179 + dx, 179 + dy + 3); c.stroke(); }
+    // ions: + = key fill, solid ring; − = accent fill, dashed ring (shape double)
+    for (const io of this.ions){ const pos = io.q > 0; const col = pos ? W.key : W.accent;
+      c.save(); c.strokeStyle = rgba(col, .8); c.lineWidth = 1.2; if (!pos) c.setLineDash([3, 3]); disc(c, io.x, io.y, 15); c.stroke(); c.restore();
+      flatDisc(c, io.x, io.y, 10, col, pos ? W.shade : '#1d3b6b');
+      c.strokeStyle = W.ink; c.lineWidth = 2; c.beginPath(); c.moveTo(io.x - 4.5, io.y); c.lineTo(io.x + 4.5, io.y); if (pos){ c.moveTo(io.x, io.y - 4.5); c.lineTo(io.x, io.y + 4.5); } c.stroke();
+      // sign toggle chip (the player sets the sign)
+      c.fillStyle = W.bezel; c.strokeStyle = rgba(W.muted, .7); c.lineWidth = 1; c.beginPath(); c.roundRect ? c.roundRect(io.x + 13, io.y - 22, 20, 12, 3) : c.rect(io.x + 13, io.y - 22, 20, 12); c.fill(); c.stroke();
+      txt(c, '±', io.x + 23, io.y - 13, { col: W.hud, size: 9, align: 'center' }); }
+  },
+  readouts(S, L){
+    const q = S.q || this.path[0]; const d = Math.hypot(q.x - 179, q.y - 179); const F = Math.min(1, (60 * 60) / (d * d));
+    const io = this.ions[0]; const r = Math.hypot(io.x - 179, io.y - 179) / 1000;
+    return { rows: [
+      { label: L === 'fr' ? 'CHARGE DE QUARKY q' : 'QUARKY’S CHARGE q', value: '−1 e', v: .5, col: this.W.accent, glyph: '−' },
+      { label: L === 'fr' ? 'DISTANCE DE L’ION r' : 'ION DISTANCE r', value: r.toFixed(3) + ' nm', v: .63, col: this.W.key },
+      { label: L === 'fr' ? 'FORCE DE COULOMB ∝ 1/r²' : 'COULOMB FORCE ∝ 1/r²', value: (F * 100).toFixed(0) + ' %', v: F, col: FBY.elec.col,
+        tag: L === 'fr' ? 'ATTIRE →←' : 'ATTRACTS →←', tagCol: this.W.hud } ],
+      help: L === 'fr' ? 'Charges opposées : attraction ; même signe : répulsion. Deux fois plus loin, quatre fois plus faible.' : 'Opposite charges attract, like charges repel. Twice as far, four times weaker.' };
+  },
+  failTitle:{en:'Captured by the nucleus', fr:'Capturée par le noyau'}
+};
+
+/* ---------------- Macro: spring + ramp, energy conservation ---------------- */
+const SCENE_M = {
+  W: WBY.m, boxH: 330,
+  title:{en:'Energy conservation', fr:'Conservation de l’énergie'}, sub:{en:'Macro · level 1', fr:'Macro · niveau 1'},
+  k: 400, m: 1, g: 9.8, Rr: 1.2, x0: .1, rampX: .6, S: 62,
+  X(x){ return 40 + this.S * x; }, Y(h){ return 300 - this.S * h; },
+  build(){
+    const mkPath = (comp) => {
+      const p = []; const { k, m, g } = this; const E = .5 * k * comp * comp; let t = 0;
+      const push = (x, h, vx, vy, epe) => { const v2 = vx * vx + vy * vy; p.push({ x: this.X(x), y: this.Y(h), t, vx: vx * this.S, vy: -vy * this.S, h, Ec: .5 * m * v2, Epg: m * g * h, Epe: epe, E }); };
+      // 1. spring release on the floor
+      let s = 0, v = 0; const dt = SAMPLE / 8; let k8 = 0;
+      while (s < comp){ const a = k * (comp - s) / m; v += a * dt; s += v * dt; t += dt; if (++k8 % 8 === 0) push(this.x0 + s, 0, v, 0, .5 * k * Math.max(0, comp - s) ** 2); }
+      let x = this.x0 + s;
+      while (x < this.rampX){ x += v * SAMPLE; t += SAMPLE; push(x, 0, v, 0, 0); }
+      // 2. concave ramp (circle of radius Rr), from 0° to 60°: speed from energy
+      let phi = 0; const phiMax = Math.PI / 3;
+      while (phi < phiMax){ const h = this.Rr * (1 - Math.cos(phi)); const sp = Math.sqrt(Math.max(0, 2 * (E - m * g * h) / m)); phi = Math.min(phiMax, phi + sp * SAMPLE / this.Rr); t += SAMPLE;
+        const h2 = this.Rr * (1 - Math.cos(phi)); const sp2 = Math.sqrt(Math.max(0, 2 * (E - m * g * h2) / m)); push(this.rampX + this.Rr * Math.sin(phi), h2, sp2 * Math.cos(phi), sp2 * Math.sin(phi), 0); }
+      // 3. free flight (no friction in this level)
+      const x1 = this.rampX + this.Rr * Math.sin(phiMax), h1 = this.Rr * (1 - Math.cos(phiMax)); const v1 = Math.sqrt(2 * (E - m * g * h1) / m);
+      const vx = v1 * Math.cos(phiMax), vy0 = v1 * Math.sin(phiMax); let tf = 0; this.exitT = t;
+      while (tf < 1.6){ tf += SAMPLE; t += SAMPLE; const xx = x1 + vx * tf, hh = h1 + vy0 * tf - .5 * g * tf * tf, vy = vy0 - g * tf; push(xx, hh, vx, vy, 0);
+        if (hh <= 0) break; if (xx >= 4.1 && xx <= 5 && hh <= 1.1 && vy < 0) break; if (comp > .34 && tf >= .9) break; }
+      return p;
+    };
+    this.path = mkPath(.35); this.failPath = mkPath(.30);
+    const last = this.path[this.path.length - 1]; this.portal = [last.x, last.y]; this.portalR = 10;
+    this.launcher = [this.X(this.x0), this.Y(0)]; this.ang = 0;
+    const te = this.exitT; this.photons = [[.25, 0], [.539, 2], [.75, 1]].map(([f, e]) => { const s = sampleAt(this.path, te + f); return { x: s.x, y: s.y, e }; });
+  },
+  bg(c, t){
+    const W = this.W;
+    c.strokeStyle = rgba(W.key, .035); c.lineWidth = 1; // very discreet technical grid (Macro only)
+    for (let x = 0; x <= 358; x += 40){ c.beginPath(); c.moveTo(x, 0); c.lineTo(x, 330); c.stroke(); }
+    for (let y = 10; y <= 330; y += 40){ c.beginPath(); c.moveTo(0, y); c.lineTo(358, y); c.stroke(); }
+    // the scientist at a far bench, out of focus (first appearance, very low luminance)
+    c.save(); c.globalAlpha = .07; c.fillStyle = W.mid; disc(c, 250, 70, 16); c.fill(); c.beginPath(); c.ellipse(250, 118, 34, 30, 0, Math.PI, TAU); c.fill(); c.fillRect(150, 118, 180, 6); c.restore();
+  },
+  phys(c, t, S){
+    const W = this.W;
+    for (const gx of [178, 208]) fline(c, [[gx, 20], [gx, 76]], 'grav', .45, t);
+    txt(c, 'g', 193, 52, { col: rgba(FBY.grav.col, .7), size: 10, align: 'center' });
+    fline(c, [[this.X(4.0) - 30, this.Y(1.1)], [358, this.Y(1.1)]], 'thr', .8, t, W.danger);
+    if (S.phase === 'aim'){ fline(c, dotsOf(this.path, .05, 999), 'traj', .6, t); fline(c, [[10, 283], [30, 283]], 'spring', .8, t); }
+    if (S.phase !== 'aim' && S.path){ // chronophotography: outlines at equal time steps (equal horizontal spacing in flight)
+      const until = S.idx; for (let i = S.path === this.path ? 0 : 0; i <= until; i += 12){ const s = S.path[i]; c.strokeStyle = rgba(W.key, .28); c.lineWidth = .8; disc(c, s.x, s.y, 12); c.stroke(); } }
+  },
+  matter(c, t, S){
+    const W = this.W;
+    // floor, ramp and platform: flat fills, neon edge
+    c.fillStyle = W.metal; c.fillRect(0, 313, 358, 17);
+    const cx = this.X(this.rampX), cy = this.Y(this.Rr), rr = this.Rr * this.S + 13;
+    c.beginPath(); c.moveTo(cx, 313); c.arc(cx, cy, rr, Math.PI / 2, Math.PI / 6, true); c.lineTo(cx + rr * Math.cos(Math.PI / 6), 313); c.closePath(); c.fill();
+    c.fillRect(this.X(4.1) - 6, this.Y(1.1) + 13, 80, 313 - this.Y(1.1) - 13);
+    c.strokeStyle = W.key; c.lineWidth = 1.5; c.beginPath(); c.moveTo(0, 313); c.lineTo(cx, 313); c.arc(cx, cy, rr, Math.PI / 2, Math.PI / 6, true); c.stroke();
+    c.beginPath(); c.moveTo(this.X(4.1) - 6, 313); c.lineTo(this.X(4.1) - 6, this.Y(1.1) + 13); c.lineTo(358, this.Y(1.1) + 13); c.stroke();
+    c.fillStyle = rgba('#000000', .25); c.fillRect(this.X(4.1) - 6 + 40, this.Y(1.1) + 14, 40, 313 - this.Y(1.1) - 14);
+    // spring launcher (the launcher is the mechanic): wall, coil, piston plate
+    const comp = S.phase === 'aim' ? .35 * S.aimF : 0; const plate = this.X(this.x0 + (.35 - comp)) - 13 + (S.phase === 'aim' ? 0 : 0);
+    const plateX = S.phase === 'aim' ? this.X(.45 - comp) - 13 : this.X(.45) - 13;
+    c.fillStyle = W.metal; c.fillRect(0, 262, 6, 51);
+    c.strokeStyle = mix(W.metal, W.key, .5); c.lineWidth = 2; c.beginPath(); const n = 7; for (let i = 0; i <= n * 2; i++){ const x = 6 + (plateX - 6) * i / (n * 2); const y = 300 + (i % 2 ? -9 : 9) * (i === 0 || i === n * 2 ? 0 : 1); i ? c.lineTo(x, y) : c.moveTo(x, y); } c.stroke();
+    c.fillStyle = W.key; c.fillRect(plateX - 4, 284, 4, 29); c.strokeStyle = W.keyHi; c.lineWidth = 1; c.strokeRect(plateX - 4, 284, 4, 29);
+    // metric ruler (instrument): heights in metres
+    c.strokeStyle = rgba(W.muted, .5); c.lineWidth = 1; for (let h = 0; h <= 4; h += .5){ const y = this.Y(h); c.beginPath(); c.moveTo(352, y); c.lineTo(h % 1 ? 355 : 358, y); c.stroke(); }
+    c.fillStyle = rgba(W.muted, .9); for (let h = 1; h <= 4; h++) txt(c, h + ' m', 348, this.Y(h) + 3, { col: rgba(W.muted, .85), size: 8, align: 'right' });
+    // corridor mini-map: 3 rooms, the camera window on the first one
+    c.strokeStyle = rgba(W.muted, .55); c.lineWidth = 1; c.strokeRect(236.5, 8.5, 96, 12); c.beginPath(); c.moveTo(268.5, 8.5); c.lineTo(268.5, 20.5); c.moveTo(300.5, 8.5); c.lineTo(300.5, 20.5); c.stroke();
+    c.fillStyle = rgba(W.key, .35); c.fillRect(237, 9, 31, 11); c.fillStyle = W.hud; disc(c, 242 + 22 * (S.progress || 0), 15, 1.8); c.fill();
+  },
+  readouts(S, L){
+    const q = S.q || this.path[0]; const E = q.E; const comp = S.phase === 'aim' ? .35 * S.aimF : .35;
+    return { rows: [
+      { label: L === 'fr' ? 'COMPRESSION DU RESSORT x' : 'SPRING COMPRESSION x', value: comp.toFixed(2) + ' m', v: comp / .5, col: this.W.key },
+      { label: L === 'fr' ? 'ÉNERGIE Ec + Ep = CONST.' : 'ENERGY Ec + Ep = CONST.', value: E.toFixed(1) + ' J', stack: [
+        { n: 'Ec', v: q.Ec / 26, col: this.W.key, pat: 'solid' }, { n: 'Ep g', v: q.Epg / 26, col: FBY.grav.col, pat: 'hatch' }, { n: 'Ep el', v: q.Epe / 26, col: FBY.spring.col, pat: 'zig' } ],
+        legend: `Ec ${q.Ec.toFixed(1)} · Ep ${(q.Epg + q.Epe).toFixed(1)} J` },
+      { label: L === 'fr' ? 'HAUTEUR h' : 'HEIGHT h', value: Math.max(0, q.h).toFixed(2) + ' m', v: Math.max(0, q.h) / 3, col: FBY.grav.col } ],
+      help: L === 'fr' ? 'Comprime le ressort, lâche. En haut du saut, Quarky avance encore : Ec n’est pas nulle.' : 'Squeeze the spring, let go. At the top of the jump Quarky still moves sideways, so Ec is not zero.' };
+  },
+  failTitle:{en:'Not enough energy', fr:'Pas assez d’énergie'}
+};
+
+/* ---------------- Space: gravity assist on a moving giant planet ---------------- */
+const SCENE_S = {
+  W: WBY.s, boxH: 430,
+  title:{en:'Gravity assist', fr:'Assistance gravitationnelle'}, sub:{en:'Space · level 3', fr:'Spatiale · niveau 3'},
+  mu: 1.2375e6, muMoon: 8e4, Vp: -40, P0: [216, 210], moon: [70, 300], Rp: 30, safe: 40,
+  P(t){ return [this.P0[0] + this.Vp * t, this.P0[1]]; },
+  build(){
+    const mkPath = (vx0, vy0, win) => {
+      const p = []; let x = 311, y = 392, u = vx0, w = vy0, t = 0; const dt = 1 / 480; let k = 0;
+      const acc = (x, y, t) => { const [px, py] = this.P(t); let dx = x - px, dy = y - py, d = Math.hypot(dx, dy); let ax = -this.mu * dx / d ** 3, ay = -this.mu * dy / d ** 3;
+        dx = x - this.moon[0]; dy = y - this.moon[1]; d = Math.hypot(dx, dy); ax += -this.muMoon * dx / d ** 3; ay += -this.muMoon * dy / d ** 3; return [ax, ay]; };
+      while (t < 4){
+        if (k % 4 === 0) p.push({ x, y, t, vx: u, vy: w });
+        const a = acc(x, y, t); u += a[0] * dt; w += a[1] * dt; x += u * dt; y += w * dt; t += dt; k++;   // semi-implicit Euler
+        const [px, py] = this.P(t); if (Math.hypot(x - px, y - py) < this.Rp + 13) break;
+        if (x < -5 || x > 363 || y < -5 || y > 435) break;
+        if (win && (y < 70 || x < 60)) break;
+      }
+      return p;
+    };
+    this.path = mkPath(-40, -186, true); this.failPath = mkPath(-100, -186, false);
+    const last = this.path[this.path.length - 1]; this.portal = [last.x, last.y]; this.portalR = 10;
+    this.launcher = [311, 392]; this.ang = Math.atan2(-186, -40);
+    let kp = 0, best = 1e9; this.path.forEach((s, i) => { const [px, py] = this.P(s.t); const d = Math.hypot(s.x - px, s.y - py); if (d < best){ best = d; kp = i; } });
+    this.rp = best; const tp = this.path[kp].t;
+    this.photons = [[-.35, 0], [0, 2], [.4, 1]].map(([dt, e]) => { const s = sampleAt(this.path, tp + dt); return { x: s.x, y: s.y, e }; });
+    this.v0 = Math.hypot(-40, -186); this.v1 = Math.hypot(last.vx, last.vy);
+  },
+  bg(c, t){ // sparse, soft stars (bokeh, not pinpoints) + a faint nebula
+    for (let i = 0; i < 26; i++){ const x = hash(i * 3.1) * 358, y = hash(i * 7.7 + 1) * 430; halo(c, x, y, 0, 4 + 5 * hash(i), i % 5 ? '#ffffff' : this.W.accent, .06 + .03 * Math.sin(t * .7 + i)); }
+    halo(c, 90, 120, 0, 150, this.W.mid, .03); halo(c, 300, 330, 0, 170, this.W.key, .03);
+  },
+  phys(c, t, S){
+    const W = this.W; const [px, py] = this.P(S.clock || 0);
+    fline(c, Array.from({ length: 34 }, (_, i) => [px + 140 - i * 9, py]).filter(p => Math.abs(p[0] - px) > 58), 'traj', .22, t); // the planet's own path (its predicted trajectory), low alpha
+    for (const r of [55, 80, 115]){ const pts = []; for (let a = 0; a <= 72; a++) pts.push([px + Math.cos(a / 72 * TAU) * r, py + Math.sin(a / 72 * TAU) * r]); fline(c, pts, 'iso', .35, t); }
+    for (const r of [18, 28]){ const pts = []; for (let a = 0; a <= 48; a++) pts.push([this.moon[0] + Math.cos(a / 48 * TAU) * r, this.moon[1] + Math.sin(a / 48 * TAU) * r]); fline(c, pts, 'iso', .3, t); }
+    for (let i = 0; i < 8; i++){ const a = i / 8 * TAU + .2; fline(c, [[px + Math.cos(a) * 140, py + Math.sin(a) * 140], [px + Math.cos(a) * 62, py + Math.sin(a) * 62]], 'grav', .3, t); }
+    const ring = []; for (let a = 0; a <= 64; a++) ring.push([px + Math.cos(a / 64 * TAU) * this.safe, py + Math.sin(a / 64 * TAU) * this.safe]); fline(c, ring, 'thr', .7, t, W.danger);
+    if (S.phase === 'aim') fline(c, dotsOf(this.path, .06, 999), 'traj', .6, t);
+  },
+  matter(c, t, S){
+    const W = this.W; const [px, py] = this.P(S.clock || 0);
+    // giant ringed planet: back half of the ring, body, front half
+    c.save(); c.translate(px, py); c.rotate(-.25);
+    c.strokeStyle = rgba(W.mid, .55); c.lineWidth = 3; c.beginPath(); c.ellipse(0, 0, 54, 13, 0, Math.PI, TAU); c.stroke(); c.restore();
+    flatDisc(c, px, py, this.Rp, W.key, W.shade, { facet: true });
+    c.save(); disc(c, px, py, this.Rp); c.clip(); c.fillStyle = rgba(W.ink, .25); c.fillRect(px - 30, py - 6, 60, 5); c.fillRect(px - 30, py + 8, 60, 3); c.restore();
+    c.save(); c.translate(px, py); c.rotate(-.25); c.strokeStyle = W.mid; c.lineWidth = 3; c.beginPath(); c.ellipse(0, 0, 54, 13, 0, 0, Math.PI); c.stroke(); c.restore();
+    // planet velocity (instrument annotation)
+    c.strokeStyle = rgba(W.hud, .6); c.fillStyle = rgba(W.hud, .6); c.lineWidth = 1; c.beginPath(); c.moveTo(px - 36, py - 44); c.lineTo(px - 62, py - 44); c.stroke(); arrowHead(c, px - 64, py - 44, Math.PI, 3.5);
+    txt(c, 'V', px - 50, py - 49, { col: rgba(W.hud, .75), size: 9, align: 'center' });
+    flatDisc(c, this.moon[0], this.moon[1], 9, mix(W.muted, W.bg, .2), '#2a2440');
+    drawLauncher(c, this.launcher[0], this.launcher[1], t, W, this.ang, S.phase === 'aim' ? S.aimF : 0, { r: 20, panels: true });
+  },
+  readouts(S, L){
+    const q = S.q || this.path[0]; const [px, py] = this.P(q.t); const r = Math.hypot(q.x - px, q.y - py); const v = Math.hypot(q.vx, q.vy);
+    return { rows: [
+      { label: L === 'fr' ? 'VITESSE v (RÉF. ÉTOILE)' : 'SPEED v (STAR FRAME)', value: (v / 10).toFixed(1) + ' km/s', v: v / 320, col: this.W.key, mark: this.v0 / 320 },
+      { label: L === 'fr' ? 'DISTANCE À LA PLANÈTE r' : 'DISTANCE TO PLANET r', value: (r / 100).toFixed(2) + '×10⁹ m', v: Math.min(1, r / 300), col: this.W.mid, band: [0, this.safe / 300], dash: true },
+      { label: L === 'fr' ? 'GRAVITÉ F ∝ 1/r²' : 'GRAVITY F ∝ 1/r²', value: (Math.min(1, (60 * 60) / (r * r)) * 100).toFixed(0) + ' %', v: Math.min(1, 3600 / (r * r)), col: FBY.grav.col } ],
+      help: L === 'fr' ? 'Passe derrière la planète en mouvement pour lui emprunter de la vitesse. Vue de la planète, Quarky repart aussi vite qu’elle est arrivée.' : 'Pass behind the moving planet to borrow some of its speed. Seen from the planet, Quarky leaves as fast as it came.' };
+  },
+  failTitle:{en:'Too close to the planet', fr:'Trop près de la planète'}
+};
+
+/* ---------------- Cosmological: lensing around an opaque black hole ---------------- */
+const SCENE_C = {
+  W: WBY.c, boxH: 430,
+  title:{en:'Gravitational lensing', fr:'Lentille gravitationnelle'}, sub:{en:'Cosmological · level 1', fr:'Cosmologique · niveau 1'},
+  C: [179, 205], mu: 1.233e6, rh: 20, rps: 30, src: [179, 18], obs: [179, 430],
+  build(){
+    const mkPath = (tx, win) => {
+      const p = []; let x = 300, y = 412; const dx0 = tx - 300, dy0 = 200 - 412, L0 = Math.hypot(dx0, dy0); let u = 242 * dx0 / L0, w = 242 * dy0 / L0, t = 0; const dt = 1 / 480; let k = 0;
+      while (t < 3){
+        if (k % 4 === 0) p.push({ x, y, t, vx: u, vy: w });
+        const ddx = x - this.C[0], ddy = y - this.C[1], d = Math.hypot(ddx, ddy); u += -this.mu * ddx / d ** 3 * dt; w += -this.mu * ddy / d ** 3 * dt; x += u * dt; y += w * dt; t += dt; k++;
+        if (Math.hypot(x - this.C[0], y - this.C[1]) < this.rps) break;
+        if (x < -5 || x > 363 || y < -5 || y > 435) break;
+        if (win && y < 62) break;
+      }
+      return p;
+    };
+    this.path = mkPath(262, true); this.failPath = mkPath(236, false);
+    const last = this.path[this.path.length - 1]; this.portal = [last.x, last.y]; this.portalR = 10;
+    this.launcher = [300, 412]; this.ang = Math.atan2(200 - 412, 262 - 300);
+    let kp = 0, rp = 1e9; this.path.forEach((s, i) => { const d = Math.hypot(s.x - this.C[0], s.y - this.C[1]); if (d < rp){ rp = d; kp = i; } });
+    this.rp = rp; this.RE = rp * 1.15;
+    const cross = []; for (let i = 1; i < this.path.length; i++){ const a = Math.hypot(this.path[i-1].x - this.C[0], this.path[i-1].y - this.C[1]) - this.RE, b = Math.hypot(this.path[i].x - this.C[0], this.path[i].y - this.C[1]) - this.RE; if (a * b <= 0) cross.push(this.path[i]); }
+    const pk = this.path[kp]; const ua = Math.atan2(pk.y - this.C[1], pk.x - this.C[0]);
+    this.photons = [];
+    if (cross[0]) this.photons.push({ x: cross[0].x, y: cross[0].y, e: 0 });
+    this.photons.push({ x: this.C[0] + Math.cos(ua) * this.RE, y: this.C[1] + Math.sin(ua) * this.RE, e: 2, offPath: true });
+    if (cross[1]) this.photons.push({ x: cross[1].x, y: cross[1].y, e: 1 });
+    const a0 = Math.atan2(this.path[0].vy, this.path[0].vx), a1 = Math.atan2(last.vy, last.vx); this.defl = Math.abs(((a1 - a0 + 3 * Math.PI) % TAU) - Math.PI) * 180 / Math.PI;
+    const s = this.path[0]; this.b = Math.abs((this.C[0] - s.x) * s.vy - (this.C[1] - s.y) * s.vx) / Math.hypot(s.vx, s.vy);
+    // light rays: thin-lens picture, deflection α = K / b (closer = more bent)
+    const rayOut = (bb) => { const Lp = [this.C[0] + bb, this.C[1]]; const di = [Lp[0] - this.src[0], Lp[1] - this.src[1]]; const n = Math.hypot(di[0], di[1]); return { Lp, di: [di[0] / n, di[1] / n] }; };
+    const E = rayOut(this.RE); const dOut = [this.obs[0] - E.Lp[0], this.obs[1] - E.Lp[1]]; const aE = Math.acos((E.di[0] * dOut[0] + E.di[1] * dOut[1]) / Math.hypot(dOut[0], dOut[1])); const K = aE * this.RE;
+    this.rays = [];
+    for (const bb of [this.RE, -this.RE, 1.7 * this.RE, -1.7 * this.RE]){ const { Lp, di } = rayOut(bb); const al = K / Math.abs(bb); const sg = bb > 0 ? 1 : -1;
+      const rot = (v, a) => [v[0] * Math.cos(a) - v[1] * Math.sin(a), v[0] * Math.sin(a) + v[1] * Math.cos(a)];
+      const c1 = rot(di, al), c2 = rot(di, -al); const out = (c1[0] * sg < c2[0] * sg) ? c1 : c2; const tt = (430 - Lp[1]) / out[1];
+      this.rays.push({ pts: [this.src, Lp, [Lp[0] + out[0] * tt, 430]], main: Math.abs(bb) === this.RE }); }
+  },
+  warp(x, y, S){ // curved grid: pinch towards the black hole + Quarky's own dimple + success ripple
+    let dx = x - this.C[0], dy = y - this.C[1]; let r = Math.hypot(dx, dy) || 1e-3; let f = 1 - .38 / Math.sqrt(1 + (r / 70) ** 2); let X = this.C[0] + dx * f, Y = this.C[1] + dy * f;
+    if (S && S.q && S.phase !== 'aim'){ const qx = X - S.q.x, qy = Y - S.q.y, rq = Math.hypot(qx, qy) || 1e-3; const g = .16 / Math.sqrt(1 + (rq / 22) ** 2) * (S.qAlpha ?? 1); X -= qx * g; Y -= qy * g; }
+    if (S && S.ripple > 0){ const px = X - this.portal[0], py = Y - this.portal[1], rp = Math.hypot(px, py) || 1e-3; const w = Math.sin((rp - S.ripple * 260) / 14) * 5 * Math.exp(-Math.pow((rp - S.ripple * 260) / 40, 2)) * (1 - S.ripple); X += px / rp * w; Y += py / rp * w; }
+    if (S && S.shake > 0){ X += (hash(Math.floor(x * 3 + y) + Math.floor((S.clock || 0) * 20)) - .5) * 6 * S.shake; }
+    return [X, Y];
+  },
+  bg(c, t, S){
+    const W = this.W;
+    halo(c, 80, 90, 0, 170, W.key, .03); halo(c, 290, 340, 0, 190, W.mid, .025); halo(c, 60, 380, 0, 120, W.key, .025); // CMB-like mottling, low frequency
+    c.save(); c.fillStyle = rgba(W.accent, .25); c.beginPath(); c.ellipse(this.src[0], this.src[1], 7, 3, .3, 0, TAU); c.fill(); c.restore(); // the distant source galaxy
+    c.strokeStyle = rgba(S.shake > 0 ? FBY.hubble.col : W.key, .11); c.lineWidth = 1;
+    for (let gx = -10; gx <= 370; gx += 30){ c.beginPath(); for (let y = -10; y <= 440; y += 8){ const [X, Y] = this.warp(gx, y, S); if (Math.hypot(X - this.C[0], Y - this.C[1]) < this.rh + 2){ c.stroke(); c.beginPath(); continue; } y === -10 ? c.moveTo(X, Y) : c.lineTo(X, Y); } c.stroke(); }
+    for (let gy = -10; gy <= 440; gy += 30){ c.beginPath(); for (let x = -10; x <= 370; x += 8){ const [X, Y] = this.warp(x, gy, S); if (Math.hypot(X - this.C[0], Y - this.C[1]) < this.rh + 2){ c.stroke(); c.beginPath(); continue; } x === -10 ? c.moveTo(X, Y) : c.lineTo(X, Y); } c.stroke(); }
+  },
+  phys(c, t, S){
+    const W = this.W;
+    this.rays.forEach(r => fline(c, r.pts, 'light', r.main ? .45 : .22, t));
+    for (let i = 0; i < 8; i++){ const a = i / 8 * TAU + .4; fline(c, [[this.C[0] + Math.cos(a) * 150, this.C[1] + Math.sin(a) * 150], [this.C[0] + Math.cos(a) * 44, this.C[1] + Math.sin(a) * 44]], 'grav', .28, t); }
+    const ring = []; for (let a = 0; a <= 64; a++) ring.push([this.C[0] + Math.cos(a / 64 * TAU) * this.rps, this.C[1] + Math.sin(a / 64 * TAU) * this.rps]); fline(c, ring, 'thr', .8, t, W.danger);
+    if (S.phase === 'aim') fline(c, dotsOf(this.path, .05, 999), 'traj', .6, t);
+  },
+  matter(c, t){
+    const W = this.W; const [x, y] = this.C;
+    c.save(); c.strokeStyle = rgba(W.accent, .5); c.lineWidth = 1.5; disc(c, x, y, this.RE); c.stroke(); c.restore(); // Einstein ring = lensed image of the source
+    for (let i = 0; i < 6; i++){ const a = t * .3 + i * 1.05; glint(c, x + Math.cos(a) * this.RE, y + Math.sin(a) * this.RE, 1.8 + Math.sin(t * 3 + i) * .8, W.accent, .6); }
+    c.fillStyle = '#000000'; disc(c, x, y, this.rh); c.fill(); c.strokeStyle = rgba(W.key, .7); c.lineWidth = 1.5; c.stroke();
+    drawLauncher(c, this.launcher[0], this.launcher[1], t, W, this.ang, 0.7, { r: 20 });
+  },
+  readouts(S, L){
+    const q = S.q || this.path[0]; const a0 = Math.atan2(this.path[0].vy, this.path[0].vx), a1 = Math.atan2(q.vy, q.vx); const d = Math.abs(((a1 - a0 + 3 * Math.PI) % TAU) - Math.PI) * 180 / Math.PI;
+    return { rows: [
+      { label: L === 'fr' ? 'DISTANCE DE PASSAGE b' : 'PASSING DISTANCE b', value: (this.b / 100).toFixed(2) + ' kpc', v: this.b / 220, col: this.W.key, band: [0, this.rps / 220], dash: true },
+      { label: L === 'fr' ? 'DÉVIATION α ∝ M/b' : 'DEFLECTION α ∝ M/b', value: d.toFixed(0) + '°', v: d / 60, col: FBY.light.col },
+      { label: L === 'fr' ? 'MASSE DU TROU NOIR M' : 'BLACK HOLE MASS M', value: '4×10⁶ M☉', v: .6, col: this.W.mid } ],
+      help: L === 'fr' ? 'Vise à côté du trou noir : l’espace-temps courbe toutes les trajectoires. Plus tu passes près, plus elle se courbe.' : 'Aim beside the black hole: space-time bends every path. The closer you pass, the more it bends.' };
+  },
+  failTitle:{en:'Photon sphere crossed', fr:'Sphère de photons franchie'}
+};
+const SCENES = { q: SCENE_Q, a: SCENE_A, m: SCENE_M, s: SCENE_S, c: SCENE_C };
+for (const s of Object.values(SCENES)) s.build();
+
+/* =====================================================================
+   LEVEL SCREEN (390 × 844): same skeleton as android LevelScreen.kt
+   ===================================================================== */
+let LANG = 'en', MODE = 'win';
+const AIM = 1.4, OUTRO = 2.2;
+const STR = {
+  readings:{en:'INSTRUMENT READINGS', fr:'LECTURES DE L’INSTRUMENT'}, reading:{en:'INSTRUMENT READING', fr:'LECTURE DE L’INSTRUMENT'},
+  angle:{en:'ANGLE', fr:'ANGLE'}, win:{en:'Target reached', fr:'Cible atteinte'},
+  msg3:{en:'Three Photons in a single flight: perfect trajectory!', fr:'Trois Photons en un seul vol : trajectoire parfaite !'},
+  msgWin:{en:'A Photon is still waiting: there is a finer trajectory.', fr:'Un Photon t’attend encore : il existe une plus belle trajectoire.'},
+  msgLost:{en:'Adjust the shot and try again!', fr:'Ajuste le tir et retente !'},
+  retry:{en:'RETRY', fr:'REJOUER'}, next:{en:'NEXT', fr:'CONTINUER'}, map:{en:'MAP', fr:'CARTE'}
+};
+function collectIndex(path, ph){ for (let i = 0; i < path.length; i++) if (Math.hypot(path[i].x - ph.x, path[i].y - ph.y) < 9) return i; return Infinity; }
+for (const s of Object.values(SCENES)){ s.cWin = s.photons.map(p => collectIndex(s.path, p)); s.cFail = s.photons.map(p => collectIndex(s.failPath, p)); }
+
+function stateAt(sc, t){
+  const win = MODE === 'win'; const path = win ? sc.path : sc.failPath; const T = path[path.length - 1].t; const P = AIM + T + OUTRO;
+  const cyc = ((t % P) + P) % P; const S = { path, T, outcome: null, ripple: 0, shake: 0, aimF: 0, clock: 0, ft: 0 };
+  const cIdx = win ? sc.cWin : sc.cFail;
+  if (cyc < AIM){ S.phase = 'aim'; S.aimF = smooth(.1, 1.2, cyc); S.q = path[0]; S.idx = 0; }
+  else if (cyc < AIM + T){ S.phase = 'flight'; S.ft = cyc - AIM; S.idx = indexAtT(path, S.ft); S.q = path[S.idx]; S.clock = S.ft; }
+  else { S.phase = 'outro'; S.ot = cyc - AIM - T; S.idx = path.length - 1; S.q = path[S.idx]; S.clock = T + S.ot; S.outcome = win ? 'win' : 'fail';
+    if (win) S.ripple = clamp(S.ot / 1.8); else S.shake = clamp(S.ot / .4) * clamp(1 - (S.ot - 1.2) / .8); }
+  S.fringeLock = S.outcome === 'win';
+  S.collected = cIdx.map(ci => S.phase !== 'aim' && ci <= S.idx && (S.phase === 'flight' || win));
+  S.collectT = cIdx.map(ci => ci === Infinity ? -9 : AIM + path[Math.min(ci, path.length - 1)].t);
+  S.cyc = cyc; S.progress = clamp(S.idx / Math.max(1, path.length - 1));
+  S.stars = S.collected.filter(Boolean).length;
+  return S;
+}
+
+function makeScreen(canvas, wid, o = {}){
+  const sc = SCENES[wid], W = sc.W, bh = sc.boxH; const panelTop = BOX_TOP + bh + 14;
+  const bokeh = Array.from({ length: 12 }, (_, i) => [hash(i * 1.7), hash(i * 2.9 + 3), 22 + 40 * hash(i * 5.3), hash(i * 7.1) * TAU, .6 + hash(i + 11)]);
+  const fog = Array.from({ length: 6 }, (_, i) => [hash(i * 3.3 + 1), hash(i * 4.1 + 2), 120 + 90 * hash(i * 2.2), hash(i * 6.7) * TAU]);
+  const dust = Array.from({ length: 34 }, (_, i) => [hash(i * 9.1), hash(i * 4.7 + 5), .5 + .8 * hash(i * 3.9), .2 + .8 * hash(i * 1.3)]);
+  let S = null;
+  const box = c => { c.translate(BOX_X, BOX_TOP); c.beginPath(); c.rect(0, 0, BOX_W, bh); c.clip(); };
+  const quarkyPos = () => {
+    const q = S.q; if (S.phase === 'aim'){ const ang = sc.ang; const f = S.aimF; return [q.x - Math.cos(ang) * f * 13 * 1.1, q.y - Math.sin(ang) * f * 13 * 1.1]; }
+    if (S.phase === 'outro' && S.outcome === 'win'){ const e = smooth(0, .8, S.ot); return [lerp(q.x, sc.portal[0], e), lerp(q.y, sc.portal[1], e)]; }
+    return [q.x, q.y];
+  };
+  const hooks = {
+    update(t){ S = stateAt(sc, t); },
+    bg(c, t){
+      const g = c.createLinearGradient(0, 0, 0, 844); g.addColorStop(0, W.bgTop); g.addColorStop(.5, W.bg); g.addColorStop(1, W.bgBot); c.fillStyle = g; c.fillRect(0, 0, 390, 844);
+      const [qx0, qy0] = quarkyPos(); const qx = qx0 + BOX_X - 195, qy = qy0 + BOX_TOP - 422;
+      const tx = sc.portal[0] + BOX_X, ty = sc.portal[1] + BOX_TOP;
+      c.globalCompositeOperation = 'lighter';
+      halo(c, tx, ty, 0, 300, W.key, .09); halo(c, sc.launcher[0] + BOX_X, sc.launcher[1] + BOX_TOP, 0, 240, W.accent, .04);
+      for (const b of bokeh) halo(c, b[0] * 390 - qx * .03 + Math.sin(t * .1 * b[4] + b[3]) * 12, b[1] * 844 - qy * .02 + Math.cos(t * .08 * b[4] + b[3]) * 10, 0, b[2], b[4] > 1.1 ? W.accent : W.key, .05);
+      for (let i = 0; i < 5; i++){ const an = Math.PI * .55 + i * .5 + Math.sin(t * .15 + i) * .04, wd = .035 + .02 * Math.sin(t * .3 + i * 2); c.fillStyle = rgba(W.key, .035); c.beginPath(); c.moveTo(tx, ty); c.lineTo(tx + Math.cos(an - wd) * 760, ty + Math.sin(an - wd) * 760); c.lineTo(tx + Math.cos(an + wd) * 760, ty + Math.sin(an + wd) * 760); c.closePath(); c.fill(); }
+      for (const f of fog) halo(c, f[0] * 390 - qx * .06 + Math.sin(t * .12 + f[3]) * 30, f[1] * 844 + Math.cos(t * .1 + f[3]) * 20, 0, f[2], f[3] > 3 ? W.accent : W.key, .04);
+      c.globalCompositeOperation = 'source-over';
+      c.save(); box(c); sc.bg(c, t, S); c.restore();
+    },
+    phys(c, t){ c.save(); box(c); sc.phys(c, t, S); c.restore(); },
+    matter(c, t){
+      c.save(); box(c);
+      sc.matter(c, t, S);
+      if (wid === 'q' || wid === 'a') drawLauncher(c, sc.launcher[0], sc.launcher[1], t, W, sc.ang, S.phase === 'aim' ? S.aimF : 0);
+      sc.photons.forEach((p, i) => { if (!S.collected[i]) drawPhoton(c, p.x, p.y, t, W, p.e, i, { k: 1 }); });
+      const flare = S.outcome === 'win' ? Math.max(0, 1 - Math.abs(S.ot - .8) / .5) : 0;
+      drawPortal(c, sc.portal[0], sc.portal[1], t, W, sc.portalR, flare);
+      // trail: a simple line (B style)
+      if (S.phase !== 'aim'){ const n0 = Math.max(0, S.idx - 45); const fade = S.phase === 'outro' ? Math.max(0, 1 - S.ot / .6) : 1; c.lineWidth = 2; c.lineCap = 'round';
+        for (let i = n0 + 1; i <= S.idx; i++){ c.strokeStyle = rgba(W.key, .55 * (i - n0) / 45 * fade); c.beginPath(); c.moveTo(S.path[i-1].x, S.path[i-1].y); c.lineTo(S.path[i].x, S.path[i].y); c.stroke(); } }
+      // Photon bursts
+      S.collectT.forEach((ct, i) => { const u = (S.cyc - ct) / .5; if (S.collected[i] && u >= 0 && u < 1){ const p = sc.photons[i]; c.strokeStyle = rgba(W.energy[p.e], (1 - u) * .9); c.lineWidth = 1.6 * (1 - u) + .3; disc(c, p.x, p.y, 4 + u * 20); c.stroke(); for (let k = 0; k < 8; k++){ const an = k / 8 * TAU + .3; glint(c, p.x + Math.cos(an) * (4 + u * 22), p.y + Math.sin(an) * (4 + u * 22), 2.6 * (1 - u), '#ffffff', 1 - u); } } });
+      // Quarky
+      const [x, y] = quarkyPos(); const q = S.q; const sp = Math.hypot(q.vx, q.vy);
+      const o = { R: 13, vx: q.vx || 1, vy: q.vy || 0, lookX: 0, lookY: 0, eyes: 'normal' };
+      if (S.phase === 'flight'){ o.ang = Math.atan2(q.vy, q.vx); o.stretch = Math.min(.18, .04 + sp / 2400); o.lookX = Math.cos(o.ang); o.lookY = Math.sin(o.ang); if (S.collectT.some(ct => S.cyc - ct >= 0 && S.cyc - ct < .35)) o.eyes = 'happy'; if (S.ft < .3) o.eyes = 'wide'; }
+      if (S.phase === 'aim'){ o.ang = sc.ang; o.lookX = Math.cos(sc.ang); o.lookY = Math.sin(sc.ang); }
+      if (wid === 'c'){ o.skewTo = [SCENE_C.C[0] - x, SCENE_C.C[1] - y]; o.skew = clamp(1400 / Math.pow(Math.hypot(o.skewTo[0], o.skewTo[1]), 1.5), .08, .3); }
+      if (S.phase === 'outro'){
+        if (S.outcome === 'win'){ const e = smooth(0, .8, S.ot); o.R = 13 * (1 - .75 * e); o.alpha = S.ot > .8 ? 0 : 1 - e * .9; o.eyes = 'happy'; }
+        else { const u = clamp(S.ot / .8); o.alpha = 1 - u; o.eyes = 'wide'; o.mouth = 'o'; for (let k = 0; k < 10; k++){ const an = k * 2.4, d = 6 + u * 26 * hash(k); glint(c, x + Math.cos(an) * d, y + Math.sin(an) * d, 2 * (1 - u), W.key, .8 * (1 - u)); } }
+      }
+      drawQuarky(c, x, y, t, W, o);
+      c.restore();
+    },
+    fore(c, t){
+      const [qx0] = quarkyPos(); const qx = qx0 + BOX_X - 195;
+      for (const d of dust){ const x = ((d[0] * 390 - qx * .1 + t * 3 * d[3]) % 390 + 390) % 390, y = ((d[1] * 844 + t * 5 * d[3]) % 844 + 844) % 844; c.fillStyle = rgba(W.hud, .1); disc(c, x, y, d[2]); c.fill(); }
+      if (S.outcome === 'fail' && S.shake > 0){ c.save(); box(c); for (let i = 0; i < 90; i++){ const x = hash(i * 3.7 + Math.floor(t * 14)) * BOX_W, y = hash(i * 5.1 + Math.floor(t * 14) * .7) * bh; c.fillStyle = rgba(i % 2 ? W.key : W.accent, .12 * S.shake); c.fillRect(x, y, 2, 2); } c.restore(); }
+      if (S.outcome === 'win' && S.ot < 1.4){ const y = BOX_TOP + (S.ot / 1.4) * bh; const g = c.createLinearGradient(0, y - 30, 0, y); g.addColorStop(0, rgba(W.accent, 0)); g.addColorStop(1, rgba(W.accent, .07)); c.fillStyle = g; c.fillRect(BOX_X, y - 30, BOX_W, 30); c.strokeStyle = rgba(W.accent, .28); c.lineWidth = .8; c.beginPath(); c.moveTo(BOX_X, y); c.lineTo(BOX_X + BOX_W, y); c.stroke(); }
+    },
+    hud(c, t){ drawFrame(c, t, sc, S); drawTopBar(c, t, sc, S); drawPanel(c, t, sc, S, panelTop); }
+  };
+  return new Stage(canvas, 390, 844, hooks, { css: o.css, t0: o.t0 || 0 });
+}
+
+function drawFrame(c, t, sc, S){
+  const W = sc.W, x0 = BOX_X, y0 = BOX_TOP, x1 = BOX_X + BOX_W, y1 = BOX_TOP + sc.boxH; const id = W.id;
+  c.save(); c.strokeStyle = rgba(W.muted, .28); c.lineWidth = 1;
+  if (id === 'c'){ const b = 3; c.beginPath(); c.moveTo(x0, y0); c.quadraticCurveTo((x0 + x1) / 2, y0 + b, x1, y0); c.quadraticCurveTo(x1 - b, (y0 + y1) / 2, x1, y1); c.quadraticCurveTo((x0 + x1) / 2, y1 - b, x0, y1); c.quadraticCurveTo(x0 + b, (y0 + y1) / 2, x0, y0); c.stroke(); }
+  else c.strokeRect(x0 + .5, y0 + .5, BOX_W - 1, sc.boxH - 1);
+  c.strokeStyle = rgba(W.accent, .7); c.lineWidth = 1.5;
+  for (const [cx, cy, sx, sy] of [[x0, y0, 1, 1], [x1, y0, -1, 1], [x1, y1, -1, -1], [x0, y1, 1, -1]]){ c.beginPath(); c.moveTo(cx + sx * 14, cy); c.lineTo(cx, cy); c.lineTo(cx, cy + sy * 14); c.stroke(); }
+  c.strokeStyle = rgba(W.muted, .25); c.lineWidth = 1;
+  for (let i = 1; i < 10; i++){ const yy = y0 + i / 10 * sc.boxH, xx = x0 + i / 10 * BOX_W; c.beginPath(); c.moveTo(x0, yy); c.lineTo(x0 + 4, yy); c.moveTo(xx, y1); c.lineTo(xx, y1 - 4); c.stroke(); }
+  if (id === 'a'){ const tx = x0 + 179 + 150 * Math.sin(t * .3); c.fillStyle = rgba(W.accent, .8); c.beginPath(); c.moveTo(tx - 4, y0 - 1); c.lineTo(tx + 4, y0 - 1); c.lineTo(tx, y0 + 6); c.closePath(); c.fill(); }
+  if (id === 's'){ c.strokeStyle = rgba(W.muted, .45); for (const [ax, ay, bx, by] of [[x0 + 179, y0, x0 + 179, y0 + 10], [x0 + 179, y1, x0 + 179, y1 - 10], [x0, y0 + 215, x0 + 10, y0 + 215], [x1, y0 + 215, x1 - 10, y0 + 215]]){ c.beginPath(); c.moveTo(ax, ay); c.lineTo(bx, by); c.stroke(); } }
+  if (id === 'm'){ c.fillStyle = W.accent; disc(c, x0 + 12, y0 + 14, 2.5); c.fill(); txt(c, '1000 FPS', x0 + 19, y0 + 17, { col: rgba(W.muted, .9), size: 8, ls: 1 }); }
+  c.restore();
+}
+
+function roundBtn(c, x, y, W, glyph){ c.fillStyle = rgba(W.bezel, .9); disc(c, x, y, 18); c.fill(); c.strokeStyle = rgba(W.muted, .45); c.lineWidth = 1; c.stroke(); c.strokeStyle = W.hud; c.fillStyle = W.hud; c.lineWidth = 1.8; c.lineCap = 'round'; glyph(); }
+function diamond(c, x, y, d, fill, col){ c.beginPath(); c.moveTo(x, y - d); c.lineTo(x + d, y); c.lineTo(x, y + d); c.lineTo(x - d, y); c.closePath(); if (fill){ c.fillStyle = col; c.fill(); } else { c.strokeStyle = col; c.lineWidth = 1.2; c.stroke(); } }
+function fitFont(c, s, max, size, w, font){ let z = size; c.font = `${w} ${z}px ${font}`; while (c.measureText(s).width > max && z > 10){ z -= .5; c.font = `${w} ${z}px ${font}`; } return z; }
+function drawTopBar(c, t, sc, S){
+  const W = sc.W, yc = 52;
+  roundBtn(c, 34, yc, W, () => { c.beginPath(); c.moveTo(37, yc - 7); c.lineTo(30, yc); c.lineTo(37, yc + 7); c.stroke(); });
+  for (let i = 0; i < 3; i++){ const got = S.collected[i]; diamond(c, 68 + i * 17, yc, 5.5, got, got ? W.energy[sc.photons[i].e] : rgba(W.muted, .7)); }
+  const title = sc.title[LANG]; const z = fitFont(c, title, 166, 15, 600, UI);
+  txt(c, title, 195, yc - 3, { font: UI, w: 600, size: z, col: W.hud, align: 'center' });
+  txt(c, sc.sub[LANG].toUpperCase(), 195, yc + 13, { size: 8.5, col: W.muted, align: 'center', ls: 1.2 });
+  roundBtn(c, 356, yc, W, () => { c.beginPath(); c.arc(356, yc, 7, .5, 5.3); c.stroke(); const ax = 356 + Math.cos(.5) * 7, ay = yc + Math.sin(.5) * 7; c.beginPath(); c.moveTo(ax + 1, ay - 4); c.lineTo(ax + 3.5, ay + 3); c.lineTo(ax - 4, ay + 1); c.closePath(); c.fill(); });
+}
+function meter(c, left, right, by, row, W){
+  const w = right - left; const sx = u => left + clamp(u) * w;
+  c.strokeStyle = rgba(W.muted, .35); c.lineWidth = 1; c.beginPath(); c.moveTo(left, by); c.lineTo(right, by); c.stroke();
+  for (let i = 0; i <= 10; i++){ const x = left + i / 10 * w; c.beginPath(); c.moveTo(x, by - 3); c.lineTo(x, by + (i % 5 ? 2 : 4)); c.stroke(); }
+  if (row.stack){ let x = left; for (const sg of row.stack){ const ww = clamp(sg.v) * w; if (ww < .5) continue; c.save(); c.beginPath(); c.rect(x, by - 4, ww, 8); c.clip();
+      if (sg.pat === 'solid'){ c.fillStyle = sg.col; c.fillRect(x, by - 4, ww, 8); }
+      else { c.fillStyle = rgba(sg.col, .22); c.fillRect(x, by - 4, ww, 8); c.strokeStyle = sg.col; c.lineWidth = 1.2; c.beginPath();
+        if (sg.pat === 'hatch') for (let k = x - 10; k < x + ww + 10; k += 4){ c.moveTo(k, by + 4); c.lineTo(k + 8, by - 4); }
+        else for (let k = x; k < x + ww + 4; k += 4){ c.lineTo(k, by + ((k - x) / 4 % 2 ? -3 : 3)); } c.stroke(); }
+      c.restore(); x += ww; }
+    c.strokeStyle = W.hud; c.lineWidth = 1.5; c.beginPath(); c.moveTo(x, by - 7); c.lineTo(x, by + 7); c.stroke(); return; }
+  if (row.band){ c.save(); c.beginPath(); c.rect(sx(row.band[0]), by - 3, sx(row.band[1]) - sx(row.band[0]), 6); c.clip(); c.fillStyle = rgba(row.col, .18); c.fillRect(sx(row.band[0]), by - 3, w, 6); c.strokeStyle = rgba(row.col, .7); c.lineWidth = 1; for (let k = sx(row.band[0]) - 8; k < sx(row.band[1]) + 8; k += 4){ c.beginPath(); c.moveTo(k, by + 3); c.lineTo(k + 6, by - 3); c.stroke(); } c.restore(); }
+  c.strokeStyle = row.col; c.lineWidth = 3; c.beginPath(); c.moveTo(left, by); c.lineTo(sx(row.v), by); c.stroke();
+  c.beginPath(); c.moveTo(sx(row.v), by - 7); c.lineTo(sx(row.v), by + 7); c.stroke();
+  if (row.mark != null){ c.strokeStyle = rgba(W.hud, .7); c.lineWidth = 1.2; c.setLineDash([2, 2]); c.beginPath(); c.moveTo(sx(row.mark), by - 8); c.lineTo(sx(row.mark), by + 8); c.stroke(); c.setLineDash([]); }
+}
+function drawPanel(c, t, sc, S, top){
+  const W = sc.W, x0 = 16, x1 = 374, bottom = 828; const left = x0 + 16, right = x1 - 16;
+  c.fillStyle = rgba(W.bezel, .9); c.fillRect(x0, top, x1 - x0, bottom - top); c.strokeStyle = rgba(W.muted, .22); c.lineWidth = 1; c.strokeRect(x0 + .5, top + .5, x1 - x0 - 1, bottom - top - 1);
+  let y = top + 24;
+  if (S.phase === 'outro' && S.ot > .9){
+    txt(c, STR.reading[LANG], left, y, { size: 9.5, col: W.muted, ls: 1.4 }); y += 30;
+    const win = S.outcome === 'win'; txt(c, win ? STR.win[LANG] : sc.failTitle[LANG], left, y, { font: UI, w: 600, size: 20, col: W.hud });
+    if (win) for (let i = 0; i < 3; i++){ const on = i < S.stars; const x = right - 12 - (2 - i) * 26; c.save(); c.beginPath(); for (let k = 0; k < 10; k++){ const r = k % 2 ? 4.5 : 10, a = -Math.PI / 2 + k * Math.PI / 5; k ? c.lineTo(x + Math.cos(a) * r, y - 7 + Math.sin(a) * r) : c.moveTo(x + Math.cos(a) * r, y - 7 + Math.sin(a) * r); } c.closePath(); if (on){ c.fillStyle = W.key; c.fill(); } else { c.strokeStyle = rgba(W.muted, .7); c.lineWidth = 1.2; c.stroke(); } c.restore(); }
+    y += 28; wrapText(c, win ? (S.stars === 3 ? STR.msg3[LANG] : STR.msgWin[LANG]) : STR.msgLost[LANG], left, y, right - left, 18, { font: UI, size: 13, col: W.hud });
+    const bw = (right - left - 12) / 2, bh = 44, by = bottom - 16 - bh;
+    c.strokeStyle = rgba(W.muted, .7); c.lineWidth = 1.2; c.strokeRect(left, by, bw, bh); txt(c, STR.retry[LANG], left + bw / 2, by + 27, { size: 12, col: W.hud, align: 'center', ls: 2 });
+    c.fillStyle = W.key; c.fillRect(left + bw + 12, by, bw, bh); txt(c, (win ? STR.next : STR.map)[LANG], left + bw + 12 + bw / 2, by + 27, { size: 12, col: W.ink, align: 'center', ls: 2 });
+    return;
+  }
+  const R = sc.readouts(S, LANG);
+  txt(c, STR.readings[LANG], left, y, { size: 9.5, col: W.muted, ls: 1.4 });
+  txt(c, `${STR.angle[LANG]} ${Math.round(-sc.ang * 180 / Math.PI)}°`, right, y, { size: 12, col: W.hud, align: 'right' });
+  y += 22;
+  for (const row of R.rows){
+    txt(c, row.label, left, y + 10, { size: 9.5, col: W.muted, ls: 1.4 });
+    txt(c, row.value, right - 62, y + 11, { size: 12, col: W.hud, align: 'right' });
+    if (row.tag) txt(c, row.tag, right, y + 10, { size: 9, col: row.tagCol || W.hud, align: 'right', ls: 1 });
+    if (row.legend) txt(c, row.legend, right, y + 32, { size: 8.5, col: W.muted, align: 'right' });
+    meter(c, left, right, y + 20, row, W);
+    y += row.legend ? 50 : 42;
+  }
+  wrapText(c, R.help, left, y + 8, right - left, 17, { font: UI, size: 12.5, col: W.hud });
+}
+
+/* =====================================================================
+   PAGE SECTIONS
+   ===================================================================== */
+const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+function colHead(w, extra = ''){ return `<div class="col-h"><div class="tag" style="color:${w.key}">${w.ref ? 'Reference · validated' : '[FULL] proposal'} · ${w.mag}</div><h3>${w.name.en} <span style="color:var(--faint);font-weight:400">/ ${w.name.fr}</span></h3>${extra}</div>`; }
+
+// 01 overview
+for (const w of WORLDS){
+  const c = el('div', 'col' + (w.ref ? ' ref' : ''));
+  c.innerHTML = colHead(w, `<p>${w.instrument.en} · ${w.instrument.fr}</p>`) + `<div class="col-b"><ul class="kv">
+    <li><span class="k">Instrument</span>${w.instrumentLong}</li><li><span class="k">Topology</span>${w.topology}</li>
+    <li><span class="k">Gravity</span>${w.gravity}</li><li><span class="k">Signature obstacle</span>${w.obstacle}</li>
+    <li><span class="k">Camera</span>${w.camera}</li><li><span class="k">Core concepts (todo §2.2)</span>${w.concepts}</li></ul></div>`;
+  $('#overview-cols').appendChild(c);
+}
+
+// 02 colour contracts
+const CONTRACT_ROLES = [['key','Scale key'], ['accent','Complementary accent'], ['bg','Deep background'], ['danger','Threshold / danger'], ['mid','Derived (medium energy)'], ['hud','HUD text'], ['muted','Secondary text'], ['bezel','Eyepiece bezel']];
+for (const w of WORLDS){
+  const c = el('div', 'col' + (w.ref ? ' ref' : ''));
+  let h = colHead(w) + '<div class="col-b">';
+  for (const [k, n] of CONTRACT_ROLES) h += `<div class="sw"><i style="background:${w[k]}"></i><span><b>${n}</b>${w[k]} · <em style="display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:-1px;background:${sim(w[k],'deutan')}"></em> <em style="display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:-1px;background:${sim(w[k],'protan')}"></em></span></div>`;
+  h += `<p style="margin:8px 0 0">Photons: ${w.energy.map((e, i) => `<span class="chip" style="background:${e}"></span> ${RAYS[i]}`).join(' · ')} rays</p>`;
+  h += `<p style="margin:6px 0 0">Small squares after each hex: deuteranopia / protanopia simulation.</p></div>`;
+  c.innerHTML = h; $('#contract-cols').appendChild(c);
+}
+{
+  const tb = $('#contrast-table tbody'); const QB = WBY.q.bezel;
+  for (const w of WORLDS){
+    const rows = [['HUD text', w.hud, w.bg, 'background'], ['HUD text', w.hud, w.bezel, 'bezel'], ['Secondary text', w.muted, w.bg, 'background'], ['Secondary text', w.muted, w.bezel, 'bezel'], ['Threshold tag', w.danger, w.bezel, 'bezel'], ['Accent tag', w.accent, w.bezel, 'bezel']];
+    if (!w.ref) rows.push(['Key as tile label (menu)', w.key, QB, 'menu bezel #150d22']);
+    for (const [n, f, b, on] of rows){ const r = contrast(f, b); tb.insertAdjacentHTML('beforeend', `<tr><td>${w.name.en}</td><td><span class="chip" style="background:${f}"></span> ${n} <code>${f}</code></td><td><span class="chip" style="background:${b}"></span> ${on} <code>${b}</code></td><td class="num">${r.toFixed(2)}:1</td><td><span class="pill ${r >= 4.5 ? 'pass' : 'fail'}">${r >= 4.5 ? 'PASS' : 'FAIL'}</span></td></tr>`); }
+  }
+}
+
+// 03 instrument backgrounds
+const BG_TEXT = {
+  q: 'Near-black detector cavity: pink/cyan bokeh → soft interference fringes that lock on success → dust. No grid.',
+  a: 'STM field: an out-of-focus atomic lattice (hexagonal bokeh, 3.5 % alpha) → electron-density fog → dust. The STM tip rides the top edge of the frame. No grid.',
+  m: 'The lab through the bench camera: lamp bokeh → fog with the scientist at a far bench (first appearance, 7 % alpha, low frequency) → dust. Very discreet technical grid (3.5 %), neon-edged platforms.',
+  s: 'Tracking telescope: sparse soft stars (bokeh, never pinpoints behind the play area) → faint violet/pink nebula → dust. Reticle ticks on the frame.',
+  c: 'Interferometer: CMB-like low-frequency mottling → the curved space-time grid (the level itself) → dust. The grid reacts: Quarky’s dimple, ripples on success, redshifted shudder on failure.'
+};
+const BG_STAGES = {};
+for (const w of WORLDS){
+  const sc = SCENES[w.id]; const c = el('div', 'col' + (w.ref ? ' ref' : ''));
+  c.innerHTML = colHead(w, `<p>${w.instrumentLong}</p>`) + `<canvas aria-label="${w.name.en} background"></canvas><div class="col-b"><p style="margin:0">${BG_TEXT[w.id]}</p><p class="probe" data-probe="${w.id}">luminance probe…</p></div>`;
+  $('#bg-cols').appendChild(c);
+  const dust = Array.from({ length: 20 }, (_, i) => [hash(i * 9.1), hash(i * 4.7 + 5), .5 + .8 * hash(i * 3.9), .2 + .8 * hash(i * 1.3)]);
+  let S = null;
+  BG_STAGES[w.id] = new Stage(c.querySelector('canvas'), 358, sc.boxH, {
+    update(t){ S = stateAt(sc, AIM + .01); S.phase = 'bg'; S.q = null; },
+    bg(cx, t){ const g = cx.createLinearGradient(0, 0, 0, sc.boxH); g.addColorStop(0, w.bgTop); g.addColorStop(.5, w.bg); g.addColorStop(1, w.bgBot); cx.fillStyle = g; cx.fillRect(0, 0, 358, sc.boxH);
+      cx.globalCompositeOperation = 'lighter'; for (let i = 0; i < 8; i++) halo(cx, hash(i * 1.7) * 358 + Math.sin(t * .1 + i) * 10, hash(i * 2.9 + 3) * sc.boxH, 0, 30 + 40 * hash(i * 5.3), i % 3 ? w.key : w.accent, .05); cx.globalCompositeOperation = 'source-over';
+      sc.bg(cx, t, S); },
+    fore(cx, t){ for (const d of dust){ cx.fillStyle = rgba(w.hud, .1); disc(cx, ((d[0] * 358 + t * 3 * d[3]) % 358), ((d[1] * sc.boxH + t * 5 * d[3]) % sc.boxH), d[2]); cx.fill(); } }
+  }, { bloom: 0 });
+}
+
+// 04 Quarky mutations
+const QK_STAGES = [];
+for (const w of WORLDS){
+  const c = el('div', 'col' + (w.ref ? ' ref' : ''));
+  c.innerHTML = colHead(w) + `<canvas aria-label="Quarky, ${w.name.en} mutation"></canvas><div class="col-b" style="display:flex;gap:14px;align-items:flex-end;justify-content:center;background:${w.bg}">
+    <figure style="margin:0;text-align:center"><canvas data-s="32" style="width:32px;height:32px"></canvas><figcaption class="probe" style="margin:4px 0 0">32 px</figcaption></figure>
+    <figure style="margin:0;text-align:center"><canvas data-s="48" style="width:48px;height:48px"></canvas><figcaption class="probe" style="margin:4px 0 0">48 px</figcaption></figure>
+    <figure style="margin:0;text-align:center"><canvas data-s="96" style="width:96px;height:96px"></canvas><figcaption class="probe" style="margin:4px 0 0">96 px</figcaption></figure></div>
+    <div class="col-b"><p style="margin:0"><b>${w.id === 'm' ? 'Canonical form.' : 'Mutation.'}</b> ${w.mutation}</p></div>`;
+  $('#quarky-cols').appendChild(c);
+  QK_STAGES.push(new Stage(c.querySelector('canvas'), 300, 170, {
+    bg(cx){ cx.fillStyle = w.bg; cx.fillRect(0, 0, 300, 170); },
+    matter(cx, t){ drawQuarky(cx, 90, 88, t, w, { R: 36, vx: 1, vy: -.2, skewTo: [1, .2] }); drawQuarky(cx, 220, 88, t, w, { R: 22, vx: 1, vy: -.4, ang: -.4, stretch: .14, lookX: .9, lookY: -.4, eyes: 'wide', skewTo: [1, .4], skew: .3 });
+      txt(cx, 'IDLE', 90, 160, { size: 8.5, col: w.muted, align: 'center', ls: 1.2 }); txt(cx, 'FLIGHT', 220, 160, { size: 8.5, col: w.muted, align: 'center', ls: 1.2 }); }
+  }, { bloom: .18, grain: 0, vignette: 0 }));
+  for (const cv of c.querySelectorAll('canvas[data-s]')){ const s = +cv.dataset.s;
+    QK_STAGES.push(new Stage(cv, s, s, { bg(cx){ cx.fillStyle = w.bg; cx.fillRect(0, 0, s, s); }, matter(cx, t){ const R = s * (w.id === 's' || w.id === 'a' ? .2 : .3); drawQuarky(cx, s / 2 + (w.id === 's' ? s * .12 : 0), s / 2, t, w, { R, vx: 1, vy: 0 }); } }, { css: s, bloom: .18, grain: 0, vignette: 0 })); }
+}
+
+// 05 level screens
+const SCREEN_NOTES = {
+  q: ['<b>Reference</b>: the implemented Tunnel 1 layout (launcher 0.10/0.50, portal 0.86/0.50, wall with a barrier window), redrawn with the same code vocabulary.', '<b>Physics layer</b>: white Δt-dots (aim), long orange dashes (threshold).'],
+  a: ['<b>Topology</b>: radial. Quarky (charge −) orbits the + nucleus; the + ion attracts it, the − ion repels it; the player sets each ion’s sign (± chip) and distance (notched rail).', '<b>Physics layer</b>: yellow chevron field lines (+ → −), dash-dot equipotentials drawn <i>through each Photon</i>, rose long-dash capture ring. The trajectory is integrated with Coulomb forces in the page.', '<b>Failure</b>: too slow → the orbit falls inside the capture ring.'],
+  m: ['<b>Topology</b>: horizontal corridor, lateral tracking (mini-map, top right). The launcher is the mechanic: a spring (Ep = ½kx²).', '<b>Physics</b>: k = 400 N/m, x = 0.35 m → 24.5 J; 60° ramp exit at 0.6 m; apex 2.02 m where Ep = 19.8 J and Ec = 4.7 J (Ec ≠ 0 at the top). Energy bar: Ec solid, Ep(g) hatched, Ep(spring) zigzag.', '<b>Trail</b>: chronophotography outlines every 0.1 s (equal horizontal spacing in flight). <b>Failure</b>: x = 0.30 m falls short of the platform (orange long-dash line = platform height).'],
+  s: ['<b>Topology</b>: open plane, several wells (giant planet + moon). The planet <i>moves</i> (V, its own dotted path); Quarky passes behind it and leaves faster in the star frame.', '<b>Physics layer</b>: blue dash-chevron gravity lines, dash-dot well contours, red long-dash minimum distance. Newton’s law integrated in the page with the moving planet; dots every 0.06 s spread out at closest approach (Kepler’s 2nd law).', '<b>Failure</b>: aimed too close → inside the minimum distance.'],
+  c: ['<b>Topology</b>: the grid itself is curved (pinched by the black hole, dimpled by Quarky). The straight shot would cross the photon sphere; only the bent path reaches the portal.', '<b>Physics layer</b>: light rays (wavefront ticks) from a background galaxy bend around the hole; the pair at b = R<sub>E</sub> meets at the eyepiece (Einstein ring, gold), the outer pair bends less. Photons sit on the ring; the 3rd one needs a tighter route.', '<b>Climax</b>: success sends a gravitational-wave ripple through the grid; failure shudders it and tints it red.']
+};
+const SCREENS = {};
+for (const w of WORLDS){
+  const card = el('div', 'phone-card');
+  card.innerHTML = `<h3 style="color:${w.key}">${w.name.en}</h3><p class="sub">${SCENES[w.id].title.en} / ${SCENES[w.id].title.fr}${w.ref ? ' — reference' : ''}</p><div class="phone"><canvas aria-label="${w.name.en} level screen, 390 by 844"></canvas></div><p class="probe" data-lprobe="${w.id}">luminance probe…</p><ul class="notes">${SCREEN_NOTES[w.id].map(n => `<li>${n}</li>`).join('')}</ul>`;
+  $('#screen-phones').appendChild(card);
+  SCREENS[w.id] = makeScreen(card.querySelector('canvas'), w.id, { t0: 0 });
+}
+$('#screen-honesty').innerHTML = `<b>Frame honesty.</b> Trajectories are integrated in the page: Atomic with Coulomb forces (softened 6 px) around a nucleus of charge +3 and two ions ±0.35; Macro analytically (spring, frictionless circular ramp, free fall, g = 9.8 m/s², 62 px/m); Space with Newton’s law and a planet moving at constant velocity (valid over a short flyby); Cosmological with Newtonian attraction for Quarky and a thin-lens picture for the light (α = K/b). Portals and Photons are then placed <i>on</i> the computed paths, so every screen is self-consistent. Numbers are illustrative; <code>docs/physics-spec.md</code> stays the reference and the level generator decides real geometry. Computed here: Space closest approach ${SCENE_S.rp.toFixed(0)} px, speed ×${(SCENE_S.v1 / SCENE_S.v0).toFixed(2)} from launch to portal; Cosmological closest approach ${SCENE_C.rp.toFixed(0)} px (photon sphere 30 px), deflection ${SCENE_C.defl.toFixed(0)}°, passing distance b = ${SCENE_C.b.toFixed(0)} px.`;
+
+function fillFitTable(){
+  const c = mk(10, 10).getContext('2d'); const tb = $('#fit-table tbody'); tb.innerHTML = '';
+  const measure = (s, size, font, w, ls) => { c.font = `${w || 400} ${size}px ${font || MONO}`; return c.measureText(s).width + (ls || 0) * s.length; };
+  for (const w of WORLDS){ const sc = SCENES[w.id]; const S = stateAt(sc, AIM + .5);
+    const en = sc.readouts(S, 'en'), fr = sc.readouts(S, 'fr');
+    const rows = en.rows.map((r, i) => { const rf = fr.rows[i]; const valW = Math.max(measure(r.value, 12), measure(rf.value, 12)); return { a: r.label, b: rf.label, avail: 358 - 62 - valW - 8 - 32, size: 9.5, ls: 1.4 }; });
+    rows.push({ a: sc.title.en, b: sc.title.fr, avail: 166, size: 15, font: UI, w: 600, ls: 0, note: ' (title, auto-shrinks to 10 px)' });
+    rows.push({ a: STR.readings.en, b: STR.readings.fr, avail: 326 - 80, size: 9.5, ls: 1.4 });
+    for (const r of rows){ const wa = measure(r.a, r.size, r.font, r.w, r.ls), wb = measure(r.b, r.size, r.font, r.w, r.ls); const ok = Math.max(wa, wb) <= r.avail;
+      tb.insertAdjacentHTML('beforeend', `<tr><td>${w.name.en}</td><td>${r.a}</td><td class="num">${wa.toFixed(0)}</td><td>${r.b}</td><td class="num">${wb.toFixed(0)}</td><td><span class="pill ${ok ? 'pass' : 'fail'}">${ok ? 'FITS' : 'SHRINK'}</span> <span class="probe">≤ ${r.avail.toFixed(0)} px${r.note || ''}</span></td></tr>`); } }
+}
+
+/* ---------------- 06 menus: scales screen + world maps ---------------- */
+const QC = WBY.q; // the Compose shell keeps the Quantum chrome; each tile carries its world key
+const MAP_NODES = {
+  q: [['Tunnel effect','Effet tunnel'],['Superposition','Superposition'],['Entanglement','Intrication'],['Uncertainty','Incertitude'],['Quantisation','Quantification'],['Spin','Spin'],['Wave–particle duality','Dualité onde-particule']],
+  a: [['Coulomb’s law','Loi de Coulomb'],['Coulomb II','Coulomb II'],['Energy levels','Niveaux d’énergie'],['Energy levels II','Niveaux d’énergie II'],['Van der Waals','Van der Waals'],['Covalent bonds','Liaisons covalentes'],['Mix','Mélange']],
+  m: [['Energy','Énergie'],['Springs','Ressorts'],['Reflection','Réflexion'],['Refraction','Réfraction'],['Electromagnet','Électroaimant'],['Collisions','Collisions'],['Mix','Mélange']],
+  s: [['Gravitation','Gravitation'],['Kepler orbits','Orbites de Kepler'],['Gravity assist','Effet de fronde'],['Angular momentum','Moment cinétique'],['Orbit or escape','Orbite ou évasion'],['Escape velocity','Vitesse de libération'],['Mix','Mélange']],
+  c: [['Lensing','Lentille'],['Einstein ring','Anneau d’Einstein'],['Redshift','Décalage spectral'],['Expansion','Expansion'],['Dark matter','Matière noire'],['Dark matter II','Matière noire II'],['Black hole','Trou noir']]
+};
+const MAP_TITLE = { q:['Quantum world','Monde Quantique'], a:['Atomic world','Monde atomique'], m:['Macro world','Monde Macro'], s:['Space world','Monde spatial'], c:['Cosmological world','Monde cosmologique'] };
+function mapPos(id, i){
+  const top = 130, bot = 790;
+  switch (id){
+    case 'q': return [195 + 101 * Math.sin(i * 1.15 + .4), bot - (bot - top) / 6 * i];
+    case 'a': { const a = Math.PI / 2 + i * 1.02, r = 34 + 38 * i; return [195 + Math.cos(a) * r * .95, 470 + Math.sin(a) * r * 1.15]; }
+    case 'm': return [[78, 780], [312, 700], [78, 600], [312, 510], [78, 420], [312, 330], [195, 220]][i];
+    case 's': { const a = Math.PI / 2 + i * (TAU * .78 / 6), rx = 140, ry = 290; return [195 + Math.cos(a) * rx, 470 + Math.sin(a) * ry]; }
+    case 'c': { if (i === 6) return [195, 330]; const a = Math.PI * .5 + i * .95, r = 300 - i * 38; return [195 + Math.cos(a) * r * .55, 330 + Math.sin(a) * r * 1.05 + 40]; }
+  }
+}
+function drawHeader(c, W, title, sub, trailing){
+  roundBtn(c, 34, 52, W, () => { c.beginPath(); c.moveTo(37, 45); c.lineTo(30, 52); c.lineTo(37, 59); c.stroke(); });
+  txt(c, title, 66, 50, { font: UI, w: 600, size: 20, col: W.hud }); txt(c, sub, 66, 68, { size: 9, col: W.muted, ls: 1.2 });
+  if (trailing) txt(c, trailing, 374, 50, { size: 12, col: W.hud, align: 'right' });
+}
+function makeMap(canvas, id){
+  const W = WBY[id]; const n = MAP_NODES[id]; const best = [3, 2]; const current = 2;
+  return new Stage(canvas, 390, 844, {
+    bg(c, t){ const g = c.createLinearGradient(0, 0, 0, 844); g.addColorStop(0, W.bgTop); g.addColorStop(.5, W.bg); g.addColorStop(1, W.bgBot); c.fillStyle = g; c.fillRect(0, 0, 390, 844);
+      c.globalCompositeOperation = 'lighter'; for (let i = 0; i < 9; i++) halo(c, hash(i * 1.7) * 390, hash(i * 2.9 + 3) * 844, 0, 40 + 60 * hash(i * 5.3), i % 3 ? W.key : W.accent, .045); c.globalCompositeOperation = 'source-over';
+      if (id === 'a'){ c.fillStyle = rgba(W.key, .7); disc(c, 195, 470, 7); c.fill(); }
+      if (id === 's'){ halo(c, 195, 470, 0, 60, W.accent, .18); c.fillStyle = W.accent; disc(c, 195, 470, 9); c.fill(); }
+      if (id === 'c'){ c.strokeStyle = rgba(W.key, .09); for (let r = 40; r < 460; r += 34){ c.beginPath(); c.ellipse(195, 330, r * .9, r * .9 * (1 - 18 / (r + 30)), 0, 0, TAU); c.stroke(); } c.fillStyle = '#000'; disc(c, 195, 330, 18); c.fill(); c.strokeStyle = rgba(W.accent, .5); c.lineWidth = 1.5; disc(c, 195, 330, 30); c.stroke(); }
+      if (id === 'm'){ c.strokeStyle = rgba(W.key, .035); for (let x = 0; x <= 390; x += 40){ c.beginPath(); c.moveTo(x, 90); c.lineTo(x, 844); c.stroke(); } }
+    },
+    phys(c, t){
+      const pts = n.map((_, i) => mapPos(id, i));
+      for (let i = 0; i < pts.length - 1; i++){ const [ax, ay] = pts[i], [bx, by] = pts[i + 1]; const reached = i < current;
+        c.save(); c.strokeStyle = reached ? rgba(W.key, .8) : rgba(W.muted, .35); c.lineWidth = reached ? 2 : 1; if (!reached){ c.setLineDash([4, 5]); c.lineDashOffset = t * 12; }
+        c.beginPath(); c.moveTo(ax, ay);
+        if (id === 'm'){ c.lineTo(bx, ay); c.lineTo(bx, by); } else c.quadraticCurveTo((ax + bx) / 2 + (by - ay) * .25, (ay + by) / 2 - (bx - ax) * (id === 'q' ? 0 : .2), bx, by);
+        c.stroke(); c.restore(); }
+    },
+    matter(c, t){
+      if (id === 'm') for (let i = 0; i < 7; i++){ const [x, y] = mapPos(id, i); c.fillStyle = W.metal; c.fillRect(x - 46, y + 30, 92, 5); c.fillStyle = W.key; c.fillRect(x - 46, y + 30, 92, 1.5); }
+      n.forEach((lbl, i) => { const [x, y] = mapPos(id, i); const r = 22; const playable = i <= current;
+        if (playable){ halo(c, x, y, 0, r * 1.8, W.key, i === current ? .22 + .08 * Math.sin(t * 3) : .1); c.fillStyle = W.bezel; disc(c, x, y, r); c.fill(); c.strokeStyle = W.key; c.lineWidth = 2; c.stroke();
+          c.strokeStyle = rgba(W.accent, .8); c.lineWidth = 1; for (let j = 0; j < 3; j++){ const a = t * .7 + j * TAU / 3; c.beginPath(); c.arc(x, y, r + 4, a, a + TAU / 3 * .6); c.stroke(); }
+          if (i === current) drawQuarky(c, x, y, t, W, { R: 11 }); else txt(c, String(i + 1), x, y + 6, { size: 17, col: W.hud, align: 'center' });
+          if (i < current) for (let s = 0; s < 3; s++){ diamond(c, x - 12 + s * 12, y + r + 26, 3.5, s < best[i], s < best[i] ? W.key : rgba(W.muted, .7)); }
+        } else { c.fillStyle = rgba(W.bezel, .85); disc(c, x, y, r); c.fill(); c.strokeStyle = rgba(W.muted, .35); c.lineWidth = 1; c.stroke();
+          c.strokeStyle = rgba(W.muted, .7); c.lineWidth = 1.4; c.beginPath(); c.arc(x, y - 3, 4, Math.PI, TAU); c.stroke(); c.fillStyle = rgba(W.muted, .7); c.fillRect(x - 5.5, y - 3, 11, 8); }
+        const s = lbl[LANG === 'fr' ? 1 : 0]; const z = fitFont(c, s, 120, 10, 400, MONO); txt(c, s, x, y + r + 15, { size: z, col: playable ? W.hud : W.muted, align: 'center', ls: .6 });
+      });
+    },
+    hud(c){ drawHeader(c, W, MAP_TITLE[id][LANG === 'fr' ? 1 : 0], `${W.mag} · ${W.instrument[LANG].toUpperCase()}`, '★ 5/21'); }
+  }, { css: 0 });
+}
+function makeScales(canvas){
+  const W = QC;
+  return new Stage(canvas, 390, 844, {
+    bg(c, t){ const g = c.createLinearGradient(0, 0, 0, 844); g.addColorStop(0, W.bgTop); g.addColorStop(.5, W.bg); g.addColorStop(1, W.bgBot); c.fillStyle = g; c.fillRect(0, 0, 390, 844);
+      c.globalCompositeOperation = 'lighter'; WORLDS.forEach((w, i) => halo(c, 60 + 280 * hash(i * 3.1), 140 + i * 130, 0, 120, w.key, .04)); c.globalCompositeOperation = 'source-over'; },
+    phys(c){ c.save(); c.strokeStyle = rgba(W.muted, .4); c.setLineDash([3, 4]); c.lineWidth = 1; for (let i = 0; i < 4; i++){ const y = 110 + i * 112 + 92; c.beginPath(); c.moveTo(60, y); c.lineTo(60, y + 20); c.stroke(); } c.restore(); },
+    matter(c, t){
+      WORLDS.forEach((w, i) => { const y = 110 + i * 112; const open = i < 2;
+        c.save(); c.globalAlpha = open ? 1 : .62; c.fillStyle = rgba(W.bezel, .85); c.beginPath(); c.roundRect ? c.roundRect(16, y, 358, 92, 6) : c.rect(16, y, 358, 92); c.fill(); c.strokeStyle = rgba(w.key, open ? .6 : .3); c.lineWidth = 1; c.stroke();
+        halo(c, 60, y + 46, 0, 34, w.key, .18); drawQuarky(c, 60, y + 46, t, w, { R: w.id === 'a' || w.id === 's' ? 11 : 14, vx: 1, vy: -.2 });
+        txt(c, `${i + 1} · ${w.mag}`.toUpperCase(), 104, y + 28, { size: 10, col: w.key, ls: 1.4 });
+        const nm = w.name[LANG]; const z = fitFont(c, nm, 180, 17, 600, UI); txt(c, nm, 104, y + 50, { font: UI, w: 600, size: z, col: W.hud });
+        txt(c, w.instrument[LANG], 104, y + 70, { font: UI, size: 13, col: W.muted });
+        if (open){ txt(c, i ? '★ 5/21' : '★ 18/21', 360, y + 42, { size: 13, col: W.hud, align: 'right' }); txt(c, (i ? '3/7 ' : '7/7 ') + (LANG === 'fr' ? 'NIVEAUX' : 'LEVELS'), 360, y + 60, { size: 10, col: W.muted, align: 'right', ls: 1 }); }
+        else { txt(c, `★ ${i * 14}`, 360, y + 42, { size: 13, col: W.muted, align: 'right' }); txt(c, LANG === 'fr' ? 'POUR OUVRIR' : 'TO OPEN', 360, y + 60, { size: 10, col: W.muted, align: 'right', ls: 1 }); }
+        c.restore(); });
+    },
+    hud(c){ drawHeader(c, W, LANG === 'fr' ? 'Les échelles' : 'The scales', (LANG === 'fr' ? 'De l’infiniment petit à l’infiniment grand' : 'From the infinitely small to the infinitely large').toUpperCase()); }
+  }, {});
+}
+{
+  const card = el('div', 'phone-card'); card.innerHTML = `<h3>Scales screen</h3><p class="sub">Tiles with the Quarky mutation as emblem; unlock threshold ≈ 2 stars per level of the previous world (proposal).</p><div class="phone"><canvas aria-label="Scales screen"></canvas></div>`;
+  $('#menu-phones').appendChild(card); makeScales(card.querySelector('canvas'));
+  for (const w of WORLDS){ const cc = el('div', 'phone-card'); cc.innerHTML = `<h3 style="color:${w.key}">${MAP_TITLE[w.id][0]}</h3><p class="sub">${{ q:'Implemented map (reference): winding vertical path.', a:'Spiral outwards from the nucleus, one orbit per level.', m:'Switchback shelves of the lab, like the corridor.', s:'One orbit around the star, levels as stops.', c:'Spiral inwards, the last node on the black hole’s ring.' }[w.id]}</p><div class="phone small"><canvas aria-label="${w.name.en} world map"></canvas></div>`; $('#menu-phones').appendChild(cc); makeMap(cc.querySelector('canvas'), w.id); }
+}
+
+/* ---------------- 07 force registry ---------------- */
+{
+  const tb = $('#force-table tbody');
+  for (const f of FORCES){
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${f.en}</td><td>${f.col ? `<span class="chip" style="background:${f.col}"></span> <code>${f.col}</code>` : 'scale threshold colour'}</td><td><canvas width="120" height="22" style="width:120px;height:22px;display:block;background:#07050c;border-radius:4px"></canvas><span class="probe">${f.styleName}</span></td><td>${f.glyph}</td>` + ['q','a','m','s','c'].map(w => `<td>${f.w.includes(w) ? '●' : '<span style="color:var(--faint)">·</span>'}</td>`).join('');
+    tb.appendChild(tr);
+    const cv = tr.querySelector('canvas'); const c = cv.getContext('2d');
+    const pts = f.style === 'dots' ? Array.from({ length: 12 }, (_, i) => [8 + i * 9.5, 11]) : [[8, 11], [112, 11]];
+    fline(c, pts, f.id, .95, 0, f.col || '#fb923c');
+  }
+  // checks
+  const pairs = new Map(); let dupPairs = 0, dupStyles = 0; const styles = new Map();
+  for (const f of FORCES){ const k = (f.col || 'scale') + '|' + f.style; if (pairs.has(k)) dupPairs++; pairs.set(k, 1); if (styles.has(f.style)) dupStyles++; styles.set(f.style, 1); }
+  const tc = $('#force-check tbody');
+  for (const w of WORLDS){ const ids = ON_SCREEN[w.id]; const cols = ids.map(id => FBY[id].col || w.danger);
+    let best = null; for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++){ const d = [dE(cols[i], cols[j]), dE(sim(cols[i],'deutan'), sim(cols[j],'deutan')), dE(sim(cols[i],'protan'), sim(cols[j],'protan'))]; const m = Math.min(...d); if (!best || m < best.m) best = { m, d, a: ids[i], b: ids[j] }; }
+    const st = new Set(ids.map(id => FBY[id].style)).size === ids.length;
+    tc.insertAdjacentHTML('beforeend', `<tr><td>${w.name.en}</td><td>${ids.map((id, i) => `<span class="chip" style="background:${cols[i]}"></span> ${FBY[id].en.split(' (')[0]}`).join('<br>')}</td><td class="num">${best ? `${FBY[best.a].en.split(' (')[0]} ↔ ${FBY[best.b].en.split(' (')[0]}: ${best.d.map(x => x.toFixed(0)).join(' / ')}` : '—'}</td><td><span class="pill ${st ? 'pass' : 'fail'}">${st ? 'YES' : 'NO'}</span></td></tr>`); }
+  $('#force-note').innerHTML = `Game-wide: <b>${dupPairs}</b> duplicated colour + style pair, <b>${dupStyles}</b> duplicated line style across ${FORCES.length} entries. Near colours never share a screen: magnetic cyan <code>#67e8f9</code> vs Van der Waals teal <code>#5eead4</code> (Quantum/Macro vs Atomic), entanglement lavender <code>#c4b5fd</code> vs gravity blue <code>#93c5fd</code> (Quantum vs Macro/Space/Cosmological), electric yellow <code>#fde047</code> vs light <code>#fef3c7</code> (Atomic vs Macro/Cosmological). Where ΔE is low under colour blindness, the style and the glyph carry the information. The threshold keeps one style everywhere and takes each scale’s threshold colour (it is a limit, not a force).`;
+}
+
+/* ---------------- 08 physics cards ---------------- */
+{
+  const S = (inner) => `<svg viewBox="0 0 300 150" role="img">${inner}</svg>`;
+  const T = (x, y, s, col = '#cbd5e1', size = 10, anchor = 'start') => `<text x="${x}" y="${y}" fill="${col}" font-family="JetBrains Mono, monospace" font-size="${size}" text-anchor="${anchor}">${s}</text>`;
+  const cards = [
+    { w: WBY.q, h: 'Quantum — tunnel (reference)', svg: S(`<rect x="140" y="30" width="16" height="90" fill="#fb923c" fill-opacity=".25" stroke="#fb923c"/><circle cx="50" cy="75" r="9" fill="#f472b6"/><line x1="62" y1="75" x2="138" y2="75" stroke="#fff" stroke-dasharray="1.5 7" stroke-linecap="round" stroke-width="2.5"/><line x1="158" y1="75" x2="250" y2="75" stroke="#fff" stroke-opacity=".5" stroke-dasharray="1.5 7" stroke-linecap="round" stroke-width="2.5"/>${T(150, 138, 'E < barrier height, crosses a thin barrier', '#cbd5e1', 9.5, 'middle')}`),
+      p: 'Validated (ADR-0008). Shown only as the reference for layout and HUD.' },
+    { w: WBY.a, h: 'Atomic — Coulomb’s law', svg: S(`<circle cx="40" cy="50" r="10" fill="#facc15"/>${T(40, 54, '+', '#1c1402', 13, 'middle')}<circle cx="110" cy="50" r="7" fill="#60a5fa"/>${T(110, 54, '−', '#0b1b3a', 12, 'middle')}<line x1="98" y1="50" x2="70" y2="50" stroke="#fde047"/><polyline points="74,46 70,50 74,54" fill="none" stroke="#fde047"/>${T(75, 30, 'r → F', '#fdf8e8', 10, 'middle')}<circle cx="40" cy="110" r="10" fill="#facc15"/>${T(40, 114, '+', '#1c1402', 13, 'middle')}<circle cx="180" cy="110" r="7" fill="#60a5fa"/>${T(180, 114, '−', '#0b1b3a', 12, 'middle')}<line x1="168" y1="110" x2="161" y2="110" stroke="#fde047"/><polyline points="165,106 161,110 165,114" fill="none" stroke="#fde047"/>${T(110, 132, '2r → F/4', '#fdf8e8', 10, 'middle')}${T(290, 60, 'F = k·q₁q₂/r²', '#fde047', 10, 'end')}`),
+      p: '<b>Rule:</b> opposite charges attract, like charges repel; twice as far, four times weaker. The equipotentials cross the field lines at right angles. <b>In real physics…</b> an electron does not orbit on a sharp ellipse (it is a probability cloud) and the nucleus is ~10⁵ times smaller than the atom: the scale is exaggerated.' },
+    { w: WBY.m, h: 'Macro — energy and Snell–Descartes', svg: S(`<path d="M20 120 H80 A60 60 0 0 0 110 112" fill="none" stroke="#4ade80" stroke-width="1.5"/><path d="M110 105 Q150 30 190 80" fill="none" stroke="#fff" stroke-dasharray="1.5 6" stroke-linecap="round" stroke-width="2.5"/>${T(150, 40, 'top: Ec ≠ 0', '#effbf3', 9.5, 'middle')}${T(20, 142, '½kx² = mgh + ½mv²', '#86efac', 10)}<rect x="210" y="75" width="80" height="60" fill="#4ade80" fill-opacity=".08" stroke="#4ade80" stroke-opacity=".5"/><line x1="250" y1="30" x2="250" y2="135" stroke="#a7c4b1" stroke-dasharray="3 3" stroke-opacity=".6"/><line x1="215" y1="40" x2="250" y2="75" stroke="#fef3c7"/><line x1="250" y1="75" x2="268.7" y2="110" stroke="#fef3c7"/>${T(214, 34, 'i = 45°', '#fef3c7', 9)}${T(258, 128, 'r = 28°', '#fef3c7', 9)}${T(292, 90, 'n=1.5', '#a7c4b1', 8.5, 'end')}`),
+      p: '<b>Rule:</b> Ec + Ep stays constant (minus friction losses, shown as heat); at the top of a slanted jump the speed is horizontal, not zero. Refraction: n₁ sin i = n₂ sin r, entering glass (n = 1.5) at 45° gives 28° — the ray bends <i>towards</i> the normal; angle in = angle out on a mirror.' },
+    { w: WBY.s, h: 'Space — gravitation, Kepler, gravity assist', svg: S(`<ellipse cx="150" cy="75" rx="110" ry="55" fill="none" stroke="#fff" stroke-opacity=".6" stroke-dasharray="1.5 6" stroke-linecap="round" stroke-width="2"/><circle cx="210" cy="75" r="8" fill="#fcd34d"/><path d="M210 75 L256 50 L256 100 Z" fill="#a78bfa" fill-opacity=".3"/><path d="M210 75 L60 40 L50 70 Z" fill="#a78bfa" fill-opacity=".3"/>${T(150, 142, 'equal areas in equal times', '#f3effd', 9.5, 'middle')}${T(290, 18, 'F ∝ m₁m₂/r²', '#93c5fd', 10, 'end')}`),
+      p: '<b>Rule:</b> closer = faster (Kepler’s 2nd law); orbits are ellipses with the star at a focus. <b>Gravity assist:</b> in the planet’s frame Quarky leaves exactly as fast as it came; the gain in the star’s frame comes only from the planet’s own motion (passing behind it). A still planet only deflects.' },
+    { w: WBY.c, h: 'Cosmological — gravitational lensing', svg: S(`<circle cx="150" cy="75" r="12" fill="#000" stroke="#818cf8"/><circle cx="150" cy="75" r="18" fill="none" stroke="#fb923c" stroke-dasharray="10 4"/><circle cx="150" cy="75" r="40" fill="none" stroke="#fde68a" stroke-opacity=".6"/><polyline points="20,75 150,35 280,75" fill="none" stroke="#fef3c7"/><polyline points="20,75 150,115 280,75" fill="none" stroke="#fef3c7"/><polyline points="20,75 150,5 280,40" fill="none" stroke="#fef3c7" stroke-opacity=".45"/>${T(150, 146, 'closer → bent more; always towards the mass', '#eef0ff', 9, 'middle')}${T(290, 18, 'α = 4GM/(c²b)', '#fef3c7', 10, 'end')}`),
+      p: '<b>Rule:</b> space-time bends every path towards the mass, more the closer it passes (α ∝ M/b); when source, hole and observer line up, the light makes an Einstein ring. Inside the photon sphere (1.5 × the horizon radius) light cannot orbit; nothing comes back from inside the horizon. <b>In real physics…</b> Quarky (slow, massive) and light bend by different amounts; the game uses one rule per object.' }
+  ];
+  for (const k of cards){ const d = el('div', 'col'); d.innerHTML = `<div class="col-h"><div class="tag" style="color:${k.w.key}">${k.w.mag}</div><h3>${k.h}</h3></div>${k.svg}<div class="col-b"><p style="margin:0">${k.p}</p></div>`; $('#phys-cards').appendChild(d); }
+}
+
+/* ---------------- controls, probes, animation loop ---------------- */
+function rerenderAll(){ for (const s of STAGES) s.render(); }
+document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => { LANG = b.dataset.lang; document.querySelectorAll('[data-lang]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); rerenderAll(); }));
+document.querySelectorAll('[data-mode]').forEach(b => b.addEventListener('click', () => { MODE = b.dataset.mode; document.querySelectorAll('[data-mode]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); for (const id in SCREENS) SCREENS[id].time = 0; rerenderAll(); }));
+function runProbes(){
+  for (const w of WORLDS){ const st = SCREENS[w.id]; const sc = SCENES[w.id]; const keep = st.time; st.time = AIM + .5; st.render();
+    const r = st.probe([BOX_X, BOX_TOP, BOX_W, sc.boxH]); st.time = keep;
+    const out = r ? (() => { const ratio = r.bg / Math.max(1e-6, r.matter); return `bg mean L ${r.bg.toFixed(4)} · matter mean L ${r.matter.toFixed(3)} → <span class="${ratio <= .2 ? 'ok' : 'ko'}">${(ratio * 100).toFixed(1)} % ${ratio <= .2 ? '≤' : '>'} 20 %</span>`; })() : 'probe unavailable (canvas read blocked)';
+    document.querySelectorAll(`[data-lprobe="${w.id}"],[data-probe="${w.id}"]`).forEach(p => p.innerHTML = out); }
+}
+let last = performance.now();
+function frame(now){
+  const dt = Math.min(.1, (now - last) / 1000); last = now;
+  for (const s of STAGES){ if (!s.visible) continue; if (!RM) s.time += dt; s.render(); }
+  requestAnimationFrame(frame);
+}
+if (RM){ for (const id in SCREENS) SCREENS[id].time = AIM + 1; }
+const start = () => { fillFitTable(); runProbes(); rerenderAll(); };
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(start); else setTimeout(start, 300);
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
