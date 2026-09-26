@@ -14,7 +14,7 @@ Exception decided by the user (2026-09-26, [ADR-0006](docs/decisions/ADR-0006-an
 |---|---|---|
 | 1 — Art direction / UI-UX | **Validated** (art direction v2, 2026-09-25) | `design/art-direction-v2/`, skill `art-direction` |
 | 2 — HTML/JS mockup | **Validated**, frozen | `design/mockups/` |
-| 3 — Physics engine & level builder | **In progress**: 7 concepts × 3 difficulties generated and validated; open: physics fixes (§2), level viewer, beta-scope `[GATE]` (S4–S6) | `levels-builder/`, `content/levels/` |
+| 3 — Physics engine & level builder | **In progress**: 7 concepts × 3 difficulties generated and validated; open: implementing the approved Quantum concept fixes (§2.2, [ADR-0008](docs/decisions/ADR-0008-quantum-concept-fixes.md), S5), level viewer, beta-scope `[GATE]` (S5–S6) | `levels-builder/`, `content/levels/` |
 | 4 — Audio | **Not started** | — |
 | 5 — Android | **POC done** ahead of stage 4: welcome, scales, Quantum map, Tunnel 1 playable, EN/FR; awaiting the user's emulator check | `android/`, skill `android-architecture` |
 
@@ -73,6 +73,7 @@ CI: `.github/workflows/python.yml` (ruff + pytest) and `android.yml` (golden rep
 - `art-direction` — validated art direction (palette, Quarky, visual rules, level design). Load before any visual production or mockup.
 - `storytelling` — validated narrative universe (premise, tone, the scientist, Codex, Quantum → Cosmological order). Load before any in-game text.
 - `gameplay-mechanics` — beta concepts (single source), game loop, object control, in-flight action, 3-star system. Load before any level spec or scoring.
+- `physics-pedagogy` — high-school target, per-concept one-liner / approved mechanic / feedback / Codex anchor / "In real physics…" note, forbidden simplifications, Codex rules, review checklist. Load before any Codex text, concept spec or physics claim.
 - `android-architecture` — Android modules, Python ⇄ Kotlin determinism, EN/FR localisation, budgets. Load before any change to `android/`.
 
 Agents in `.claude/agents/`: `art-director`, `level-designer`, `level-qa`, `physics-reviewer`, `android-dev`. Domain detail lives in its skill, not here.
