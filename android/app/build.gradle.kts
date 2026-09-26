@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-// Coque Android : menus Compose (accueil, échelles, carte du monde Quantique),
-// activité libGDX pour le niveau, sauvegarde des étoiles (DataStore).
+// Android shell: Compose menus (welcome, scales, Quantum world map), libGDX
+// activity for the level, star saving (DataStore), English + French strings.
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -35,10 +35,16 @@ android {
         compose = true
     }
 
+    // Per-app language (Android 13+ settings): locales taken from res/values-*,
+    // default locale declared in res/resources.properties.
+    androidResources {
+        generateLocaleConfig = true
+    }
+
     sourceSets.getByName("main") {
-        // Niveaux copiés depuis le moteur Python à chaque build (source unique, rien de dupliqué dans git).
-        assets.srcDir(layout.buildDirectory.dir("generated/levels-assets").get().asFile)
-        // Bibliothèques natives de libGDX, extraites des jars `natives` ci-dessous.
+        // Levels and Codex lines copied from content/ at every build (single source, nothing duplicated in git).
+        assets.srcDir(layout.buildDirectory.dir("generated/content-assets").get().asFile)
+        // libGDX native libraries, extracted from the `natives` jars below.
         jniLibs.srcDir(layout.buildDirectory.dir("gdx-natives").get().asFile)
     }
 }
@@ -69,15 +75,22 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
 }
 
-// Niveaux livrés : seulement stage3-physics-engine/levels/*.json (jamais meta/, réservé au dev).
-val copyLevels by tasks.registering(Sync::class) {
-    from(rootProject.layout.projectDirectory.dir("../stage3-physics-engine/levels")) {
+// Shipped content (content/ at the repo root, see docs/level-schema.md):
+// levels -> assets/levels/, Codex lines -> assets/codex/<lang>/.
+val content = rootProject.layout.projectDirectory.dir("../content")
+val copyContent by tasks.registering(Sync::class) {
+    from(content.dir("levels/quantique")) {
         include("*.json")
+        into("levels")
     }
-    into(layout.buildDirectory.dir("generated/levels-assets/levels"))
+    from(content.dir("codex")) {
+        include("*/*.json")
+        into("codex")
+    }
+    into(layout.buildDirectory.dir("generated/content-assets"))
 }
 
-// Extraction des .so de libGDX par ABI (même principe que le gabarit gdx-liftoff).
+// Extract libGDX .so files per ABI (same approach as the gdx-liftoff template).
 val copyAndroidNatives by tasks.registering {
     val out = layout.buildDirectory.dir("gdx-natives")
     inputs.files(natives)
@@ -94,4 +107,4 @@ val copyAndroidNatives by tasks.registering {
     }
 }
 
-tasks.named("preBuild") { dependsOn(copyLevels, copyAndroidNatives) }
+tasks.named("preBuild") { dependsOn(copyContent, copyAndroidNatives) }

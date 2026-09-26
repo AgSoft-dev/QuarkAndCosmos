@@ -1,46 +1,47 @@
 package dev.agsoft.quarkcosmos
 
+import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
 
-/** Une échelle de l'univers (ordre du jeu : de l'infiniment petit à l'infiniment grand). */
+/** A scale of the universe (game order: from the infinitely small to the infinitely large). */
 class World(
     val id: String,
-    val name: String,
-    /** Ordre de grandeur, ex. « 10⁻¹⁵ m ». */
+    @StringRes val name: Int,
+    /** Order of magnitude, e.g. "10⁻¹⁵ m" (same in every language). */
     val magnitude: String,
-    /** Ce que l'instrument montre à ce grossissement (DA v2). */
-    val instrument: String,
+    /** What the instrument shows at this magnification (art direction v2). */
+    @StringRes val instrument: Int,
     val key: Color,
     val available: Boolean,
 )
 
-/** Un nœud de la carte d'un monde : un concept, un niveau (null = pas encore jouable dans ce POC). */
+/** A node of a world map: one concept, one level (null = not playable yet in this POC). */
 class LevelNode(
     val concept: String,
-    val title: String,
+    @StringRes val title: Int,
     val levelId: String?,
     val file: String?,
 )
 
 object Catalog {
-    // Couleurs clés par échelle (skill art-direction).
+    // Key colours per scale (art-direction skill).
     val worlds = listOf(
-        World("quantique", "Quantique", "10⁻¹⁵ m", "Cavité du détecteur", Color(0xFFF472B6), available = true),
-        World("atomique", "Atomique & moléculaire", "10⁻⁹ m", "Nuage d’électrons", Color(0xFFFACC15), available = false),
-        World("macro", "Macro", "1 m", "Le labo", Color(0xFF4ADE80), available = false),
-        World("spatiale", "Spatiale", "10⁹ m", "Au-delà de la Terre", Color(0xFFA78BFA), available = false),
-        World("cosmologique", "Cosmologique", "10²² m", "L’espace-temps courbé", Color(0xFF818CF8), available = false),
+        World("quantique", R.string.world_quantique, "10⁻¹⁵ m", R.string.world_quantique_instrument, Color(0xFFF472B6), available = true),
+        World("atomique", R.string.world_atomique, "10⁻⁹ m", R.string.world_atomique_instrument, Color(0xFFFACC15), available = false),
+        World("macro", R.string.world_macro, "1 m", R.string.world_macro_instrument, Color(0xFF4ADE80), available = false),
+        World("spatiale", R.string.world_spatiale, "10⁹ m", R.string.world_spatiale_instrument, Color(0xFFA78BFA), available = false),
+        World("cosmologique", R.string.world_cosmologique, "10²² m", R.string.world_cosmologique_instrument, Color(0xFF818CF8), available = false),
     )
 
-    /** Monde Quantique, beta : un niveau par concept, dans l'ordre de CLAUDE.md. */
+    /** Quantum world, beta: one level per concept, in the order of the gameplay-mechanics skill. */
     val quantique = listOf(
-        LevelNode("tunnel", "Effet tunnel", "quantique-tunnel-1", "quantique_tunnel_1.json"),
-        LevelNode("superposition", "Superposition", null, null),
-        LevelNode("intrication", "Intrication", null, null),
-        LevelNode("incertitude", "Incertitude", null, null),
-        LevelNode("quantification", "Quantification", null, null),
-        LevelNode("spin", "Spin", null, null),
-        LevelNode("dualite", "Dualité onde-particule", null, null),
+        LevelNode("tunnel", R.string.concept_tunnel, "quantique-tunnel-1", "quantique_tunnel_1.json"),
+        LevelNode("superposition", R.string.concept_superposition, null, null),
+        LevelNode("intrication", R.string.concept_intrication, null, null),
+        LevelNode("incertitude", R.string.concept_incertitude, null, null),
+        LevelNode("quantification", R.string.concept_quantification, null, null),
+        LevelNode("spin", R.string.concept_spin, null, null),
+        LevelNode("dualite", R.string.concept_dualite, null, null),
     )
 
     const val STARS_PER_LEVEL = 3

@@ -34,15 +34,17 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import dev.agsoft.quarkcosmos.Catalog
+import dev.agsoft.quarkcosmos.R
 import dev.agsoft.quarkcosmos.World
 import kotlinx.coroutines.delay
 import kotlin.math.cos
 import kotlin.math.sin
 
-/** Les 5 échelles, de l'infiniment petit à l'infiniment grand ; seule la Quantique est ouverte dans le POC. */
+/** The 5 scales, from the infinitely small to the infinitely large; only Quantum is open in the POC. */
 @Composable
 fun WorldsScreen(best: Map<String, Int>, onBack: () -> Unit, onOpen: (World) -> Unit) {
     val type = LocalType.current
@@ -52,7 +54,7 @@ fun WorldsScreen(best: Map<String, Int>, onBack: () -> Unit, onOpen: (World) -> 
     Box(Modifier.fillMaxSize()) {
         LabBackground()
         Column(Modifier.fillMaxSize()) {
-            Header("Les échelles", "De l’infiniment petit à l’infiniment grand", onBack)
+            Header(stringResource(R.string.worlds_title), stringResource(R.string.worlds_caption), onBack)
             Column(
                 Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp),
             ) {
@@ -60,11 +62,12 @@ fun WorldsScreen(best: Map<String, Int>, onBack: () -> Unit, onOpen: (World) -> 
                     val ids = if (world.id == "quantique") Catalog.quantique.mapNotNull { it.levelId } else emptyList()
                     val done = ids.count { it in best }
                     val stars = ids.sumOf { best[it] ?: 0 }
+                    val locked = stringResource(R.string.worlds_locked, stringResource(world.name))
                     WorldTile(world, i, t, done, stars) {
-                        if (world.available) onOpen(world) else notice = "L’échelle ${world.name} s’ouvrira dans une prochaine version."
+                        if (world.available) onOpen(world) else notice = locked
                     }
                     if (i < Catalog.worlds.lastIndex) {
-                        // fil du voyage entre deux échelles (couche « physique » : pointillé fin)
+                        // journey thread between two scales ("physics" layer: thin dotted line)
                         Canvas(Modifier.fillMaxWidth().height(18.dp)) {
                             val x = 44.dp.toPx()
                             drawLine(QC.hudMuted.copy(alpha = .4f), Offset(x, 0f), Offset(x, size.height), 1.dp.toPx(),
@@ -101,22 +104,22 @@ private fun WorldTile(world: World, index: Int, t: Float, done: Int, stars: Int,
         Spacer(Modifier.width(14.dp))
         Column(Modifier.weight(1f)) {
             BasicText("${index + 1} · ${world.magnitude}".uppercase(), style = type.label.copy(color = world.key))
-            BasicText(world.name, style = type.tileTitle)
-            BasicText(world.instrument, style = type.bodyMuted)
+            BasicText(stringResource(world.name), style = type.tileTitle)
+            BasicText(stringResource(world.instrument), style = type.bodyMuted)
         }
         Column(horizontalAlignment = Alignment.End) {
             if (world.available) {
                 BasicText("★ $stars/${Catalog.quantique.size * Catalog.STARS_PER_LEVEL}", style = type.mono13)
-                BasicText("$done/${Catalog.quantique.size} NIVEAUX", style = type.label)
+                BasicText(stringResource(R.string.worlds_levels_done, done, Catalog.quantique.size), style = type.label)
             } else {
                 Canvas(Modifier.size(18.dp)) { lock(Offset(size.width / 2, size.height / 2), size.width, QC.hudMuted) }
-                BasicText("BIENTÔT", style = type.label)
+                BasicText(stringResource(R.string.worlds_soon), style = type.label)
             }
         }
     }
 }
 
-/** Emblème de chaque échelle : ce que l'instrument y montre, en aplats de la couleur clé. */
+/** Emblem of each scale: what the instrument shows there, in flat fills of the key colour. */
 private fun DrawScope.emblem(world: World, index: Int, t: Float) {
     val c = Offset(size.width / 2, size.height / 2)
     val r = size.minDimension / 2
@@ -124,10 +127,10 @@ private fun DrawScope.emblem(world: World, index: Int, t: Float) {
     glow(c, r * 1.1f, k, .18f)
     val s = Stroke(1.5f * density)
     when (index) {
-        0 -> { // Quantique : Quarky et ses copies de phase
+        0 -> { // Quantum: Quarky and its phase copies
             drawQuarky(c, r * .55f, t, ghosts = .4f)
         }
-        1 -> { // Atomique : noyau + orbites
+        1 -> { // Atomic: nucleus + orbits
             drawCircle(k, r * .18f, c)
             for (i in 0 until 3) rotate(i * 60f + t * 20, c) {
                 drawOval(k.copy(alpha = .8f), topLeft = Offset(c.x - r * .85f, c.y - r * .32f), size = Size(r * 1.7f, r * .64f), style = s)
@@ -135,17 +138,17 @@ private fun DrawScope.emblem(world: World, index: Int, t: Float) {
             val a = t * 2.4f
             drawCircle(Color(0xFF67E8F9), r * .09f, Offset(c.x + cos(a) * r * .85f, c.y + sin(a) * r * .32f))
         }
-        2 -> { // Macro : miroir et rayon réfléchi
+        2 -> { // Macro: mirror and reflected ray
             drawLine(k, Offset(c.x - r * .7f, c.y + r * .5f), Offset(c.x + r * .7f, c.y + r * .5f), 4f * density)
             drawLine(k.copy(alpha = .8f), Offset(c.x - r * .6f, c.y - r * .6f), Offset(c.x, c.y + r * .45f), 1.5f * density)
             drawLine(k.copy(alpha = .8f), Offset(c.x, c.y + r * .45f), Offset(c.x + r * .6f, c.y - r * .6f), 1.5f * density)
         }
-        3 -> { // Spatiale : planète à anneau
+        3 -> { // Space: ringed planet
             drawCircle(k, r * .42f, c)
             drawCircle(Color.Black.copy(alpha = .25f), r * .42f, Offset(c.x + r * .12f, c.y + r * .1f))
             drawOval(k.copy(alpha = .9f), topLeft = Offset(c.x - r * .85f, c.y - r * .2f), size = Size(r * 1.7f, r * .4f), style = s)
         }
-        else -> { // Cosmologique : trou noir et anneau de lumière déviée
+        else -> { // Cosmological: black hole and ring of bent light
             drawCircle(k.copy(alpha = .9f), r * .62f, c, style = Stroke(2.5f * density))
             drawCircle(Color.Black, r * .45f, c)
         }

@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.requiredWidth
-
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
@@ -30,6 +29,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -38,13 +38,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.agsoft.quarkcosmos.Catalog
 import dev.agsoft.quarkcosmos.LevelNode
+import dev.agsoft.quarkcosmos.R
 import kotlinx.coroutines.delay
 import kotlin.math.sin
 
 /**
- * Carte du monde Quantique : un chemin sinueux de bas (départ) en haut,
- * un nœud par concept dans l'ordre de CLAUDE.md. Seul l'effet tunnel est
- * jouable dans le POC ; les autres nœuds montrent leur concept, verrouillés.
+ * Quantum world map: a winding path from the bottom (start) to the top, one
+ * node per concept in the order of the gameplay-mechanics skill. Only the
+ * tunnel effect is playable in the POC; the other nodes show their concept,
+ * locked.
  */
 @Composable
 fun QuantumMapScreen(best: Map<String, Int>, onBack: () -> Unit, onPlay: (LevelNode, Int) -> Unit) {
@@ -54,13 +56,14 @@ fun QuantumMapScreen(best: Map<String, Int>, onBack: () -> Unit, onPlay: (LevelN
     val total = nodes.mapNotNull { it.levelId }.sumOf { best[it] ?: 0 }
     var notice by remember { mutableStateOf<String?>(null) }
     LaunchedEffect(notice) { if (notice != null) { delay(2500); notice = null } }
-    // nœud courant : le premier jouable pas encore à 3 étoiles (Quarky s'y tient)
+    // current node: the first playable one not yet at 3 stars (Quarky stands there)
     val current = nodes.indexOfFirst { it.levelId != null && (best[it.levelId] ?: 0) < Catalog.STARS_PER_LEVEL }.coerceAtLeast(0)
 
     Box(Modifier.fillMaxSize()) {
         LabBackground()
         Column(Modifier.fillMaxSize()) {
-            Header("Monde Quantique", "10⁻¹⁵ m · cavité du détecteur", onBack, trailing = "★ $total/${nodes.size * Catalog.STARS_PER_LEVEL}")
+            val world = Catalog.worlds.first { it.id == "quantique" }
+            Header(stringResource(R.string.map_title), "${world.magnitude} · ${stringResource(world.instrument)}", onBack, trailing = "★ $total/${nodes.size * Catalog.STARS_PER_LEVEL}")
             BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
                 val w = maxWidth
                 val h = maxHeight
@@ -70,7 +73,7 @@ fun QuantumMapScreen(best: Map<String, Int>, onBack: () -> Unit, onPlay: (LevelN
                     val y = h - 40.dp - step * i
                     return x to y
                 }
-                // chemin du voyage : fin, pointillé (couche « physique »), plein jusqu'au nœud courant
+                // journey path: thin, dotted ("physics" layer), solid up to the current node
                 Canvas(Modifier.fillMaxSize()) {
                     val pts = nodes.indices.map { i -> pos(i).let { (x, y) -> Offset(x.toPx(), y.toPx()) } }
                     for (i in 0 until pts.lastIndex) {
@@ -86,12 +89,13 @@ fun QuantumMapScreen(best: Map<String, Int>, onBack: () -> Unit, onPlay: (LevelN
                 }
                 nodes.forEachIndexed { i, node ->
                     val (x, y) = pos(i)
+                    val locked = stringResource(R.string.map_locked, stringResource(node.title))
                     MapNode(
                         node, i, best[node.levelId ?: ""], i == current, t,
                         Modifier.offset(x - 34.dp, y - 34.dp),
                     ) {
                         if (node.levelId != null) onPlay(node, i)
-                        else notice = "${node.title} : ce niveau n’est pas encore jouable dans le POC."
+                        else notice = locked
                     }
                 }
             }
@@ -109,12 +113,14 @@ fun QuantumMapScreen(best: Map<String, Int>, onBack: () -> Unit, onPlay: (LevelN
 private fun MapNode(node: LevelNode, index: Int, stars: Int?, current: Boolean, t: Float, modifier: Modifier, onClick: () -> Unit) {
     val type = LocalType.current
     val playable = node.levelId != null
+    val title = stringResource(node.title)
+    val description = stringResource(if (playable) R.string.map_node else R.string.map_node_locked, index + 1, title)
     Box(modifier.width(68.dp)) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Box(
                 Modifier.size(68.dp)
                     .clickable(role = Role.Button, onClick = onClick)
-                    .semantics { contentDescription = "Niveau ${index + 1}, ${node.title}" + if (playable) "" else ", verrouillé" },
+                    .semantics { contentDescription = description },
                 contentAlignment = Alignment.Center,
             ) {
                 Canvas(Modifier.fillMaxSize()) {
@@ -124,7 +130,7 @@ private fun MapNode(node: LevelNode, index: Int, stars: Int?, current: Boolean, 
                         glow(c, r * 1.8f, QC.key, if (current) .22f + .08f * sin(t * 3) else .1f)
                         drawCircle(QC.bezel, r, c)
                         drawCircle(QC.key, r, c, style = Stroke(2.dp.toPx()))
-                        // anneau du portail qui tourne
+                        // rotating portal ring
                         val seg = 360f / 3
                         for (j in 0 until 3) drawArc(QC.accent.copy(alpha = .8f), t * 40 + j * seg, seg * .6f, false,
                             topLeft = Offset(c.x - r - 4.dp.toPx(), c.y - r - 4.dp.toPx()),
@@ -146,7 +152,7 @@ private fun MapNode(node: LevelNode, index: Int, stars: Int?, current: Boolean, 
                 }
             }
             BasicText(
-                node.title, Modifier.requiredWidth(120.dp).offset(0.dp, 2.dp),
+                title, Modifier.requiredWidth(120.dp).offset(0.dp, 2.dp),
                 style = (if (playable) type.label.copy(color = QC.hud) else type.label).copy(textAlign = TextAlign.Center),
             )
             if (playable) StarRow(stars ?: 0, 10.dp, Modifier.padding(top = 3.dp))

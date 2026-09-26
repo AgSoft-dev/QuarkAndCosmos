@@ -3,8 +3,8 @@ package dev.agsoft.quarkcosmos.game.render
 import com.badlogic.gdx.graphics.Color
 
 /**
- * Contrat couleur — Quantique (skill art-direction, DA v2). Seules ces
- * couleurs et leurs mélanges apparaissent à l'écran.
+ * Colour contract — Quantum (art-direction skill, art direction v2). Only
+ * these colours and their mixes appear on screen.
  */
 object Pal {
     val key: Color = Color.valueOf("f472b6")
@@ -26,11 +26,11 @@ object Pal {
     val keyShade: Color = mix(key, Color.valueOf("3a0a2e"), .45f)
     val keyRim: Color = mix(key, white, .35f)
 
-    /** Couleur d'un Photon = son énergie (bas → haut), doublée par le nombre de rayons. */
+    /** A Photon's colour = its energy (low → high), doubled by its number of rays. */
     val energy = arrayOf(key, mid, accent)
     val energyRays = intArrayOf(4, 6, 8)
 
-    // Fond « C » : gradient profond, luminance ≤ 20 % de la matière.
+    // "C" background: deep gradient, luminance ≤ 20% of the matter.
     val bgTop: Color = Color.valueOf("17061d")
     val bgBottom: Color = Color.valueOf("040a14")
 

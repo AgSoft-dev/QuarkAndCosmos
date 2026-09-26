@@ -1,47 +1,55 @@
 ---
 name: storytelling
-description: Univers narratif validé pour Quark & Cosmos — prémisse (particule échappée d'un labo par curiosité), personnalité de Quarky, rôle du/de la scientifique, ton léger/aventure, et intégration au Codex pédagogique. Charger avant d'écrire tout texte in-game, pop-up de victoire, dialogue, ou contenu du Codex.
+description: Validated narrative universe for Quark & Cosmos — premise (a particle leaving a lab out of curiosity), Quarky's personality, the scientist's role, light/adventure tone, and integration with the educational Codex; player-facing text is written in English and French. Load before writing any in-game text, win pop-up, dialogue, or Codex content.
 ---
 
 # Storytelling — Quark & Cosmos
 
-## Prémisse
+## Premise
 
-Quarky est une particule expérimentale née **à l'échelle quantique**, au cœur d'un appareil de laboratoire, lors d'une expérience réussie (pas un accident, pas une fuite dangereuse) — cohérent avec le nom du jeu (« Quark » → « Cosmos »). Curieuse de nature, elle grandit et explore de son plein gré vers des échelles toujours **plus grandes**, jusqu'à sortir littéralement de l'appareil (passage à l'échelle Macro = première fois qu'elle voit le labo et le/la scientifique), puis continue vers l'infiniment grand. Chaque changement d'échelle est une étape volontaire de son exploration, pas une fuite.
+Quarky is an experimental particle born **at the quantum scale**, at the heart of a lab apparatus, during a successful experiment (not an accident, not a dangerous leak) — consistent with the game's name ("Quark" → "Cosmos"). Curious by nature, Quarky grows and freely explores towards ever **larger** scales, until literally leaving the apparatus (reaching the Macro scale = the first time Quarky sees the lab and the scientist), then carries on towards the infinitely large. Each change of scale is a deliberate step of the exploration, not an escape.
 
-**Ton** : léger, curieux, aventure bienveillante — jamais de menace existentielle, de péril dramatique ou d'enjeu punitif. Proche d'un ton "premier voyage hors de la maison" plutôt que "évasion".
+**Tone**: light, curious, benevolent adventure — never an existential threat, dramatic peril or punishing stakes. Closer to "first trip away from home" than "escape".
 
-## Le/la scientifique
+**Pronouns**: the French text treats Quarky as feminine ("elle", "Née au cœur d'une expérience…"). The English pronoun is not decided yet: English copy uses "Quarky" and avoids pronouns where it can.
 
-Personnage resté·e au labo, jamais hostile ni inquiet·e au sens dramatique — plutôt dans une posture de mentor amusé·e et bienveillant·e, qui suit l'aventure de Quarky à distance (instruments de mesure, échos, messages) sans jamais la freiner. C'est la source diégétique des pop-ups pédagogiques : le/la scientifique "commente" ce que Quarky vient de découvrir, comme un parent ou un prof qui regarde son élève partir en exploration.
+## The scientist
 
-- Nom/genre à trancher plus tard (pas bloquant pour la suite).
-- Ne doit jamais donner d'ordre ni gronder — seulement s'émerveiller, expliquer, encourager.
+A character who stays at the lab, never hostile nor worried in a dramatic sense — rather an amused, benevolent mentor who follows Quarky's adventure from afar (measuring instruments, echoes, messages) without ever holding Quarky back. This is the in-world source of the educational pop-ups: the scientist "comments" on what Quarky has just discovered, like a parent or teacher watching a student set off exploring.
 
-## Intégration au Codex
+- Name/gender to be decided later (not blocking). French copy uses inclusive forms ("le/la scientifique"); English copy says "the scientist".
+- Never gives orders or scolds — only marvels, explains, encourages.
 
-Le pop-up "Le saviez-vous ?" de fin de niveau devient une **réplique du/de la scientifique**, pas un encart détaché. Structure : constat amusé/étonné sur ce que Quarky vient de faire → mise en lien avec le monde réel (ex : "Tu as utilisé la fronde gravitationnelle, comme la sonde Voyager 2 en 1979 !"). Le Codex Scientifique (encyclopédie débloquable) est présenté comme le **carnet de bord du/de la scientifique**, qui se complète au fil des découvertes de Quarky.
+## Codex integration
 
-## Arc narratif par échelle — ordre croissant (Quantique → Cosmologique)
+The end-of-level "Did you know?" pop-up becomes **a line from the scientist**, not a detached box. Structure: an amused/surprised remark on what Quarky just did → a link to the real world (e.g. "You used a gravitational slingshot, like the Voyager 2 probe in 1979!"). The Scientific Codex (unlockable encyclopedia) is presented as **the scientist's logbook**, filled in as Quarky makes discoveries.
 
-Décision actuelle (remplace l'ambiguïté Option A "sablier" / Option B "linéaire inversée") : **une seule progression, par échelle croissante**, cohérente avec le nom du jeu. Curiosité croissante plutôt que fuite : à chaque échelle, Quarky ne cherche pas à échapper à quelque chose, mais à répondre à une question qu'elle vient de se poser à l'échelle précédente.
+Codex lines live in `content/codex/<lang>/<scale>.json` (one file per language, keyed by concept id). Every line is written in **English and French**; neither is a literal translation of the other if a more natural phrasing exists, but both carry the same meaning and the same physics.
 
-1. **Quantique (départ)** : Quarky "naît" au cœur de l'expérience — premier contact avec le joueur, univers encore abstrait/fermé (cf. `art-direction`). Vulgarisation à soigner particulièrement ici : c'est la toute première échelle vue par le joueur, donc la plus dépaysante — les mécaniques (superposition, effet tunnel) doivent être lisibles sans aucun jargon.
-2. **Atomique/Moléculaire** : Quarky explore la matière qui compose l'appareil lui-même.
-3. **Macro** : elle sort littéralement de l'appareil — première apparition du labo et du/de la scientifique, moment de bascule émotionnelle (surprise, émerveillement) plutôt que révélation dramatique.
-4. **Spatiale** : curiosité pour ce qu'il y a au-delà du labo, puis de la Terre.
-5. **Cosmologique (fin)** : pas de "boss" au sens menaçant — émerveillement culminant (ex : contempler/traverser un trou noir comme aboutissement de la curiosité, non comme épreuve à vaincre).
+## Narrative arc by scale — increasing order (Quantum → Cosmological)
 
-Chaque échelle suivante est motivée par une question naïve et positive de Quarky ("c'est fait de quoi, tout ça ?", "et si je vais encore plus loin ?"), jamais par une contrainte ou un danger à fuir.
+Current decision (replaces the ambiguous Option A "hourglass" / Option B "reversed linear"): **a single progression, by increasing scale**, consistent with the game's name. Growing curiosity rather than escape: at each scale, Quarky is not trying to get away from something, but to answer a question raised at the previous scale.
 
-**Note** : ceci remplace la référence à l'Option A/B pour la narration. Si une structure de progression non-linéaire (déblocage libre façon sablier) est réintroduite côté level design, le fil narratif ci-dessus reste l'ordre de référence pour l'écriture des textes/Codex.
+1. **Quantum (start)**: Quarky is "born" at the heart of the experiment — first contact with the player, a universe still abstract/closed (see `art-direction`). Popularisation needs special care here: it is the very first scale the player sees, hence the most disorienting — the mechanics (superposition, tunnel effect) must read without any jargon.
+2. **Atomic/Molecular**: Quarky explores the matter the apparatus itself is made of.
+3. **Macro**: Quarky literally leaves the apparatus — first appearance of the lab and the scientist, an emotional turning point (surprise, wonder) rather than a dramatic reveal.
+4. **Space**: curiosity for what lies beyond the lab, then beyond the Earth.
+5. **Cosmological (end)**: no "boss" in a threatening sense — culminating wonder (e.g. contemplating/crossing a black hole as the peak of curiosity, not a trial to overcome).
 
-## À trancher plus tard (non bloquant)
+Each next scale is motivated by a naive, positive question from Quarky ("what is all this made of?", "what if I go even further?"), never by a constraint or a danger to flee.
 
-- Nom du/de la scientifique et de Quarky (si un nom définitif remplace le nom de code).
-- Existe-t-il d'autres particules/personnages croisés en chemin, ou Quarky reste-t-elle seule protagoniste ?
-- Ton des textes du Codex : registre de vulgarisation à définir précisément en Stage 2 (longueur, niveau de langage) une fois les mockups de pop-up testés.
+**Note**: this replaces the Option A/B reference for the narrative. If a non-linear progression (free "hourglass" unlocking) comes back on the level design side, the thread above stays the reference order for writing texts/Codex.
 
-## Statut
+## To decide later (not blocking)
 
-Direction validée : exploration par curiosité, origine de labo bienveillante à l'échelle quantique, ton léger/aventure, progression par échelle croissante (Quantique → Cosmologique). Ne pas réintroduire de registre menaçant/dramatique, ni un point de départ Macro/Cosmos, sans décision explicite de l'utilisateur.
+- Names of the scientist and of Quarky (if a final name replaces the code name), and Quarky's English pronoun.
+- Are there other particles/characters met along the way, or is Quarky the only protagonist?
+- Codex text tone: popularisation register to define precisely (length, language level) once the pop-up mockups are tested.
+
+## Status
+
+Direction validated: exploration out of curiosity, benevolent lab origin at the quantum scale, light/adventure tone, progression by increasing scale (Quantum → Cosmological). Don't reintroduce a threatening/dramatic register, or a Macro/Cosmos starting point, without an explicit user decision.
+
+## Changelog
+
+- 2026-09-26 — Translated to English; player-facing text is bilingual (English + French), Codex lines moved to `content/codex/<lang>/` (S1, [ADR-0007](../../../docs/decisions/ADR-0007-repo-english-app-bilingual.md)).

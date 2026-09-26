@@ -17,21 +17,21 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 
 /**
- * Petite surcouche de dessin vectoriel (équivalent des helpers Canvas 2D de
- * stage1-art-direction/poc-v2/index.html) : un ShapeRenderer pour les formes
- * pleines, un SpriteBatch pour les halos, le grain et le texte. Elle bascule
- * entre les deux et entre fusion normale / additive sans que l'appelant ait à
- * gérer begin/end. Tout est procédural : aucune image n'est livrée.
+ * Thin vector drawing layer (equivalent of the Canvas 2D helpers of
+ * design/art-direction-v2/index.html): a ShapeRenderer for filled shapes, a
+ * SpriteBatch for halos, grain and text. It switches between the two, and
+ * between normal / additive blending, without the caller handling
+ * begin/end. Everything is procedural: no image is shipped.
  */
 class Canvas : Disposable {
     val shapes = ShapeRenderer(5000)
     val batch = SpriteBatch()
 
-    /** Halo radial blanc (alpha qui décroît du centre vers le bord), teinté au dessin. */
+    /** White radial halo (alpha falling from the centre to the edge), tinted when drawn. */
     val halo: Texture = radialTexture(128) { d -> val f = max(0f, 1f - d); f * f * (3 - 2 * f) }
-    /** Vignette : transparente au centre, noire au bord. */
+    /** Vignette: transparent in the centre, black at the edge. */
     val vignette: Texture = radialTexture(256) { d -> min(1f, max(0f, (d - .55f) / .45f)).let { it * it } }
-    /** Grain (bruit blanc) en tuile répétée. */
+    /** Grain (white noise) as a repeated tile. */
     val grain: Texture = noiseTexture(128)
 
     private enum class Mode { NONE, SHAPES, SPRITES }
@@ -55,7 +55,7 @@ class Canvas : Disposable {
         mode = Mode.NONE
     }
 
-    /** Passe en formes pleines (ShapeRenderer). */
+    /** Switch to filled shapes (ShapeRenderer). */
     fun shapes(): ShapeRenderer {
         if (mode == Mode.SHAPES) return shapes
         if (mode == Mode.SPRITES) batch.end()
@@ -67,7 +67,7 @@ class Canvas : Disposable {
         return shapes
     }
 
-    /** Passe en sprites (halos, grain, texte). */
+    /** Switch to sprites (halos, grain, text). */
     fun sprites(): SpriteBatch {
         if (mode == Mode.SPRITES) return batch
         if (mode == Mode.SHAPES) shapes.end()
@@ -78,7 +78,7 @@ class Canvas : Disposable {
         return batch
     }
 
-    /** Fusion additive (lumière) ou normale. */
+    /** Additive (light) or normal blending. */
     fun additive(on: Boolean) {
         if (on == additive) return
         val was = mode
@@ -91,7 +91,7 @@ class Canvas : Disposable {
         }
     }
 
-    // --- formes ----------------------------------------------------------
+    // --- shapes ----------------------------------------------------------
 
     fun color(c: Color, a: Float = 1f) = shapes().setColor(c.r, c.g, c.b, c.a * a)
 
@@ -107,7 +107,7 @@ class Canvas : Disposable {
         shapes.rectLine(x1, y1, x2, y2, w)
     }
 
-    /** Arc de cercle tracé (épaisseur [w]), angles en radians, sens trigonométrique. */
+    /** Stroked circular arc (thickness [w]), angles in radians, counter-clockwise. */
     fun arc(x: Float, y: Float, r: Float, a0: Float, a1: Float, w: Float, c: Color, a: Float = 1f) {
         if (a <= 0.003f || r <= 0f) return
         color(c, a)
@@ -129,7 +129,7 @@ class Canvas : Disposable {
     fun ring(x: Float, y: Float, r: Float, w: Float, c: Color, a: Float = 1f) =
         arc(x, y, r, 0f, TAU, w, c, a)
 
-    /** Polygone étoilé autour de (x, y) donné par ses rayons (xs/ys relatifs), rempli en éventail. */
+    /** Star-shaped polygon around (x, y) given by its radii (relative xs/ys), filled as a fan. */
     fun fan(x: Float, y: Float, xs: FloatArray, ys: FloatArray, n: Int, c: Color, a: Float = 1f) {
         if (a <= 0.003f) return
         color(c, a)
@@ -148,7 +148,7 @@ class Canvas : Disposable {
         }
     }
 
-    /** Quadrilatère orienté (segment épais) de (x1, y1) à (x2, y2), demi-épaisseur [h]. */
+    /** Oriented quad (thick segment) from (x1, y1) to (x2, y2), half-thickness [h]. */
     fun slab(x1: Float, y1: Float, x2: Float, y2: Float, h: Float, c: Color, a: Float = 1f) {
         if (a <= 0.003f) return
         val dx = x2 - x1
@@ -161,7 +161,7 @@ class Canvas : Disposable {
         shapes.triangle(x1 + nx, y1 + ny, x2 - nx, y2 - ny, x1 - nx, y1 - ny)
     }
 
-    /** Étoile à 5 branches (notation), pleine ou en contour. */
+    /** 5-pointed star (rating), filled or outlined. */
     fun star(x: Float, y: Float, r: Float, filled: Boolean, c: Color, a: Float = 1f) {
         val n = 10
         for (i in 0 until n) {
@@ -173,7 +173,7 @@ class Canvas : Disposable {
         if (filled) fan(x, y, starX, starY, n, c, a) else outline(x, y, starX, starY, n, 1.4f, c, a)
     }
 
-    /** Scintillement à 4 branches (paillette d'un Photon). */
+    /** 4-pointed glint (a Photon's sparkle). */
     fun glint(x: Float, y: Float, s: Float, c: Color, a: Float) {
         if (s <= .05f || a <= 0f) return
         color(c, a)
@@ -186,7 +186,7 @@ class Canvas : Disposable {
 
     // --- sprites ---------------------------------------------------------
 
-    /** Halo lumineux doux (additif conseillé), rayon [r]. */
+    /** Soft glow (additive recommended), radius [r]. */
     fun glow(x: Float, y: Float, r: Float, c: Color, a: Float) {
         if (a <= 0.003f || r <= 0f) return
         val b = sprites()
@@ -216,7 +216,7 @@ class Canvas : Disposable {
             return s - kotlin.math.floor(s)
         }
 
-        /** Gaussienne de lissage utile aux enveloppes (franges). */
+        /** Smoothing gaussian, handy for envelopes (fringes). */
         fun gauss(x: Float) = exp(-x * x)
 
         private fun noiseTexture(size: Int): Texture {

@@ -18,7 +18,7 @@ import kotlin.math.sin
 
 private const val TAU = (PI * 2).toFloat()
 
-/** Membrane de Quarky : cercle ondulant (3 harmoniques), lissé en courbes. */
+/** Quarky's membrane: wavy circle (3 harmonics), smoothed into curves. */
 private fun blobPath(r: Float, t: Float, wob: Float = 1f): Path {
     val n = 30
     val xs = FloatArray(n)
@@ -47,10 +47,10 @@ private fun flicker(t: Float, i: Int): Float {
 }
 
 /**
- * Quarky v2, rendu plat « B » (port de body()/drawEyes() de
- * stage1-art-direction/poc-v2/index.html) : membrane sombre + zone éclairée
- * découpée (croissant d'ombre), cœur lumineux, contour clair, reflet gomme,
- * grands yeux qui clignent ; [ghosts] = copies de phase de la mutation Quantique.
+ * Quarky v2, flat "B" rendering (port of body()/drawEyes() from
+ * design/art-direction-v2/index.html): dark membrane + cut-out lit area (shadow
+ * crescent), glowing core, light outline, gummy highlight, big blinking eyes;
+ * [ghosts] = phase copies of the Quantum mutation.
  */
 fun DrawScope.drawQuarky(center: Offset, r: Float, t: Float, ghosts: Float = .35f, happy: Boolean = false, lookX: Float = 0f) {
     if (ghosts > 0f) {
@@ -82,7 +82,7 @@ fun DrawScope.drawQuarky(center: Offset, r: Float, t: Float, ghosts: Float = .35
         rotate(-34f, pivot = Offset(-r * .42f, -r * .5f)) {
             drawOval(Color.White, topLeft = Offset(-r * .64f, -r * .6f), size = Size(r * .44f, r * .2f))
         }
-        // yeux
+        // eyes
         val ex = r * .34f
         val ey = -r * .1f
         val ew = r * .17f
@@ -104,7 +104,7 @@ fun DrawScope.drawQuarky(center: Offset, r: Float, t: Float, ghosts: Float = .35
                 drawCircle(Color.White.copy(alpha = .6f), radius = ew * .17f, center = Offset(cx - ew * .3f, ey + hh * .38f))
             }
         }
-        // sourire
+        // smile
         drawArc(QC.ink, startAngle = 32.4f, sweepAngle = 115.2f, useCenter = false,
             topLeft = Offset(lx - r * .12f, r * .24f - r * .12f), size = Size(r * .24f, r * .24f),
             style = Stroke(max(.9f, r * .065f), cap = StrokeCap.Round))

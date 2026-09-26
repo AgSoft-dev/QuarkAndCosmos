@@ -1,82 +1,107 @@
 ---
 name: gameplay-mechanics
-description: Mécaniques de jeu validées pour Quark & Cosmos — boucle physique lancer/rebond, contrôle d'orientation et de puissance des objets (expérience de labo), et système de notation à 3 étoiles par collecte de Photons sur la trajectoire (modèle Cut the Rope). Charger avant toute spécification de niveau, UI de réglage d'objet, ou logique de scoring.
+description: Validated game mechanics for Quark & Cosmos — the 7 beta concepts and their order (single source), launch/bounce physics loop, orientation and power control of objects (lab experiment), in-flight actions, difficulty by layout, and 3-star scoring by collecting Photons along the trajectory (Cut the Rope model). Load before any level spec, object-setting UI, or scoring logic.
 ---
 
 # Gameplay Mechanics — Quark & Cosmos
 
-## Boucle de base (établie en Stage 2)
+## Beta scope — the 7 Quantum concepts (single source)
 
-Glisser-relâcher façon fronde : le joueur tire Quarky en arrière puis relâche, la physique (gravité + éventuels champs) fait le reste jusqu'à la cible ou un échec. Cf. maquette [`stage2-mockup/index.html`](../../../stage2-mockup/index.html).
+The closed-test build covers the **first world only (Quantum scale)**, ~1 level per concept (7 concepts → 7 levels, within the 5–10 range). No level mixes several concepts in the beta (see "Progression structure").
 
-## Contrôle des objets — paradigme "expérience de labo"
+Introduction order (numbers = play order, not the order of physical discovery). The world opens on the most immediate concept to read (a threshold you clear or not) so the player gets used to launching in a closed box without gravity before being asked to understand a choice of path.
 
-Cohérent avec la prémisse du skill `storytelling` (Quarky né d'une expérience de labo) : avant de lancer, le joueur peut régler certains objets de la scène comme des instruments de laboratoire, pas seulement les positionner.
-
-- **Orientation** : rotation de l'objet (miroir, aimant, électro-aimant...) pour changer l'angle de réflexion/déviation.
-- **Puissance/intensité** : curseur ou molette réglant la force d'un champ (intensité d'un électro-aimant, angle d'un ressort, etc.) plutôt qu'un simple on/off.
-- Ces réglages font partie de la résolution du puzzle au même titre que le lancer — un niveau peut n'avoir qu'une seule combinaison valide (précision) ou plusieurs solutions (plage de tolérance), selon la difficulté voulue.
-
-**Dépendance bloquante** : cette mécanique ne peut être implémentée/testée sérieusement qu'une fois le moteur physique du Stage 3 construit, car c'est lui qui doit générer et valider les niveaux (vérifier qu'au moins une combinaison orientation/puissance résout le niveau). Ne pas coder de vraie UI de réglage avant cette brique — la maquette Stage 2 peut rester en objets fixes/non réglables en attendant.
-
-## Règle de base — action en vol (tout concept, dès la beta)
-
-Constat (retour design) : un lancer où tout est réglé avant le tir (angle, puissance, dials) se résout comme un problème de trajectoire idéale — proche d'Angry Birds, mais sans la tension "temps réel" de Cut the Rope (timing de la découpe, obstacles mouvants, ordre des actions). Décision : **chaque concept du monde Quantique intègre au moins une variable qui dépend du temps pendant le vol**, pas seulement des réglages pré-tir. Deux briques génériques, réutilisables par tous les concepts :
-
-1. **Élément oscillant** — la position d'un obstacle (ou de la cible) varie dans le temps (ex. va-et-vient sinusoïdal). Le joueur doit alors viser correctement ET faire coïncider son temps de vol avec le bon moment de l'oscillation, pas juste viser un point fixe.
-2. **Action déclenchée en vol (« tap »)** — un seul geste du joueur pendant le vol (pas un contrôle continu) qui bascule un état à l'instant choisi : ouvrir une porte liée, basculer onde/particule, inverser une polarité. C'est l'équivalent de la découpe de corde au bon moment dans Cut the Rope — un geste, mais dont le *timing* fait toute la difficulté. Le solveur Stage 3 traite l'instant du tap comme un paramètre de plus (recherché sur une grille), donc la solvabilité reste garantie et vérifiable comme pour l'angle/la puissance.
-
-Les réglages pré-tir (dials façon labo, cf. section suivante) restent valides et se cumulent avec ces mécaniques — l'objectif est d'ajouter des variables, pas de remplacer celles qui existent déjà. Répartition retenue pour les 7 concepts de la beta (cf. `CLAUDE.md`) : voir Stage 3 (`stage3-physics-engine/engine/generator.py`) pour le détail par concept — chacun a désormais soit un élément oscillant, soit un déclenchement en vol, parfois les deux.
-
-## Structure de progression par monde
-
-Trois phases, dans cet ordre, pour l'organisation des niveaux au sein d'un même monde (échelle) :
-
-1. **Introduction séquentielle** — chaque concept physique du monde (cf. liste dans `CLAUDE.md`, 7 concepts pour le Quantique en beta) est présenté un par un, dans son propre niveau d'intro, jamais deux concepts nouveaux en même temps.
-2. **Progression de difficulté intra-concept** — plusieurs niveaux qui font monter la difficulté sur un même concept avant de passer au suivant (cf. règle déjà posée dans `art-direction` : même vocabulaire visuel, on ajoute des contraintes plutôt que de changer le style).
-3. **Mix inter-concepts** — des niveaux combinant 2+ concepts déjà appris du même monde, pour des puzzles plus riches/complexes.
-
-### Difficulté = disposition, jamais seulement la place des Photons (décision Stage 3)
-
-Retour design : déplacer les Photons sur une disposition identique ne rend pas un niveau plus riche, seulement plus exigeant en précision. **Chaque cran de difficulté change la disposition pour explorer la mécanique plus loin**, avec le même vocabulaire visuel :
-
-1. **Découverte** — une seule instance de la mécanique, effet visible immédiatement.
-2. **Séquence** — la mécanique utilisée **deux fois, dans deux sens** au cours du même vol. C'est là que le tap devient un vrai timing (une fenêtre *entre* deux contacts), façon découpe de corde dans Cut the Rope.
-3. **Enchaînement** — trois instances, ou deux plus un élément mobile : visée, puissance et timing interagissent.
-
-Monde Quantique (générateur `stage3-physics-engine/engine/generator.py`, une fonction par concept et par difficulté) :
-
-| Concept | 1 — découverte | 2 — séquence | 3 — enchaînement |
+| # | Concept id | Concept | Mechanic |
 |---|---|---|---|
-| Effet tunnel | une barrière (fenêtre dans une paroi), seuil oscillant | deux barrières en série : une vitesse qui tombe dans un creux aux deux (« résonance ») | barrière → miroir → barrière |
-| Superposition | une lame : deux copies fantômes (transmise / réfléchie), taper = mesurer, Quarky devient la copie la plus proche du détecteur ; mesurer avant que l'autre copie s'écrase | boucle à deux miroirs, les copies se croisent : garder l'une **ou** l'autre (deux routes), le détecteur balaie donc l'instant du tap choisit | deux lames, **deux mesures** dans le même vol, chacune dans sa fenêtre |
-| Intrication | une porte ouverte par le tap | paire **anti-corrélée** : franchir A (ouverte avant le tap), taper, franchir B | la porte M sert de **miroir** tant qu'elle est fermée, puis le même tap ouvre B |
-| Incertitude | précision vs vitesse, cible mobile | une fente étroite (précision → lenteur) devant une cible qui dérive | deux fentes alignées, cible plus rapide |
-| Quantification | crans d'énergie, une barrière | deux barrières : seuls 2 crans passent | trois barrières + miroir : un seul cran passe |
-| Spin | un pôle | deux pôles + : attiré en A, inverser le spin **entre** A et B | pôles +, −, + : lire le signe de chaque pôle pour savoir où inverser |
-| Dualité | une surface traversée en onde | rebond en **particule** sur s1, puis traversée en **onde** de s2 | deux rebonds en particule puis traversée en onde, cible mobile |
+| 1 | `tunnel` | Tunnel effect | a barrier crossed under a timing/gauge condition |
+| 2 | `superposition` | Superposition of states | a splitter turns Quarky into two ghost copies flying at the same time; the tap "measures" and Quarky becomes the copy closest to the detector — the target only accepts a measured Quarky, so the interaction is never optional |
+| 3 | `intrication` | Quantum entanglement | a linked pair at a distance: acting on one changes the other instantly |
+| 4 | `incertitude` | Heisenberg uncertainty principle | aiming precision vs speed control |
+| 5 | `quantification` | Energy quantisation | a notched launcher, no continuous setting |
+| 6 | `spin` | Quantum spin | a binary toggle that changes the interaction with some fields |
+| 7 | `dualite` | Wave–particle duality | wave/particle toggle; the wave-mode bounce foreshadows — without duplicating — the classical reflection fully taught at the Macro scale with mirrors |
 
-**Superposition à deux fantômes (décision utilisateur, remplace le séparateur-déflecteur)** : les Photons ramassés par une copie ne comptent que si elle survit à la mesure ; la cible n'accepte qu'un Quarky mesuré ; une copie qui s'écrase avant la mesure brise la superposition (décohérence, le lancer échoue). La page Codex « Dans la vraie physique… » précise que le résultat d'une vraie mesure est aléatoire.
+Concept ids are data keys (level files, Codex, save) and stay in French. Player-facing names are localised (`android/app/src/main/res/values*/strings.xml`).
 
-Chaque niveau déclare `must_contact` (la séquence d'interactions attendue). Le validateur rejette tout niveau où un lancer gagnant contourne la mécanique (`bypass_solutions` doit valoir 0).
+Decoherence was removed from the beta scope (design feedback: redundant with superposition/the detector, not enough teaching value of its own). It remains an option for the full release if a more distinct angle is found. The other 4 scales are outside this build's scope.
 
-Surfaces planes (miroirs, portes, fenêtres) plutôt que disques pour tout rebond voulu : « angle d'incidence = angle de réflexion » est prévisible pour le joueur (et c'est de l'optique de lycée), alors qu'un rebond sur un disque amplifie la moindre erreur de visée.
+## Core loop (established in Stage 2)
 
-**Portée beta vs full release** : la phase 3 (mix inter-concepts) et la progression de difficulté complète de la phase 2 sont réservées à la **full release**. La **beta/test fermé** peut se limiter à une version allégée : moins de niveaux par concept (voire un seul par concept), peu ou pas de montée en difficulté intra-concept, et **aucun niveau de mix**. Cf. `CLAUDE.md` pour la portée exacte retenue pour le build de test fermé actuel.
+Slingshot drag-and-release: the player pulls Quarky back then lets go; physics (gravity where the scale has it, plus any fields) does the rest until the target or a failure. See the mockup [`design/mockups/index.html`](../../../design/mockups/index.html).
 
-## Système de notation — 3 étoiles par collecte (modèle Cut the Rope)
+## Object control — the "lab experiment" paradigm
 
-Décision actuelle (remplace la version "efficacité/essais" précédente) : 3 collectibles sont placés le long d'un tracé plausible entre le lanceur et la cible. Chaque collectible touché pendant le vol de Quarky, dans la **même tentative** que celle qui atteint la cible, rapporte 1 étoile. Rater la cible ou devoir relancer annule les collectibles ramassés lors de cette tentative — il faut tout faire en un seul vol réussi.
+Consistent with the premise of the `storytelling` skill (Quarky born from a lab experiment): before launching, the player can set some objects of the scene like lab instruments, not just place them.
 
-- **Nom retenu pour le collectible : "Photon"** — pas "Quark", pour éviter la confusion avec le nom du jeu et celui de la mascotte (Quarky). À réévaluer si besoin, mais tenir ce nom par défaut dans tous les textes/assets.
-- Rendu visuel : petite particule qui scintille, cohérente avec la couche "matière" de `art-direction` (DA v2 : couleur = énergie, doublée par le nombre de rayons) — mais plus petite et plus discrète que Quarky ou la cible, pour ne pas polluer la lisibilité de la trajectoire prévue.
-- Un niveau reste "réussi" (cible atteinte) même à 0 Photon collecté — les Photons ne conditionnent que le nombre d'étoiles, jamais la complétion du niveau elle-même.
-- **Distribution 1-2-3 étoiles (décision Stage 3)** : on mesure par « lancer de rayons » (éventail dense de lancers sur angle/puissance/instant du tap) l'ensemble des lancers valides d'un niveau. Parmi eux, la part qui rapporte au moins *k* étoiles suit une **gaussienne tronquée** `exp(−k²/2σ²)`, k = 1..3 : beaucoup de lancers valides donnent 1 étoile, peu en donnent 3. **σ diminue avec la difficulté** (2.2 / 1.6 / 1.2 pour les difficultés 1 / 2 / 3), donc le nombre de chemins/timings qui rapportent 3 étoiles se resserre. Le générateur place les Photons pour coller à cette cible ; un Photon peut osciller (brique "élément oscillant") quand les chemins valides se superposent et que seul le timing peut les départager. Rapport de revue : `python3 cli.py report` (JSON + CSV + HTML avec mini-cartes), cf. `stage3-physics-engine/README.md`.
-- **La 3e étoile récompense une route plus maligne, pas seulement plus précise.** Plusieurs dispositions font émerger des routes alternatives qui utilisent davantage la mécanique (ex : ping-pong entre deux portes intriquées, particule qui rebondit entre deux barrières avant de passer par effet tunnel, seconde chance en onde après un rebond raté). Le placement essaie comme référence le meilleur chemin de chaque route : une route rare et riche est le candidat naturel pour le 3e Photon. Principe Cut the Rope : on gagne facilement, puis on voit un Photon qui suggère qu'il existe une plus belle trajectoire.
-- **Pourquoi revenir chercher les 3 étoiles** (à implémenter côté jeu, Stage 5) : relance instantanée ; fantôme du meilleur essai précédent ; après une première réussite, le Photon manquant « pulse » pour signaler qu'un autre chemin existe ; la page Codex « Dans la vraie physique… » du concept ne se débloque qu'avec 3 étoiles (la récompense est de comprendre plus, cohérent avec le ton du skill `storytelling`).
-- **Les étoiles ouvrent la suite (full release)** : le total d'étoiles débloque les niveaux et les mondes suivants. Seuils à calibrer sur les données du test fermé, avec la règle de base : on n'exige jamais 3 étoiles partout (seuil d'un monde ≈ 2 étoiles de moyenne sur le monde précédent), pour que la curiosité, pas la frustration, fasse revenir sur un niveau. La beta n'a pas de verrou.
-- **Dépendance Stage 3** : le placement des 3 Photons par niveau doit être vérifié solvable par le générateur/validateur de niveaux (au moins une trajectoire capable de les collecter tous les 3 puis d'atteindre la cible) — c'est lui qui déterminera leur position définitive, pas un placement à la main.
+- **Orientation**: rotating the object (mirror, magnet, electromagnet...) to change the reflection/deflection angle.
+- **Power/intensity**: a slider or dial setting a field's strength (electromagnet intensity, spring angle, etc.) rather than a simple on/off.
+- These settings are part of solving the puzzle just like the launch — a level can have a single valid combination (precision) or several solutions (tolerance range), depending on the intended difficulty.
 
-## Statut
+**Blocking dependency**: this mechanic can only be implemented/tested seriously once the Stage 3 physics engine exists, because the engine must generate and validate levels (check that at least one orientation/power combination solves the level). Don't build a real setting UI before that — the Stage 2 mockup can keep fixed, non-adjustable objects meanwhile.
 
-Direction validée pour les trois mécaniques ci-dessus (boucle de lancer, réglages d'objets façon labo, notation par Photons). Réglages d'objets et placement définitif des Photons différés au Stage 3 (moteur physique) — ne pas construire l'UI de réglage ni le placement final des collectibles avant que le moteur existe. La maquette Stage 2 peut illustrer la collecte de Photons avec un placement arbitraire à titre de preuve de concept.
+## Base rule — in-flight action (every concept, from the beta)
+
+Finding (design feedback): a launch where everything is set before the shot (angle, power, dials) is solved like an ideal-trajectory problem — close to Angry Birds, but without the "real-time" tension of Cut the Rope (timing the cut, moving obstacles, order of actions). Decision: **every Quantum-world concept includes at least one variable that depends on time during the flight**, not just pre-launch settings. Two generic building blocks, reusable by every concept:
+
+1. **Oscillating element** — the position of an obstacle (or the target) varies over time (e.g. a sinusoidal back and forth). The player must then aim correctly AND make the flight time match the right moment of the oscillation, not just aim at a fixed point.
+2. **Action triggered in flight ("tap")** — a single player gesture during the flight (not a continuous control) that flips a state at the chosen instant: open a linked gate, switch wave/particle, flip a polarity. It is the equivalent of cutting the rope at the right time in Cut the Rope — one gesture, whose *timing* is the whole difficulty. The Stage 3 solver treats the tap instant as one more parameter (searched on a grid), so solvability stays guaranteed and checkable like the angle/power. A tap before `TAP_MIN_TIME` (0.1 s) is ignored by the game and stays available (a tap at launch would be a disguised pre-launch setting).
+
+Pre-launch settings (lab-style dials, see the previous section) stay valid and stack with these mechanics — the goal is to add variables, not replace existing ones. Every beta concept has an oscillating element, an in-flight trigger, or both: see the level templates in `levels-builder/src/quarkcosmos_levels/concepts/generator.py`.
+
+## Progression structure per world
+
+Three phases, in this order, for organising the levels within one world (scale):
+
+1. **Sequential introduction** — each physics concept of the world (the table above for the Quantum beta) is introduced one at a time, in its own intro level, never two new concepts at once.
+2. **Intra-concept difficulty progression** — several levels raising the difficulty on one concept before moving to the next (see the rule already set in `art-direction`: same visual vocabulary, add constraints rather than changing style).
+3. **Cross-concept mix** — levels combining 2+ concepts already learned in the same world, for richer/more complex puzzles.
+
+### Difficulty = layout, never just Photon placement (Stage 3 decision)
+
+Design feedback: moving Photons on an identical layout doesn't make a level richer, only more demanding in precision. **Every difficulty step changes the layout to explore the mechanic further**, with the same visual vocabulary:
+
+1. **Discover** — a single instance of the mechanic, immediately visible effect.
+2. **Sequence** — the mechanic used **twice, both ways** during the same flight. This is where the tap becomes real timing (a window *between* two contacts), like cutting the rope in Cut the Rope.
+3. **Chain** — three instances, or two plus a moving element: aim, power and timing interact.
+
+Quantum world (`levels-builder/src/quarkcosmos_levels/concepts/generator.py`, one function per concept and difficulty):
+
+| Concept | 1 — discover | 2 — sequence | 3 — chain |
+|---|---|---|---|
+| Tunnel effect | one barrier (a window in a wall), oscillating threshold | two barriers in series: a speed that hits a trough at both ("resonance") | barrier → mirror → barrier |
+| Superposition | one splitter: two ghost copies (transmitted / reflected), tap = measure, Quarky becomes the copy closest to the detector; measure before the other copy crashes | two-mirror loop, the copies cross: keep one **or** the other (two routes); the detector sweeps, so the tap instant chooses | two splitters, **two measurements** in the same flight, each in its window |
+| Entanglement | a gate opened by the tap | **anti-correlated** pair: cross A (open before the tap), tap, cross B | gate M acts as a **mirror** while closed, then the same tap opens B |
+| Uncertainty | precision vs speed, moving target | a narrow slit (precision → slowness) in front of a drifting target | two aligned slits, faster target |
+| Quantisation | energy notches, one barrier | two barriers: only 2 notches pass | three barriers + mirror: only one notch passes |
+| Spin | one pole | two + poles: attracted at A, flip the spin **between** A and B | poles +, −, +: read each pole's sign to know where to flip |
+| Duality | a surface crossed as a wave | **particle** bounce on s1, then **wave** crossing of s2 | two particle bounces then a wave crossing, moving target |
+
+**Two-ghost superposition (user decision, replaces the splitter-deflector; [ADR-0002](../../../docs/decisions/ADR-0002-two-ghost-superposition.md))**: Photons collected by a copy only count if it survives the measurement; the target only accepts a measured Quarky; a copy crashing before the measurement breaks the superposition (decoherence, the launch fails). The "In real physics…" Codex page states that the outcome of a real measurement is random.
+
+Each level declares `must_contact` (the expected sequence of interactions). The validator rejects any level where a winning launch bypasses the mechanic (`bypass_solutions` must be 0).
+
+Flat surfaces (mirrors, gates, windows) rather than discs for any intended bounce: "angle of incidence = angle of reflection" is predictable for the player (and it is high-school optics), whereas a bounce on a disc amplifies the smallest aiming error.
+
+**Beta vs full release scope**: phase 3 (cross-concept mix) and the full phase 2 difficulty progression are reserved for the **full release**. The **beta/closed test** is a lighter version: fewer levels per concept (possibly one per concept), little or no intra-concept difficulty ramp, and **no mix level**. How many of the 21 generated levels ship in the closed test is an open `[GATE]` in `todo.md` §0.
+
+## Scoring — 3 stars by collection (Cut the Rope model)
+
+Current decision (replaces the earlier "efficiency/attempts" version): 3 collectibles are placed along a plausible path between the launcher and the target. Each collectible touched during Quarky's flight, in the **same attempt** that reaches the target, earns 1 star. Missing the target or having to relaunch cancels the collectibles picked up during that attempt — everything must be done in a single successful flight.
+
+- **Collectible name: "Photon"** — not "Quark", to avoid confusion with the game's name and the mascot's (Quarky). Can be revisited, but use this name by default in every text/asset (in French too).
+- Visual: a small sparkling particle, consistent with the "matter" layer of `art-direction` (art direction v2: colour = energy, doubled by the number of rays) — smaller and more discreet than Quarky or the target, so it doesn't clutter the readability of the intended path.
+- A level stays "completed" (target reached) even with 0 Photons — Photons only set the number of stars, never the completion itself.
+- **1-2-3 star distribution (Stage 3 decision)**: "ray tracing" (a dense fan of launches over angle/power/tap instant) measures every valid launch of a level. Among them, the share earning at least *k* stars follows a **truncated gaussian** `exp(−k²/2σ²)`, k = 1..3: many valid launches earn 1 star, few earn 3. **σ shrinks with difficulty** (2.2 / 1.6 / 1.2 for difficulties 1 / 2 / 3), so the number of paths/timings earning 3 stars narrows. The generator places the Photons to match this target; a Photon may oscillate (the "oscillating element" block) when valid paths overlap and only timing can tell them apart. Review report: `python3 -m quarkcosmos_levels report` (JSON + CSV + HTML with mini-maps), see `levels-builder/README.md`.
+- **The 3rd star rewards a smarter route, not just a more precise one.** Several layouts produce alternative routes that use the mechanic more (e.g. ping-pong between two entangled gates, a particle bouncing between two barriers before tunnelling, a second chance as a wave after a missed bounce). Placement tries the best path of each route as the reference: a rare, rich route is the natural candidate for the 3rd Photon. Cut the Rope principle: you win easily, then see a Photon hinting that a finer path exists.
+- **Why come back for 3 stars** (game side, Stage 5): instant restart; ghost of the previous best attempt; after a first win, the missing Photon "pulses" to signal another path exists; the concept's "In real physics…" Codex page only unlocks with 3 stars (the reward is understanding more, consistent with the `storytelling` tone).
+- **Stars unlock what comes next (full release)**: the star total unlocks the next levels and worlds. Thresholds to calibrate on closed-test data, with the base rule: never require 3 stars everywhere (a world's threshold ≈ 2 stars on average over the previous world), so curiosity, not frustration, brings players back to a level. The beta has no lock.
+- **Stage 3 dependency**: the placement of the 3 Photons per level must be proven solvable by the level generator/validator (at least one trajectory able to collect all 3 then reach the target) — it decides their final position, never a hand placement.
+
+## Status
+
+Direction validated for the mechanics above (launch loop, lab-style object settings, Photon scoring, in-flight action, difficulty by layout, two-ghost superposition). Implemented in the level builder for the 7 concepts × 3 difficulties; the Android POC plays Tunnel 1.
+
+## Changelog
+
+- 2026-09-26 — Translated to English; the beta concept list moved here from `CLAUDE.md` (single source); paths updated to the `levels-builder/` layout (S1).
+- 2026-09-25 — Two-ghost superposition; difficulty by layout (21 levels); ray-traced star distribution; `TAP_MIN_TIME`.

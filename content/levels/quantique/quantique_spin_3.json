@@ -1,0 +1,124 @@
+{
+  "schema_version": 3,
+  "id": "quantique-spin-3",
+  "scale": "quantique",
+  "concept": "spin",
+  "difficulty": 3,
+  "launcher": {
+    "x": 0.1,
+    "y": 0.9
+  },
+  "target": {
+    "x": 0.792,
+    "y": 0.416,
+    "r": 0.05
+  },
+  "obstacles": [
+    {
+      "id": "A",
+      "type": "pole",
+      "x": 0.32,
+      "y": 0.9,
+      "r": 0.06,
+      "pole": "+",
+      "kick_deg": -40
+    },
+    {
+      "id": "B",
+      "type": "pole",
+      "x": 0.49,
+      "y": 0.707,
+      "r": 0.06,
+      "pole": "-",
+      "kick_deg": -40
+    },
+    {
+      "id": "C",
+      "type": "pole",
+      "x": 0.492,
+      "y": 0.47,
+      "r": 0.06,
+      "pole": "+",
+      "kick_deg": -60,
+      "motion": {
+        "axis": "x",
+        "amplitude": 0.05,
+        "period": 1.2
+      }
+    }
+  ],
+  "photons": [
+    {
+      "id": "p1",
+      "x": 0.384,
+      "y": 0.797,
+      "r": 0.03,
+      "motion": {
+        "axis": "y",
+        "amplitude": 0.08,
+        "period": 0.5,
+        "phase": 0.5027
+      }
+    },
+    {
+      "id": "p2",
+      "x": 0.564,
+      "y": 0.484,
+      "r": 0.03,
+      "motion": {
+        "axis": "y",
+        "amplitude": 0.08,
+        "period": 0.5,
+        "phase": 5.9062
+      }
+    },
+    {
+      "id": "p3",
+      "x": 0.643,
+      "y": 0.455,
+      "r": 0.03,
+      "motion": {
+        "axis": "y",
+        "amplitude": 0.08,
+        "period": 0.5,
+        "phase": 4.3982
+      }
+    }
+  ],
+  "max_wall_bounces": 0,
+  "param_space": {
+    "angle_deg": {
+      "type": "range",
+      "min": -10,
+      "max": 10,
+      "step": 1
+    },
+    "power": {
+      "type": "range",
+      "min": 0.4,
+      "max": 0.9,
+      "step": 0.1
+    },
+    "spin_up": {
+      "type": "choice",
+      "values": [
+        true,
+        false
+      ]
+    },
+    "tap_time": {
+      "type": "range",
+      "min": 0.1,
+      "max": 1.8,
+      "step": 0.05
+    }
+  },
+  "hint": {
+    "params": {
+      "angle_deg": -6,
+      "power": 0.7,
+      "spin_up": true,
+      "tap_time": 0.25
+    }
+  }
+}

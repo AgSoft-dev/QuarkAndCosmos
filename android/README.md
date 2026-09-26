@@ -1,47 +1,55 @@
-# Quark & Cosmos — POC Android
+# Quark & Cosmos — Android POC
 
-Premier build jouable : **accueil → échelles → carte du monde Quantique → niveau Effet tunnel 1**. Portrait, Android 8.0+ (`minSdk 26`), DA v2 (« B + fond de C », Quarky v2).
+First playable build: **welcome → scales → Quantum world map → Tunnel effect level 1**. Portrait, Android 8.0+ (`minSdk 26`), art direction v2 ("B + C background", Quarky v2). The app is in **English and French**: it follows the device language (and the per-app language setting on Android 13+).
 
-## Ouvrir et lancer dans Android Studio
+## Open and run in Android Studio
 
-1. **File ▸ Open…** et choisir ce dossier `android/` (pas la racine du dépôt).
-2. Laisser la synchronisation Gradle se faire. Si Android Studio le demande, installer la plateforme **Android 16 (API 36)** proposée.
-   - JDK : celui d'Android Studio convient (Settings ▸ Build Tools ▸ Gradle ▸ Gradle JDK = JDK 17 ou plus).
-   - Si l'assistant propose de passer à AGP 9, **refuser pour l'instant** : AGP 9 intègre Kotlin autrement et demande d'adapter les scripts.
-3. Créer un émulateur si besoin (Device Manager) : un téléphone en portrait, image **API 26 ou plus** (x86_64).
-4. Configuration **app** ▸ Run.
+1. **File ▸ Open…** and pick this `android/` folder (not the repository root).
+2. Let the Gradle sync run. If Android Studio asks, install the proposed **Android 16 (API 36)** platform.
+   - JDK: Android Studio's bundled JDK is fine (Settings ▸ Build Tools ▸ Gradle ▸ Gradle JDK = JDK 17 or newer).
+   - If the assistant offers to upgrade to AGP 9, **decline for now**: AGP 9 integrates Kotlin differently and the scripts would need changes.
+3. Create an emulator if needed (Device Manager): a portrait phone, **API 26 or newer** image (x86_64).
+4. **app** configuration ▸ Run.
+5. To see French: set the emulator's system language to Français, or (Android 13+) Settings ▸ Apps ▸ Quark & Cosmos ▸ Language.
 
-Les niveaux ne sont pas copiés dans ce dossier : la tâche `copyLevels` les prend dans `../stage3-physics-engine/levels/` à chaque build (seulement les fichiers livrés, jamais `meta/`). Garder la structure du dépôt telle quelle.
+Content is not copied into this folder: the `copyContent` task takes the levels from `../content/levels/quantique/` and the Codex lines from `../content/codex/<lang>/` at every build. Keep the repository structure as is.
 
-En ligne de commande : `./gradlew :app:installDebug` (téléphone ou émulateur branché), `./gradlew :core-physics:test`.
+Command line: `./gradlew :app:installDebug` (phone or emulator connected), `./gradlew :core-physics:test`.
 
 ## Modules
 
-| Module | Rôle | Dépendances |
+| Module | Role | Dependencies |
 |---|---|---|
-| `:core-physics` | Port Kotlin **pur** du moteur Python (`stage3-physics-engine/engine`) : niveau JSON v2, pas fixe, handlers. Testé contre les trajectoires golden. | kotlinx-serialization-json |
-| `:game` | Vue de jeu **libGDX** (JVM) : `LevelScreen` (visée fronde, boucle à pas entiers de `DT`, rendu, lecture de résultat), rendu procédural (`render/`). | `:core-physics`, libGDX, FreeType |
-| `:app` | Coque Android : `MainActivity` (menus Compose), `GameActivity` (libGDX), `Progress` (DataStore), haptique. | `:game`, Compose, DataStore |
+| `:core-physics` | **Pure** Kotlin port of the Python engine (`levels-builder/src/quarkcosmos_levels/core`): JSON level v3, fixed step, handlers. Tested against the golden trajectories. | kotlinx-serialization-json |
+| `:game` | **libGDX** game view (JVM): `LevelScreen` (slingshot aim, whole-`DT` loop, rendering, result reading), procedural rendering (`render/`). Strings come from the shell through `GameText`. | `:core-physics`, libGDX, FreeType |
+| `:app` | Android shell: `MainActivity` (Compose menus), `GameActivity` (libGDX), `Progress` (DataStore), haptics, EN/FR resources. | `:game`, Compose, DataStore |
 
-La physique ne connaît ni libGDX ni Android ; la vue de jeu ne connaît ni les activités ni la sauvegarde (interface `GameHost`).
+The physics knows neither libGDX nor Android; the game view knows neither activities nor saving (`GameHost` interface).
 
-## Ce que le POC couvre
+## Strings
 
-- **Accueil** : Quarky v2 au repos dans la lunette de l'instrument, « Jouer ».
-- **Échelles** : les 5 échelles dans l'ordre du voyage ; seule la Quantique est ouverte (étoiles / 21 et niveaux faits / 7), les autres affichent « Bientôt ».
-- **Carte Quantique** : 7 nœuds (ordre de `CLAUDE.md`), Quarky sur le nœud courant, étoiles par niveau ; seul Effet tunnel est jouable, les 6 autres sont verrouillés.
-- **Effet tunnel 1** :
-  - glisser vers l'arrière n'importe où dans la boîte, relâcher pour tirer ; l'angle et l'énergie sont calés sur la grille `param_space` validée par le moteur Python ;
-  - le panneau du bas montre l'énergie de Quarky face au seuil oscillant de la barrière (PASSE / BLOQUE) ;
-  - 3 Photons = 3 étoiles, en un seul vol ; résultat lu comme une lecture d'instrument, avec la réplique du carnet du labo ;
-  - fantôme du tir précédent, indice « premier segment » après 5 échecs ;
-  - haptique : cran de visée, tir, Photon, réussite/échec.
-- **Sauvegarde** : meilleures étoiles par niveau, conservées entre deux lancements.
+- `app/src/main/res/values/strings.xml` — English (default).
+- `app/src/main/res/values-fr/strings.xml` — French. Same keys; use ` ` before `: ! ?`.
+- The level screen's strings go through `GameText` (`game/.../GameHost.kt`), built in `GameActivity`.
+- Codex lines: `content/codex/en/quantique.json` and `content/codex/fr/quantique.json`, keyed by concept.
 
-## Limites connues (volontaires pour un POC)
+## What the POC covers
 
-- Un seul niveau jouable ; les handlers des 6 autres concepts ne sont pas encore portés (un obstacle non porté lève `UnsupportedObstacle`).
-- Pas de vrai bloom (halos additifs à la place) ; budget de frame à mesurer sur un téléphone d'entrée de gamme (todo.md §4.2, spike).
-- Pas d'audio (Stage 4), pas de Codex, pas de réglages.
-- La boîte de jeu est carrée (la physique est dans une boîte unité) : la « boîte verticale étroite » de la DA demandera une boîte non carrée côté moteur.
-- Les oscillations démarrent au lâcher (spec §3) : avant le tir, le dispositif est à l'arrêt.
+- **Welcome**: Quarky v2 idling in the instrument's eyepiece, "Play".
+- **Scales**: the 5 scales in journey order; only Quantum is open (stars / 21 and levels done / 7), the others show "Soon".
+- **Quantum map**: 7 nodes (order of the `gameplay-mechanics` skill), Quarky on the current node, stars per level; only Tunnel effect is playable, the 6 others are locked.
+- **Tunnel effect 1**:
+  - drag back anywhere in the box, release to shoot; angle and energy snap to the `param_space` grid validated by the Python engine;
+  - the bottom panel shows Quarky's energy against the barrier's oscillating threshold (PASSES / BLOCKED);
+  - 3 Photons = 3 stars, in a single flight; the result reads as an instrument reading, with the lab logbook line;
+  - ghost of the previous shot, "first segment" hint after 5 failures;
+  - haptics: aim notch, shot, Photon, success/failure.
+- **Save**: best stars per level, kept between launches.
+
+## Known limits (on purpose for a POC)
+
+- A single playable level; the handlers of the 6 other concepts are not ported yet (an unported obstacle throws `UnsupportedObstacle`).
+- No real bloom (additive halos instead); frame budget still to measure on a low-end phone (`todo.md` §4.2, spike).
+- No audio (Stage 4), no Codex screen, no settings.
+- The play box is square (the physics lives in a unit box): the art direction's "narrow vertical box" will need a non-square box in the engine.
+- Oscillations start at release (spec §3): before the shot, the apparatus is idle.

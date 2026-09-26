@@ -26,20 +26,24 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import dev.agsoft.quarkcosmos.R
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-/** En-tête « lunette » : retour, titre, sous-titre en lecture d'instrument, info à droite. */
+/** "Eyepiece" header: back, title, subtitle as an instrument reading, info on the right. */
 @Composable
 fun Header(title: String, caption: String, onBack: () -> Unit, trailing: String? = null) {
     val type = LocalType.current
+    val backLabel = stringResource(R.string.back)
     Row(
         Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -48,7 +52,7 @@ fun Header(title: String, caption: String, onBack: () -> Unit, trailing: String?
             Modifier.size(40.dp).background(QC.bezel.copy(alpha = .9f), CircleShape)
                 .border(1.dp, QC.hudMuted.copy(alpha = .45f), CircleShape)
                 .clickable(role = Role.Button, onClick = onBack)
-                .semantics { contentDescription = "Retour" },
+                .semantics { contentDescription = backLabel },
             contentAlignment = Alignment.Center,
         ) {
             Canvas(Modifier.size(14.dp)) {
@@ -65,7 +69,7 @@ fun Header(title: String, caption: String, onBack: () -> Unit, trailing: String?
     }
 }
 
-/** Bouton principal (aplat de la couleur clé) ou secondaire (contour). */
+/** Primary button (flat key colour) or secondary (outline). */
 @Composable
 fun LabButton(label: String, modifier: Modifier = Modifier, primary: Boolean = true, onClick: () -> Unit) {
     val type = LocalType.current
@@ -80,7 +84,7 @@ fun LabButton(label: String, modifier: Modifier = Modifier, primary: Boolean = t
     }
 }
 
-/** Étoiles de notation (pleines = gagnées). */
+/** Rating stars (filled = earned). */
 fun DrawScope.star(c: Offset, r: Float, filled: Boolean, color: Color) {
     val p = Path()
     for (i in 0 until 10) {
@@ -96,7 +100,8 @@ fun DrawScope.star(c: Offset, r: Float, filled: Boolean, color: Color) {
 
 @Composable
 fun StarRow(stars: Int, size: Dp = 12.dp, modifier: Modifier = Modifier) {
-    Canvas(modifier.width(size * 3 + 8.dp).height(size).semantics { contentDescription = "$stars étoiles sur 3" }) {
+    val description = pluralStringResource(R.plurals.stars_out_of_3, stars, stars)
+    Canvas(modifier.width(size * 3 + 8.dp).height(size).semantics { contentDescription = description }) {
         val r = this.size.height / 2
         val step = (this.size.width - 2 * r) / 2
         for (i in 0 until 3) {
@@ -105,7 +110,7 @@ fun StarRow(stars: Int, size: Dp = 12.dp, modifier: Modifier = Modifier) {
     }
 }
 
-/** Cadenas dessiné (pas de dépendance aux icônes Material). */
+/** Drawn padlock (no dependency on Material icons). */
 fun DrawScope.lock(c: Offset, s: Float, color: Color) {
     val bw = s * 1.1f
     val bh = s * .8f

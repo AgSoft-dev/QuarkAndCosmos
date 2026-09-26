@@ -7,10 +7,10 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.utils.Disposable
 
 /**
- * Polices du HUD (skill art-direction) : JetBrains Mono pour les lectures
- * d'instrument, Fira Sans pour l'interface — OFL, dans assets/fonts/.
- * Générées à la résolution réelle de l'écran (net sur tout DPI) puis ramenées
- * à l'échelle des unités virtuelles de la vue.
+ * HUD fonts (art-direction skill): JetBrains Mono for instrument readings, Fira
+ * Sans for the interface — OFL, in assets/fonts/. Generated at the screen's
+ * real resolution (sharp at any DPI) then scaled back to the view's virtual
+ * units. The character set covers English and French.
  */
 class Fonts(pxPerUnit: Float) : Disposable {
     val mono: BitmapFont
@@ -50,6 +50,6 @@ class Fonts(pxPerUnit: Float) : Disposable {
     }
 
     private companion object {
-        const val EXTRA_CHARS = "’‘“”—–…•−→←↑↓·"
+        const val EXTRA_CHARS = "’‘“”«»—–…•−→←↑↓·œŒ\u00A0\u202F"
     }
 }

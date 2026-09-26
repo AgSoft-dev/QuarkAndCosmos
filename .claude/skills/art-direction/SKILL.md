@@ -1,96 +1,98 @@
 ---
 name: art-direction
-description: Direction artistique validée pour Quark & Cosmos (Stage 1, DA v2 « labo vu à travers un instrument » : matière plate + fond cinématique, Quarky v2) — palette par échelle, design du personnage Quarky et ses 5 évolutions, règle des deux couches visuelles (objets vs champs physiques), et conventions de level design. Charger avant toute production de mockup, asset, écran de niveau, ou toute décision visuelle/UX sur ce projet.
+description: Validated art direction for Quark & Cosmos (Stage 1, art direction v2 "a lab seen through an instrument": flat matter + cinematic background, Quarky v2) — palette per scale, Quarky's character design and its 5 evolutions, the two-visual-layer rule (objects vs physics fields), and level design conventions. Load before producing any mockup, asset, level screen, or any visual/UX decision on this project.
 ---
 
-# Direction artistique — Quark & Cosmos
+# Art direction — Quark & Cosmos
 
-**DA v2 (validée) : « un labo de physique rétro-futuriste vu à travers un instrument ».** Chaque échelle est ce qu'un instrument montrerait à ce grossissement (Quantique = cavité de détecteur / chambre à bulles). Le HUD est la lunette de l'instrument. Mondes sombres, jamais de décor pastel/enfantin ; physique en overlay vectoriel fin.
+**Art direction v2 (validated): "a retro-futuristic physics lab seen through an instrument".** Each scale is what an instrument would show at that magnification (Quantum = detector cavity / bubble chamber). The HUD is the instrument's eyepiece. Dark worlds, never a pastel/childish setting; physics as a thin vector overlay.
 
-Référence vivante : [`stage1-art-direction/poc-v2/index.html`](../../../stage1-art-direction/poc-v2/index.html) (frames A/B/C, planche Quarky v2, objets, contrat couleur). La combinaison retenue ci-dessous est **B + fond de C** : elle n'existe pas encore comme frame unique dans la page, c'est la prochaine planche à produire.
+Living reference: [`design/art-direction-v2/index.html`](../../../design/art-direction-v2/index.html) (frames A/B/C, Quarky v2 sheet, objects, colour contract). The combination chosen below is **B + C background**; the Android level screen (`android/game`) is its first full implementation. Decision record: [ADR-0001](../../../docs/decisions/ADR-0001-art-direction-v2.md).
 
-## Rendu retenu — « B + fond de C »
+## Chosen rendering — "B + C background"
 
-Décision utilisateur (gate Phase 1 §1.1) : **surtout B** (le plus lisible), avec **le fond de C**.
+User decision (Phase 1 gate §1.1): **mostly B** (the most readable), with **C's background**.
 
-- **Matière et objets = style B, « labo plat » (Monument Valley)** : aplats, 3–4 couleurs par scène, volume donné par une **ombre en croissant**, des **facettes** et un point de reflet (pas de dégradé radial lourd), contour ~1,5 px. Bloom **léger** (≈ 0,18, physique ≈ 0,08). Portail en disques concentriques plats qui tournent ; franges à bords nets ; traînée de Quarky en ligne simple ; espace négatif assumé.
-- **Fond = style C, « cinéma volumétrique »** : **3 couches de parallaxe** liées à la position de Quarky (bokeh lointain → franges/brume → poussière au premier plan), rayons de lumière doux depuis le portail, **grain et vignette ≤ 3 %**. Le fond reste **sous** la matière : luminance du fond ≤ 20 % de celle de la matière, aucun détail haute fréquence derrière la zone de jeu.
-- **Budget mobile** : formes vectorielles + **un seul passage de bloom** (¼ de résolution, 2 flous), un grade couleur par échelle, aucune lumière temps réel par objet.
-- **L'environnement réagit au résultat** : réussite = les franges se verrouillent en un motif net et une ligne de scan « résout » la cavité ; échec = le fond décohère en bruit et Quarky se dissout. Le résultat s'affiche comme une lecture d'instrument (titre du HUD), jamais en pop-up sur la zone de jeu.
-- **Orientation : portrait** (confirmé à la validation de la DA v2 ; la Quantique reste une boîte verticale étroite).
+- **Matter and objects = B style, "flat lab" (Monument Valley)**: flat fills, 3–4 colours per scene, volume given by a **shadow crescent**, **facets** and a highlight dot (no heavy radial gradient), ~1.5 px outline. **Light** bloom (≈ 0.18, physics ≈ 0.08). Portal as rotating flat concentric discs; sharp-edged fringes; Quarky's trail as a simple line; negative space embraced.
+- **Background = C style, "volumetric cinema"**: **3 parallax layers** tied to Quarky's position (distant bokeh → fringes/fog → foreground dust), soft light rays from the portal, **grain and vignette ≤ 3%**. The background stays **below** the matter: background luminance ≤ 20% of the matter's, no high-frequency detail behind the play area.
+- **Mobile budget**: vector shapes + **a single bloom pass** (¼ resolution, 2 blurs), one colour grade per scale, no real-time light per object.
+- **The environment reacts to the outcome**: success = the fringes lock into a sharp pattern and a scan line "resolves" the cavity; failure = the background decoheres into noise and Quarky dissolves. The result is shown as an instrument reading (HUD title), never as a pop-up over the play area.
+- **Orientation: portrait** (confirmed when art direction v2 was validated; Quantum stays a narrow vertical box).
 
-## Règle fondamentale : deux couches visuelles non négociables
+## Core rule: two non-negotiable visual layers
 
-1. **Couche "matière"** — Quarky et tout objet manipulable (miroir, lame, barrière, aimant, ressort, cible, obstacles). Rendu plat façon B : aplats + ombre en croissant/facettes + point de reflet, contour coloré ~1,5 px. C'est la couche la plus contrastée de l'écran.
-2. **Couche "physique invisible"** — trajectoires prédites, lignes de champ, franges, halos/dômes gravitationnels. Toujours fine (~0.75–1px), pointillée ou en flèches, monochrome par type de force, en surimpression sur la couche matière, qui pulse dans le sens du flux, et **moins bloomée** que la matière.
+1. **"Matter" layer** — Quarky and every manipulable object (mirror, splitter, barrier, magnet, spring, target, obstacles). Flat B rendering: flat fills + shadow crescent/facets + highlight dot, ~1.5 px coloured outline. The most contrasted layer on screen.
+2. **"Invisible physics" layer** — predicted trajectories, field lines, fringes, gravitational halos/domes. Always thin (~0.75–1 px), dotted or with arrows, monochrome per force type, overlaid on the matter layer, pulsing in the direction of flow, and **less bloomed** than the matter.
 
-Cette séparation est aussi un signal pédagogique : le joueur distingue instantanément "ce qui se touche" de "ce que la physique montre".
+This separation is also a teaching signal: the player instantly tells "what can be touched" from "what physics shows".
 
-**Règle par force** : une force = une couleur dédiée + un seul style de trait (plein/pointillé/flèche), répété identiquement partout dans le jeu.
+**Per-force rule**: one force = one dedicated colour + a single line style (solid/dotted/arrow), repeated identically everywhere in the game.
 
-## Quarky — personnage
+## Quarky — the character
 
-ADN visuel constant sur toutes les évolutions : corps mou façon gélatine/peluche, grands yeux expressifs (pupilles sombres, reflet blanc), reflet spéculaire façon gomme, contour coloré ~1.5px, léger *rim light* (accent froid) qui le détache du fond sombre.
+Visual DNA constant across every evolution: soft jelly/plush body, big expressive eyes (dark pupils, white highlight), gummy specular highlight, ~1.5 px coloured outline, a slight cool *rim light* that detaches Quarky from the dark background.
 
-**Quarky v2 (validé, gate Phase 1 §1.2)** : créature-particule **lumineuse** — un **cœur lumineux** dans une **membrane gélatineuse**, les grands yeux gardés (ancre émotionnelle). Rendu dans le style B (aplats + croissant d'ombre), le cœur est le seul élément « lumineux » de la matière.
-- Silhouette = une goutte ronde + deux yeux : lisible à **48 px** (encore à 32 px).
-- 8 états **procéduraux** (squash & stretch piloté par la vitesse, pas de sprites) : repos, tension de visée, lancer, vol, collecte, quasi-raté, réussite (aspiré par le portail), échec (se dissout).
-- **Mutation Quantique = 2–3 copies de phase fantômes** qui clignotent, sans pupilles pleines (la « vraie » Quarky reste identifiable). Ce sont aussi les **copies de la superposition** en jeu (cf. `gameplay-mechanics`) : la copie perdue à la mesure s'efface avec sa traînée.
-- **Dualité** : particule = corps net ; onde = le corps se dissout en ondulations concentriques qui suivent la trajectoire.
+**Quarky v2 (validated, Phase 1 gate §1.2)**: a **luminous** particle creature — a **glowing core** inside a **jelly membrane**, keeping the big eyes (emotional anchor). Rendered in B style (flat fills + shadow crescent), the core is the only "luminous" element of the matter.
+- Silhouette = a round drop + two eyes: readable at **48 px** (still at 32 px).
+- 8 **procedural** states (speed-driven squash & stretch, no sprites): idle, aiming tension, launch, flight, collect, near miss, success (drawn into the portal), failure (dissolves).
+- **Quantum mutation = 2–3 flickering ghost phase copies**, without solid pupils (the "real" Quarky stays identifiable). They are also the **superposition copies** in the game (see `gameplay-mechanics`): the copy lost at the measurement fades out with its trail.
+- **Duality**: particle = sharp body; wave = the body dissolves into concentric ripples following the trajectory.
 
-La forme **Macro est la forme canon** — les 4 autres échelles sont des *mutations* de cette même base, pas des personnages différents.
+The **Macro form is the canonical form** — the other 4 scales are *mutations* of this same base, not different characters.
 
-## Les 5 échelles
+## The 5 scales
 
-Progression chromatique continue du petit au grand : rose → jaune/orange → vert → violet → indigo profond.
+Continuous colour progression from small to large: pink → yellow/orange → green → violet → deep indigo.
 
-| Échelle | Couleur | Mutation Quarky | Topologie de niveau | Gravité | Obstacle signature | Décor |
+| Scale | Colour | Quarky mutation | Level topology | Gravity | Signature obstacle | Setting |
 |---|---|---|---|---|---|---|
-| Quantique (10⁻¹⁵ m) | Rose `#f472b6` | Copies de phase fantômes clignotantes (superposition) | Boîte fermée, verticale, étroite (portrait) | Absente | Barrière/tunnel | Cavité de détecteur quasi-noire, parallaxe 3 couches (fond C), aucune grille |
-| Atomique/Moléculaire (10⁻⁹ m) | Jaune `#facc15` | Anneau d'électron en orbite + satellite bleu (charge) | Radiale/orbitale autour d'un noyau | Attraction centrale | Ions +/- | Quasi-noir, aucune grille |
-| Macro (1 m) | Vert `#4ade80` | Forme canon | Couloir horizontal | Verticale fixe (bas) | Ressort/miroir/électro-aimant | Fond noir, grille technique très discrète, plateformes à liseré néon |
-| Spatiale (10⁹ m) | Violet `#a78bfa` | Mini ailerons voile solaire + traîne d'étoiles | Plan ouvert, sans sol | Multi-puits | Planète géante (fronde gravitationnelle) | Noir étoilé classique |
-| Cosmologique (10²² m) | Indigo `#818cf8` | Silhouette légèrement déformée (skew) | Grille elle-même courbée | Déforme l'espace | Trou noir opaque (lentille gravitationnelle) | Seule échelle où le décor réagit visuellement au gameplay (climax/boss de fin) |
+| Quantum (10⁻¹⁵ m) | Pink `#f472b6` | Flickering ghost phase copies (superposition) | Closed, vertical, narrow box (portrait) | None | Barrier/tunnel | Near-black detector cavity, 3-layer parallax (C background), no grid |
+| Atomic/Molecular (10⁻⁹ m) | Yellow `#facc15` | Orbiting electron ring + blue satellite (charge) | Radial/orbital around a nucleus | Central attraction | +/- ions | Near-black, no grid |
+| Macro (1 m) | Green `#4ade80` | Canonical form | Horizontal corridor | Fixed vertical (down) | Spring/mirror/electromagnet | Black background, very discreet technical grid, neon-edged platforms |
+| Space (10⁹ m) | Violet `#a78bfa` | Mini solar-sail fins + star trail | Open plane, no floor | Multiple wells | Giant planet (gravitational slingshot) | Classic starry black |
+| Cosmological (10²² m) | Indigo `#818cf8` | Slightly deformed (skewed) silhouette | The grid itself is curved | Warps space | Opaque black hole (gravitational lensing) | The only scale where the setting reacts visually to gameplay (climax/final boss) |
 
-### Contrat couleur — Quantique
+### Colour contract — Quantum
 
-| Rôle | Couleur |
+| Role | Colour |
 |---|---|
-| Clé de l'échelle | `#f472b6` |
-| Accent complémentaire (froid) | `#67e8f9` |
-| Fond profond | `#0a0612` |
-| Seuil / danger | `#fb923c` |
-| Dérivé (énergie moyenne, filament d'intrication) | `#c4b5fd` |
-| Texte HUD / texte secondaire | `#f7eef9` / `#b9a7c9` (≥ 4,5:1 sur le fond) |
+| Scale key | `#f472b6` |
+| Complementary (cool) accent | `#67e8f9` |
+| Deep background | `#0a0612` |
+| Threshold / danger | `#fb923c` |
+| Derived (medium energy, entanglement filament) | `#c4b5fd` |
+| HUD text / secondary text | `#f7eef9` / `#b9a7c9` (≥ 4.5:1 on the background) |
 
-Daltonisme (deutéranopie/protanopie) : aucune information par la couleur seule. Doublons obligatoires : style de trait par force, glyphes ↑/↓ du spin et +/−, **nombre de rayons du Photon (4/6/8) pour son énergie** (les Photons moyen/haut sont proches en deutéranopie). Les autres échelles recevront leur contrat (clé + accent + fond + seuil) au même format.
+Colour blindness (deuteranopia/protanopia): no information by colour alone. Mandatory doubles: line style per force, ↑/↓ spin and +/− glyphs, **the Photon's number of rays (4/6/8) for its energy** (medium/high Photons are close in deuteranopia). The other scales will get their contract (key + accent + background + threshold) in the same format.
 
-## Cible et Photon — rendu
+## Target and Photon — rendering
 
-- **Cible = portail**, pas un simple disque doré statique. Concept : halo de téléportation — anneaux concentriques animés (rotation lente + pulsation), cœur lumineux qui aspire visuellement le regard, dans la couleur de l'échelle en cours (pas de couleur dorée universelle imposée). Renforce l'idée narrative que Quarky change d'état/de lieu en l'atteignant, cohérent avec le concept "voyage à travers les échelles" du skill `storytelling`. Animable dès que le moteur de rendu le permet (Stage 2 HTML/JS : `requestAnimationFrame`, pas de sprite statique).
-- **Photon = scintillement**, pas juste un point qui pulse en taille. Concept : petites étincelles/reflets qui apparaissent et disparaissent de façon aléatoire autour du corps du Photon (façon paillette), en plus du halo existant — le but est de lire immédiatement "récompense à collecter" au premier coup d'œil, avant même de comprendre la mécanique du niveau. Reste plus petit/discret que la cible et que Quarky (cf. `gameplay-mechanics`), le scintillement ne doit jamais rivaliser en lisibilité avec la trajectoire prévue.
-- Les deux restent couche "matière" (rendu plat B : aplats + croissant d'ombre) — le scintillement/l'animation du portail s'ajoutent par-dessus. Photon : couleur = énergie (E = hν), doublée par le nombre de rayons.
+- **Target = portal**, not a plain static golden disc. Concept: a teleportation halo — animated concentric rings (slow rotation + pulse), a glowing core that draws the eye, in the current scale's colour (no universal gold). It reinforces the narrative idea that Quarky changes state/place on reaching it, consistent with the "journey across scales" of the `storytelling` skill. Animated as soon as the renderer allows it.
+- **Photon = glint**, not just a dot pulsing in size. Concept: small sparks/highlights appearing and disappearing randomly around the Photon's body (like glitter), on top of the halo — the goal is to read "reward to collect" at first glance, before even understanding the level's mechanic. It stays smaller/more discreet than the target and Quarky (see `gameplay-mechanics`); the glint must never compete in readability with the intended path.
+- Both stay in the "matter" layer (flat B rendering: flat fills + shadow crescent) — the glint/portal animation are added on top. Photon: colour = energy (E = hν), doubled by the number of rays.
 
-## Level design — règles de progression
+## Level design — progression rules
 
-- **Durée de session constante** sur les 5 échelles — ce n'est pas un axe de différenciation.
-- **Difficulté = seul axe de progression**, sur deux plans simultanés :
-  1. Courbe globale entre échelles (Quantique/Macro en intro → Cosmologique en climax).
-  2. Progression intra-échelle : minimum 3 niveaux par échelle, d'un seul obstacle/une seule règle vers une combinaison de contraintes. Le style et le vocabulaire visuel ne changent jamais d'un niveau à l'autre au sein d'une échelle — seule la quantité/combinaison d'éléments augmente.
-- Composition/caméra par échelle : fixe et serrée (Quantique/Atomique) → travelling latéral (Macro) → zoom libre (Spatiale) → zoom + distorsion (Cosmologique).
+- **Constant session length** across the 5 scales — not a differentiating axis.
+- **Difficulty = the only progression axis**, on two simultaneous levels:
+  1. Global curve across scales (Quantum/Macro as intro → Cosmological as climax).
+  2. Intra-scale progression: at least 3 levels per scale, from a single obstacle/rule to a combination of constraints. Style and visual vocabulary never change from one level to the next within a scale — only the quantity/combination of elements grows.
+- Composition/camera per scale: fixed and tight (Quantum/Atomic) → lateral tracking (Macro) → free zoom (Space) → zoom + distortion (Cosmological).
 
 ## HUD & UI
 
-**Lunette d'instrument** : cadre en trait fin autour de la zone de jeu, lectures en police **monospace** (JetBrains Mono) et interface en police **humaniste** (Fira Sans), toutes deux sous licence OFL. Positions inchangées : compteur d'étoiles en haut à gauche, bouton reset circulaire en haut à droite, sélecteur d'objets flottant en bas. Fond des pastilles sombre semi-transparent (`#0f1524` @ 90 %, ou la couleur de lunette de l'échelle).
+**Instrument eyepiece**: thin-line frame around the play area, readings in a **monospace** font (JetBrains Mono) and interface in a **humanist** font (Fira Sans), both under the OFL licence (their character sets must cover English and French). Unchanged positions: star counter top left, round reset button top right, floating object selector at the bottom. Dark semi-transparent pill background (`#0f1524` @ 90%, or the scale's eyepiece colour). Text lengths differ between English and French: layouts must fit the longer of the two (check both when adding a string).
 
-## Statut
+## Status
 
-Stage 1 (Identité graphique & DA) validé, **DA v2 incluse**. Ne pas rouvrir les choix ci-dessus sans décision explicite de l'utilisateur — les réutiliser tels quels pour tout mockup Stage 2+ (HTML/JS), asset, ou spécification technique.
+Stage 1 (graphic identity & art direction) validated, **art direction v2 included**. Don't reopen the choices above without an explicit user decision — reuse them as is for any Stage 2+ mockup (HTML/JS), asset, or technical spec.
 
-## Journal v1 → v2
+## Changelog
 
-- **Rendu** : matière illustrée à dégradés (façon Cut the Rope) → **matière plate façon B** (aplats, croissant d'ombre, facettes) + **fond cinématique de C** (parallaxe 3 couches, grain/vignette ≤ 3 %), un seul passage de bloom.
-- **Quarky** : même ADN (gélatine, grands yeux, reflet gomme) → **Quarky v2** : cœur lumineux + membrane, 8 états procéduraux, copies de phase = copies de superposition.
-- **Cadre** : décor abstrait → **instrument** (cavité de détecteur pour la Quantique), HUD = lunette, polices mono + humaniste OFL.
-- **Nouveau** : contrat couleur par échelle (clé + accent + fond + seuil), règle de luminance du fond (≤ 20 % de la matière), environnement qui réagit au résultat.
-- **Inchangé** : palette clé par échelle, règle des deux couches, règle par force, portail et Photon scintillant, portrait.
+- 2026-09-26 — Translated to English; reference page moved to `design/art-direction-v2/` (S1).
+- 2026-09-25 — **v1 → v2**:
+  - **Rendering**: illustrated gradient matter (Cut the Rope style) → **flat B matter** (flat fills, shadow crescent, facets) + **C cinematic background** (3-layer parallax, grain/vignette ≤ 3%), a single bloom pass.
+  - **Quarky**: same DNA (jelly, big eyes, gummy highlight) → **Quarky v2**: glowing core + membrane, 8 procedural states, phase copies = superposition copies.
+  - **Frame**: abstract setting → **instrument** (detector cavity for Quantum), HUD = eyepiece, OFL mono + humanist fonts.
+  - **New**: colour contract per scale (key + accent + background + threshold), background luminance rule (≤ 20% of the matter), environment reacting to the outcome.
+  - **Unchanged**: key palette per scale, two-layer rule, per-force rule, portal and glinting Photon, portrait.

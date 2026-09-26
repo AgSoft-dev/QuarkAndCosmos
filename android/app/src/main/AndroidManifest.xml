@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QuarkCosmos">
 
-        <!-- Menus : accueil, échelles, carte du monde (Compose). -->
+        <!-- Menus: welcome, scales, world map (Compose). -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
 
-        <!-- Un niveau (libGDX). -->
+        <!-- One level (libGDX). -->
         <activity
             android:name=".GameActivity"
             android:exported="false"

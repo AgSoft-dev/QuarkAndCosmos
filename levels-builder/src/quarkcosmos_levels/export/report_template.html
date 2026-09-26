@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Star progression</title>
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<style>
+  :root {
+    color-scheme: light;
+    --surface-0: #f4f3f0;
+    --surface-1: #fcfcfb;
+    --border: #e2e1dc;
+    --grid: #ebeae6;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #7a7974;
+    --tier-0: #c9c8c2;
+    --tier-1: #86b6ef;
+    --tier-2: #2a78d6;
+    --tier-3: #104281;
+    --photon: #eb6834;
+    --target: #1baf7a;
+    --obstacle: #9d9c96;
+    --warning: #b25e00;
+    --warning-bg: #fdf0dc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface-0: #121211;
+      --surface-1: #1a1a19;
+      --border: #2e2e2c;
+      --grid: #262624;
+      --text-primary: #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted: #8f8e86;
+      --tier-0: #45453f;
+      --tier-1: #1c5cab;
+      --tier-2: #3987e5;
+      --tier-3: #9ec5f4;
+      --photon: #d95926;
+      --target: #199e70;
+      --obstacle: #6b6a64;
+      --warning: #f0a53c;
+      --warning-bg: #33260f;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface-0: #121211;
+    --surface-1: #1a1a19;
+    --border: #2e2e2c;
+    --grid: #262624;
+    --text-primary: #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted: #8f8e86;
+    --tier-0: #45453f;
+    --tier-1: #1c5cab;
+    --tier-2: #3987e5;
+    --tier-3: #9ec5f4;
+    --photon: #d95926;
+    --target: #199e70;
+    --obstacle: #6b6a64;
+    --warning: #f0a53c;
+    --warning-bg: #33260f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--surface-0); color: var(--text-primary);
+    font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  main { max-width: 1200px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  h2 { font-size: 16px; margin: 32px 0 8px; }
+  p, li { color: var(--text-secondary); }
+  .lede { margin: 0 0 16px; max-width: 70ch; }
+  code { font-size: 12.5px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 8px 0 12px; color: var(--text-secondary); font-size: 13px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .sw { width: 22px; height: 0; border-top: 2px solid; display: inline-block; }
+  .sw.dash { border-top-style: dashed; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .ring { width: 12px; height: 12px; border-radius: 50%; border: 2px solid; display: inline-block; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+  .maps { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 12px; min-width: 0; }
+  .card h3 { margin: 0; font-size: 14px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 4px 8px; }
+  .meta { color: var(--text-muted); font-size: 12px; margin: 2px 0 4px; }
+  .badge { font-size: 11.5px; font-weight: 600; color: var(--warning); background: var(--warning-bg); border-radius: 999px; padding: 1px 8px; white-space: nowrap; }
+  .plot { width: 100%; height: 190px; }
+  .map { width: 100%; aspect-ratio: 1 / 1; }
+  .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .seg button { font: inherit; font-size: 12px; background: none; color: var(--text-secondary); border: 0; padding: 2px 10px; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--text-primary); color: var(--surface-1); }
+  .routes { margin-top: 4px; color: var(--text-muted); font-size: 11.5px; }
+  .stats { font-size: 12px; margin-top: 4px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+  .table-wrap { overflow-x: auto; background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; }
+  table { border-collapse: collapse; width: 100%; font-size: 12.5px; font-variant-numeric: tabular-nums; }
+  th, td { padding: 6px 10px; text-align: right; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align: left; }
+  th { color: var(--text-secondary); font-weight: 600; position: sticky; top: 0; background: var(--surface-1); }
+  td.warn { color: var(--warning); font-weight: 600; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Star progression — Quantum world</h1>
+  <p class="lede">
+    For each level and each difficulty, a dense fan of launches (angle, power, tap instant) is simulated.
+    Among <strong>valid</strong> launches (target reached), the share earning at least <em>k</em> stars should follow
+    a truncated gaussian <code>exp(−k² / 2σ²)</code>, with σ shrinking as difficulty grows.
+    <span id="sigmas"></span>
+  </p>
+
+  <h2>Progression curves</h2>
+  <div class="legend" aria-hidden="true">
+    <span><i class="sw" style="border-color:var(--tier-1)"></i>≥ 1 ★</span>
+    <span><i class="sw" style="border-color:var(--tier-2)"></i>≥ 2 ★</span>
+    <span><i class="sw" style="border-color:var(--tier-3)"></i>3 ★</span>
+    <span><i class="sw" style="border-color:var(--text-secondary)"></i>measured</span>
+    <span><i class="sw dash" style="border-color:var(--text-secondary)"></i>target</span>
+  </div>
+  <div class="grid" id="curves"></div>
+
+  <h2>Level mini-maps</h2>
+  <p class="lede">Each line is a valid path, coloured by the number of stars it earns (hover: launch parameters). An oscillating Photon is drawn with its amplitude.</p>
+  <div class="legend" aria-hidden="true">
+    <span><i class="sw" style="border-color:var(--tier-0)"></i>0 ★</span>
+    <span><i class="sw" style="border-color:var(--tier-1)"></i>1 ★</span>
+    <span><i class="sw" style="border-color:var(--tier-2)"></i>2 ★</span>
+    <span><i class="sw" style="border-color:var(--tier-3)"></i>3 ★</span>
+    <span><i class="ring" style="border-color:var(--photon)"></i>Photon</span>
+    <span><i class="ring" style="border-color:var(--target)"></i>target</span>
+    <span><i class="dot" style="background:var(--obstacle)"></i>obstacle</span>
+    <span><i class="dot" style="background:var(--text-primary)"></i>launcher</span>
+  </div>
+  <div class="grid maps" id="maps"></div>
+
+  <h2>Full table</h2>
+  <div class="table-wrap"><table id="table"></table></div>
+</main>
+
+<script>
+const DATA = /*__DATA__*/null;
+
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const tierColor = k => css(`--tier-${k}`);
+const pct = v => `${Math.round(v * 100)}\u202f%`;
+const byConcept = {};
+for (const e of DATA.levels) (byConcept[e.concept] ??= []).push(e);
+for (const list of Object.values(byConcept)) list.sort((a, b) => a.difficulty - b.difficulty);
+const concepts = Object.keys(byConcept);
+
+document.getElementById("sigmas").textContent =
+  "σ per difficulty: " + Object.entries(DATA.sigma).map(([d, s]) => `${d} → ${s}`).join(", ") + ".";
+
+function baseLayout() {
+  return {
+    paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)",
+    font: { family: "system-ui, sans-serif", size: 11, color: css("--text-secondary") },
+    showlegend: false,
+    hoverlabel: { bgcolor: css("--surface-1"), bordercolor: css("--border"), font: { color: css("--text-primary") } },
+  };
+}
+const CONFIG = { displayModeBar: false, responsive: true };
+
+function drawCurves() {
+  const root = document.getElementById("curves");
+  root.innerHTML = "";
+  for (const c of concepts) {
+    const list = byConcept[c];
+    const ceiling = list.filter(e => e.ceiling).map(e => e.difficulty);
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `<h3>${c}${ceiling.length ? `<span class="badge">⚠ 3★ ceiling (diff. ${ceiling.join(", ")})</span>` : ""}</h3>
+      <div class="meta">${list[0].distinct_paths} distinct paths · tolerance ${pct(list[0].tolerance)}</div>
+      <div class="plot"></div>`;
+    root.appendChild(card);
+    const xs = list.map(e => e.difficulty);
+    const traces = [];
+    for (const k of [1, 2, 3]) {
+      const color = tierColor(k);
+      traces.push({
+        x: xs, y: list.map(e => e.target_shares[k]), mode: "lines", line: { color, width: 1.5, dash: "dash" },
+        hovertemplate: `target ${k === 3 ? "3" : "≥ " + k} ★ : %{y:.0%}<extra></extra>`,
+      });
+      traces.push({
+        x: xs, y: list.map(e => e.shares[k]), mode: "lines+markers", line: { color, width: 2 },
+        marker: { size: 8, color, line: { color: css("--surface-1"), width: 2 } },
+        hovertemplate: `measured ${k === 3 ? "3" : "≥ " + k} ★ : %{y:.0%}<extra></extra>`,
+      });
+    }
+    Plotly.newPlot(card.querySelector(".plot"), traces, {
+      ...baseLayout(),
+      margin: { l: 36, r: 8, t: 6, b: 28 },
+      xaxis: { tickvals: xs, ticktext: xs.map(d => `diff. ${d}`), gridcolor: css("--grid"), zeroline: false, fixedrange: true },
+      yaxis: { range: [0, 1.05], tickformat: ".0%", dtick: 0.25, gridcolor: css("--grid"), zeroline: false, fixedrange: true },
+      hovermode: "x unified",
+    }, CONFIG);
+  }
+}
+
+function circle(x, y, r, stroke, fill, width = 1.5) {
+  return { type: "circle", xref: "x", yref: "y", x0: x - r, x1: x + r, y0: y - r, y1: y + r,
+           line: { color: stroke, width }, fillcolor: fill, layer: "above" };
+}
+
+function mapFigure(e) {
+  const g = e.geometry;
+  const traces = [];
+  for (const p of e.paths) {
+    const params = Object.entries(p.params).map(([k, v]) => `${k} ${v}`).join(" · ");
+    traces.push({
+      x: p.x, y: p.y, mode: "lines",
+      line: { color: tierColor(p.stars), width: p.stars === 3 ? 2 : 1.25 },
+      opacity: p.stars === 3 ? 1 : 0.75,
+      hovertemplate: `${p.stars} ★ · ${params}<br>${p.weight} launch(es) on this path<extra></extra>`,
+    });
+  }
+  traces.push({
+    x: [g.launcher.x], y: [g.launcher.y], mode: "markers",
+    marker: { size: 10, color: css("--text-primary"), symbol: "diamond" },
+    hovertemplate: "lanceur<extra></extra>",
+  });
+  const labels = [];
+  const shapes = [
+    { type: "rect", x0: 0, x1: 1, y0: 0, y1: 1, line: { color: css("--border"), width: 1 }, layer: "below" },
+  ];
+  const hx = [], hy = [], htext = [];
+  for (const o of g.obstacles) {
+    const isWall = o.type === "wall";
+    const info = obstacleInfo(o);
+    if (o.length !== undefined) {
+      const a = (o.angle_deg || 0) * Math.PI / 180, h = o.length / 2;
+      const x0 = o.x - Math.cos(a) * h, y0 = o.y - Math.sin(a) * h, x1 = o.x + Math.cos(a) * h, y1 = o.y + Math.sin(a) * h;
+      shapes.push({ type: "line", xref: "x", yref: "y", x0, y0, x1, y1, layer: "above",
+                    line: { color: isWall ? css("--obstacle") : css("--text-primary"), width: isWall ? 2 : 4,
+                            dash: o.type === "detector" ? "dot" : "solid" } });
+      if (!isWall) for (let i = 0; i <= 4; i++) { hx.push(x0 + (x1 - x0) * i / 4); hy.push(y0 + (y1 - y0) * i / 4); htext.push(info); }
+    } else {
+      shapes.push(circle(o.x, o.y, o.r, isWall ? css("--obstacle") : css("--text-primary"),
+                         isWall ? css("--obstacle") : "rgba(0,0,0,0)", isWall ? 1 : 2));
+      if (!isWall) { hx.push(o.x); hy.push(o.y); htext.push(info); }
+    }
+    if (!isWall) labels.push({ x: o.x, y: o.y, text: o.id, showarrow: false, xshift: 14, yshift: -10,
+                               font: { size: 10, color: css("--text-secondary") } });
+  }
+  traces.push({ x: hx, y: hy, mode: "markers", marker: { size: 14, color: "rgba(0,0,0,0)" },
+                text: htext, hovertemplate: "%{text}<extra></extra>" });
+  shapes.push(circle(g.target.x, g.target.y, g.target.r, css("--target"), "rgba(0,0,0,0)", 2));
+  for (const ph of g.photons) {
+    if (ph.motion) {
+      const a = ph.motion.amplitude, alongX = ph.motion.axis === "x";
+      shapes.push({ type: "line", xref: "x", yref: "y",
+        x0: alongX ? ph.x - a : ph.x, x1: alongX ? ph.x + a : ph.x,
+        y0: alongX ? ph.y : ph.y - a, y1: alongX ? ph.y : ph.y + a,
+        line: { color: css("--photon"), width: 1.5, dash: "dot" }, layer: "above" });
+    }
+    shapes.push(circle(ph.x, ph.y, ph.r, css("--photon"), "rgba(0,0,0,0)", 2));
+    labels.push({ x: ph.x, y: ph.y, text: ph.id, showarrow: false, yshift: 14, font: { size: 10, color: css("--text-secondary") } });
+  }
+  traces.push({
+    x: g.photons.map(p => p.x), y: g.photons.map(p => p.y), mode: "markers",
+    marker: { size: 14, color: "rgba(0,0,0,0)" },
+    text: g.photons.map(p => p.motion ? `${p.id} · oscillates ±${p.motion.amplitude} (${p.motion.axis}), period ${p.motion.period}s` : `${p.id} · fixed`),
+    hovertemplate: "%{text}<extra></extra>",
+  });
+  return {
+    traces,
+    layout: {
+      ...baseLayout(),
+      margin: { l: 4, r: 4, t: 4, b: 4 },
+      xaxis: { range: [-0.02, 1.02], visible: false, fixedrange: true },
+      yaxis: { range: [1.02, -0.02], visible: false, scaleanchor: "x", fixedrange: true },
+      shapes, annotations: labels, hovermode: "closest",
+    },
+  };
+}
+
+function obstacleInfo(o) {
+  const bits = [`${o.id} · ${o.type}`];
+  if (o.pole) bits.push(`pole ${o.pole}, deflection ${Math.abs(o.kick_deg)}°`);
+  if (o.energy_threshold !== undefined) {
+    const m = o.threshold_motion;
+    bits.push(m ? `threshold ${o.energy_threshold} ± ${m.amplitude} (period ${m.period}s)` : `threshold ${o.energy_threshold}`);
+  }
+  if (o.type === "splitter") bits.push("splitter: one transmitted copy + one reflected copy");
+  if (o.type === "detector") bits.push("detector: on tap, Quarky becomes the closest copy");
+  if (o.type === "mirror") bits.push("miroir");
+  if (o.type === "gate") bits.push("closed before the tap, open after");
+  if (o.type === "gate_anti") bits.push("open before the tap, closed after");
+  if (o.type === "surface") bits.push("particle: bounces · wave: crosses");
+  if (o.motion) bits.push(`oscillates ±${o.motion.amplitude} (${o.motion.axis}), period ${o.motion.period}s`);
+  return bits.join("<br>");
+}
+
+function routesLine(e) {
+  return e.routes.slice(0, 3).map(r => `${pct(r.share)} ${r.route}`).join("<br>");
+}
+
+function statsLine(e) {
+  const s = e.shares, t = e.target_shares;
+  return `≥1★ ${pct(s[1])} (target ${pct(t[1])}) · ≥2★ ${pct(s[2])} (${pct(t[2])}) · 3★ <strong>${pct(s[3])}</strong> (${pct(t[3])})<br>` +
+    `${e.valid_rays}/${e.rays} valid launches · tolerance ${pct(e.tolerance)} · ${e.distinct_paths} paths · ${e.moving_photons} oscillating Photon(s)` +
+    (e.bypass_solutions ? ` · <span class="badge">⚠ ${e.bypass_solutions} bypass(es)</span>` : "") +
+    `<div class="routes">${routesLine(e)}</div>` +
+    (e.ceiling ? ` · <span class="badge">⚠ 3★ ceiling: paths too uniform</span>` : "");
+}
+
+const selected = {};
+function drawMaps() {
+  const root = document.getElementById("maps");
+  root.innerHTML = "";
+  for (const c of concepts) {
+    const list = byConcept[c];
+    selected[c] ??= list[0].difficulty;
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `<h3>${c}<span class="seg" role="group" aria-label="Difficulty">${
+      list.map(e => `<button type="button" data-d="${e.difficulty}" aria-pressed="${e.difficulty === selected[c]}">diff. ${e.difficulty}</button>`).join("")
+    }</span></h3><div class="map"></div><div class="stats"></div>`;
+    root.appendChild(card);
+    const render = () => {
+      const e = list.find(x => x.difficulty === selected[c]);
+      const fig = mapFigure(e);
+      Plotly.react(card.querySelector(".map"), fig.traces, fig.layout, CONFIG);
+      card.querySelector(".stats").innerHTML = statsLine(e);
+      card.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.d === selected[c])));
+    };
+    card.querySelectorAll("button").forEach(b => b.addEventListener("click", () => { selected[c] = +b.dataset.d; render(); }));
+    render();
+  }
+}
+
+function drawTable() {
+  const head = ["level", "concept", "diff.", "σ", "tolerance", "valid launches", "paths", "≥1★", "target", "≥2★", "target", "3★", "target", "3★ gap", "oscillating Photons"];
+  const rows = DATA.levels.map(e => [
+    e.id, e.concept, e.difficulty, e.sigma, pct(e.tolerance), `${e.valid_rays}/${e.rays}`, e.distinct_paths,
+    pct(e.shares[1]), pct(e.target_shares[1]), pct(e.shares[2]), pct(e.target_shares[2]),
+    pct(e.shares[3]), pct(e.target_shares[3]), { v: (e.gap_3_stars > 0 ? "+" : "") + Math.round(e.gap_3_stars * 100) + " pts" + (e.ceiling ? " ⚠" : ""), warn: e.ceiling },
+    e.moving_photons,
+  ]);
+  document.getElementById("table").innerHTML =
+    `<thead><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr></thead><tbody>` +
+    rows.map(r => `<tr>${r.map(v => typeof v === "object" ? `<td class="${v.warn ? "warn" : ""}">${v.v}</td>` : `<td>${v}</td>`).join("")}</tr>`).join("") +
+    "</tbody>";
+}
+
+function drawAll() { drawCurves(); drawMaps(); }
+drawAll();
+drawTable();
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawAll);
+new MutationObserver(drawAll).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+</script>
+</body>
+</html>

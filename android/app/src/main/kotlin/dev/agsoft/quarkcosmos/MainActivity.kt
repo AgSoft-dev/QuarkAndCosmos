@@ -28,7 +28,7 @@ import dev.agsoft.quarkcosmos.ui.WelcomeScreen
 import dev.agsoft.quarkcosmos.ui.WorldsScreen
 import dev.agsoft.quarkcosmos.ui.rememberQcType
 
-/** Menus du POC : accueil → échelles → carte du monde Quantique → niveau (GameActivity). */
+/** POC menus: welcome → scales → Quantum world map → level (GameActivity). */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()

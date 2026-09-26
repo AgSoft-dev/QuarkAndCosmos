@@ -4,9 +4,9 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 
 /**
- * Valeurs de réglage atteignables (port de validator._grid_values) : le jeu
- * cale l'angle et la puissance choisis au doigt sur cette grille, la même que
- * celle sur laquelle le validateur a vérifié la solvabilité et les étoiles.
+ * Reachable setting values (port of validator._grid_values): the game snaps
+ * the angle and power chosen by finger to this grid, the same one on which the
+ * validator checked solvability and stars.
  */
 object ParamGrid {
     fun rangeValues(min: Double, max: Double, step: Double): List<Double> {
@@ -19,10 +19,10 @@ object ParamGrid {
         return out
     }
 
-    /** round(v, 4) de Python : arrondi correct de la valeur binaire exacte, demi → pair. */
+    /** Python's round(v, 4): correct rounding of the exact binary value, half → even. */
     fun round4(v: Double): Double = BigDecimal(v).setScale(4, RoundingMode.HALF_EVEN).toDouble()
 
-    /** Valeur de la grille la plus proche de [v]. */
+    /** Grid value closest to [v]. */
     fun snap(spec: ParamSpec, v: Double): Double {
         var best = Double.NaN
         var bestD = Double.MAX_VALUE

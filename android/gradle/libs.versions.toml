@@ -1,6 +1,6 @@
-# Versions du POC Android (cf. android/README.md). Android Studio peut proposer
-# des mises à jour : les accepter est sans risque tant que `:core-physics:test`
-# reste vert (c'est lui qui garantit que la physique suit le moteur Python).
+# Android POC versions (see android/README.md). Android Studio may offer
+# updates: accepting them is safe as long as `:core-physics:test` stays green
+# (it is what guarantees the physics follows the Python engine).
 [versions]
 agp = "8.13.0"
 kotlin = "2.2.21"

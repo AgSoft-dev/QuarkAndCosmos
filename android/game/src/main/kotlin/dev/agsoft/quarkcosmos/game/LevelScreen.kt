@@ -41,17 +41,18 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 
 /**
- * Un niveau jouable (POC : Effet tunnel 1). Portrait, DA v2 « B + fond de C ».
+ * One playable level (POC: Tunnel 1). Portrait, art direction v2 "B + C background".
  *
- * - Visée : glisser vers l'arrière depuis n'importe où dans la boîte (fronde),
- *   relâcher pour lancer. Angle et énergie sont calés sur la grille
- *   `param_space` du niveau — celle sur laquelle le validateur a prouvé la
- *   solvabilité et mesuré les étoiles. Revenir près du point de départ annule.
- * - Vol : la physique (`:core-physics`) avance par pas entiers de DT, le rendu
- *   interpole entre les deux derniers états. Le dispositif « démarre » avec le
- *   tir : toutes les oscillations partent de t = 0 au lâcher (spec §3).
- * - Résultat : lu comme une lecture d'instrument dans le panneau du bas,
- *   jamais en pop-up sur la zone de jeu.
+ * - Aim: drag back from anywhere in the box (slingshot), release to launch.
+ *   Angle and energy snap to the level's `param_space` grid — the one on which
+ *   the validator proved solvability and measured the stars. Coming back near
+ *   the start point cancels.
+ * - Flight: the physics (`:core-physics`) advances in whole DT steps, the
+ *   render interpolates between the last two states. The apparatus "starts"
+ *   with the shot: every oscillation starts from t = 0 at release (spec §3).
+ * - Result: read as an instrument reading in the bottom panel, never as a
+ *   pop-up over the play area.
+ * - Text: every player-facing string comes from [LevelInfo.text] (localised by the shell).
  */
 class LevelScreen(private val info: LevelInfo, private val host: GameHost) : ScreenAdapter(), SimListener {
 
@@ -62,6 +63,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         fun hit(px: Float, py: Float) = px >= x - 6 && px <= x + w + 6 && py >= y - 6 && py <= y + h + 6
     }
 
+    private val txt = info.text
     private val level = Level.parse(Gdx.files.internal("levels/${info.file}").readString("UTF-8"))
     private val cam = OrthographicCamera()
     private val viewport = ExtendViewport(MIN_W, MIN_H, cam)
@@ -72,7 +74,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
     private var fontsPx = 0f
     private val layout = GlyphLayout()
 
-    // --- mise en page (unités virtuelles, y vers le haut) ------------------
+    // --- layout (virtual units, y pointing up) -----------------------------
     private var w = MIN_W
     private var h = MIN_H
     private var boxX = 0f
@@ -82,7 +84,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
     private fun px(u: Double) = boxX + u.toFloat() * boxS
     private fun py(v: Double) = boxTop - v.toFloat() * boxS
 
-    // --- réglages du lancer ---------------------------------------------
+    // --- launch settings -----------------------------------------------
     private val angleSpec = level.paramSpace["angle_deg"] ?: ParamSpec.Range(0.0, 0.0, 1.0)
     private val powerSpec = level.paramSpace["power"] ?: ParamSpec.Choice(listOf(1.0))
     private val angleMin = angleSpec.values.minOf { (it as Number).toDouble() }
@@ -93,10 +95,10 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
     private var aimPower = ParamGrid.snap(powerSpec, (powerMin + powerMax) / 2)
     private val powerFrac get() = if (powerMax > powerMin) ((aimPower - powerMin) / (powerMax - powerMin)).toFloat() else 1f
 
-    // --- état -------------------------------------------------------------
+    // --- state ------------------------------------------------------------
     private var phase = Phase.AIM
     private var time = 0f
-    /** Horloge du dispositif (s) : 0 avant le tir, temps simulé pendant le vol. */
+    /** Apparatus clock (s): 0 before the shot, simulated time during the flight. */
     private var clock = 0f
     private var outroT = 0f
     private var dragging = false
@@ -118,14 +120,14 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
     private var flash = ""
     private var flashT = -9f
 
-    // traînée du vol en cours et fantôme du tir précédent
+    // trail of the current flight and ghost of the previous shot
     private val trail = FloatArray(TRAIL * 2)
     private var trailN = 0
     private var trailHead = 0
     private val lastShot = FloatArray((MAX_STEPS + 1) * 2)
     private var lastShotN = 0
 
-    // bouffées de collecte de Photon
+    // Photon collection bursts
     private val burstX = FloatArray(6)
     private val burstY = FloatArray(6)
     private val burstT = FloatArray(6) { -9f }
@@ -135,7 +137,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
     private val buttons = ArrayList<Button>()
     private val touch = Vector2()
 
-    // décor précalculé (fond C : bokeh, brume, poussière)
+    // precomputed scenery (C background: bokeh, fog, dust)
     private val bokeh = Array(12) { i -> floatArrayOf(hash(i * 1.7f), hash(i * 2.9f + 3), 22f + 40 * hash(i * 5.3f), hash(i * 7.1f) * TAU, .6f + hash(i + 11f)) }
     private val fog = Array(6) { i -> floatArrayOf(hash(i * 3.3f + 1), hash(i * 4.1f + 2), 120f + 90 * hash(i * 2.2f), hash(i * 6.7f) * TAU) }
     private val dust = Array(34) { i -> floatArrayOf(hash(i * 9.1f), hash(i * 4.7f + 5), .5f + .8f * hash(i * 3.9f), .2f + .8f * hash(i * 1.3f)) }
@@ -174,7 +176,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
     }
 
     // ======================================================================
-    // Entrées
+    // Input
     // ======================================================================
 
     private fun onDown(x: Float, y: Float) {
@@ -193,7 +195,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         pull = sqrt(dx * dx + dy * dy)
         armed = pull > DEAD_ZONE
         if (!armed) return
-        // direction de tir = opposée au geste ; angle physique (y vers le bas)
+        // shot direction = opposite of the gesture; physics angle (y pointing down)
         val deg = Math.toDegrees(atan2(-dy, dx).toDouble()).coerceIn(angleMin, angleMax)
         val pw = powerMin + (((pull - DEAD_ZONE) / PULL_RANGE).coerceIn(0f, 1f)) * (powerMax - powerMin)
         val a = ParamGrid.snap(angleSpec, deg)
@@ -219,7 +221,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
     }
 
     // ======================================================================
-    // Déroulé d'un tir
+    // Shot sequence
     // ======================================================================
 
     private fun launch() {
@@ -308,7 +310,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         }
     }
 
-    // --- SimListener (appelé pendant step()) ---------------------------------
+    // --- SimListener (called during step()) ---------------------------------
 
     override fun onPhoton(photonIndex: Int) {
         val p = level.photons[photonIndex]
@@ -325,16 +327,16 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
     override fun onContact(obstacleIndex: Int, event: ContactEvent) {
         if (level.obstacles[obstacleIndex].type != "barrier") return
         if (event == ContactEvent.PASS) {
-            flash = "Effet tunnel : assez d’énergie, Quarky traverse !"
+            flash = txt.flashPass
         } else {
-            flash = "Énergie sous le seuil : la barrière la renvoie."
+            flash = txt.flashBlocked
             barrierHitT = time
         }
         flashT = time
     }
 
     // ======================================================================
-    // Rendu
+    // Rendering
     // ======================================================================
 
     override fun resize(width: Int, height: Int) {
@@ -448,7 +450,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         return px(tg.x + if (isX) o else 0.0) to py(tg.y + if (isX) 0.0 else o)
     }
 
-    // --- fond « C » : parallaxe 3 couches, rayons du portail, franges -------
+    // --- "C" background: 3-layer parallax, portal rays, fringes -------------
 
     private fun drawBackground() {
         val s = cv.shapes()
@@ -460,13 +462,13 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         cv.additive(true)
         cv.glow(tx, ty, 300f, Pal.key, .09f)
         cv.glow(px(level.launcher.x), py(level.launcher.y), 240f, Pal.accent, .04f)
-        // couche 1 : bokeh lointain
+        // layer 1: distant bokeh
         for (b in bokeh) {
             val x = b[0] * w - qx * .03f + sin(time * .1f * b[4] + b[3]) * 12
             val y = b[1] * h - qy * .02f + cos(time * .08f * b[4] + b[3]) * 10
             cv.glow(x, y, b[2], if (b[4] > 1.1f) Pal.accent else Pal.key, .05f)
         }
-        // rayons de lumière doux depuis le portail
+        // soft light rays from the portal
         val sh = cv.shapes()
         for (i in 0 until 5) {
             val an = Math.PI.toFloat() * .55f + i * .5f + sin(time * .15f + i) * .04f
@@ -476,7 +478,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
             val c1 = RAY_END.set(Pal.key.r, Pal.key.g, Pal.key.b, 0f)
             sh.triangle(tx, ty, tx + cos(an - wd) * len, ty + sin(an - wd) * len, tx + cos(an + wd) * len, ty + sin(an + wd) * len, c0, c1, c1)
         }
-        // couche 2 : brume
+        // layer 2: fog
         for (f in fog) {
             cv.glow(f[0] * w - qx * .06f + sin(time * .12f + f[3]) * 30, f[1] * h + cos(time * .1f + f[3]) * 20, f[2], if (f[3] > 3f) Pal.accent else Pal.key, .045f)
         }
@@ -485,7 +487,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         drawScan()
     }
 
-    /** Franges d'interférence nettes (style B) dans la cavité : se verrouillent en cas de réussite, décohèrent en cas d'échec. */
+    /** Sharp interference fringes (B style) in the cavity: they lock on success and decohere on failure. */
     private fun drawFringes() {
         val lock = fringeLock
         val deco = decoherence
@@ -523,7 +525,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         cv.line(boxX, y, boxX + boxS, y, .8f, Pal.accent, .28f)
     }
 
-    /** Lunette de l'instrument : cadre fin, coins, graduations. */
+    /** Instrument bezel: thin frame, corners, graduations. */
     private fun drawBoxFrame() {
         val x0 = boxX
         val y0 = boxBottom
@@ -544,18 +546,18 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         }
     }
 
-    // --- couche « physique invisible » : guides fins, pointillés ------------
+    // --- "invisible physics" layer: thin guides, dotted lines ---------------
 
     private fun drawGuides() {
         if (phase != Phase.AIM) return
-        // fantôme du tir précédent
+        // ghost of the previous shot
         var k = 0
         while (k < lastShotN) {
             cv.disc(px(lastShot[k * 2].toDouble()), py(lastShot[k * 2 + 1].toDouble()), .9f, Pal.hudMuted, .22f)
             k += 4
         }
         aimGuide(aimAngle, powerFrac, Pal.accent, if (dragging && armed) .85f else .45f)
-        // indice « premier segment » après 5 échecs (gameplay-mechanics)
+        // "first segment" hint after 5 failures (gameplay-mechanics)
         val hint = level.hint
         if (failures >= 5 && hint != null) {
             val ha = (hint["angle_deg"] as Number).toDouble()
@@ -579,14 +581,14 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         }
     }
 
-    // --- couche « matière » (rendu plat B) ------------------------------------
+    // --- "matter" layer (flat B rendering) ----------------------------------
 
     private fun drawObstacles() {
         for (o in level.obstacles) {
             val half = (o.length ?: 0.0) / 2
             val rad = Math.toRadians(o.angleDeg)
             val (ox, oy) = placed(o)
-            // un mur peut dépasser de la boîte (la physique n'en voit que l'intérieur) : on le coupe au cadre
+            // a wall may stick out of the box (physics only sees the inside): clip it to the frame
             val ux = cos(rad) * half
             val uy = sin(rad) * half
             val t0 = clipT(ox, oy, ux, uy, -1.0)
@@ -604,7 +606,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
                 else -> {
                     val t = max(3.5f, ((o.r ?: SEGMENT_HALF_THICKNESS) * boxS).toFloat())
                     cv.slab(ax, ay, bx, by, t, Pal.wall)
-                    // liseré de la face éclairée + ombre de l'autre face
+                    // rim of the lit face + shadow of the other face
                     val (nx, ny) = normal(ax, ay, bx, by)
                     cv.slab(ax - nx * (t - .75f), ay - ny * (t - .75f), bx - nx * (t - .75f), by - ny * (t - .75f), .75f, Pal.key, .75f)
                     cv.slab(ax + nx * t * .5f, ay + ny * t * .5f, bx + nx * t * .5f, by + ny * t * .5f, t * .5f, Color.BLACK, .25f)
@@ -613,7 +615,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         }
     }
 
-    /** Paramètre t ∈ [0, 1]·sens du point (ox, oy) + t·(ux, uy) le plus loin possible dans la boîte unité. */
+    /** Parameter t ∈ [0, 1] (signed) of the point (ox, oy) + t·(ux, uy) furthest inside the unit box. */
     private fun clipT(ox: Double, oy: Double, ux: Double, uy: Double, sens: Double): Double {
         var t = 1.0
         for ((p, d) in arrayOf(ox to ux * sens, oy to uy * sens)) {
@@ -635,7 +637,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         return (-dy / l) to (dx / l)
     }
 
-    /** Énergie de Quarky comparée au seuil de la barrière à cet instant. */
+    /** Quarky's energy compared with the barrier threshold at this instant. */
     private fun energy() = sim?.takeIf { phase == Phase.FLIGHT }?.speed ?: aimPower
 
     private fun drawBarrier(o: Obstacle, ax: Float, ay: Float, bx: Float, by: Float) {
@@ -645,13 +647,13 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         val col = if (open) Pal.accent else Pal.mix(Pal.key, Pal.danger, .55f + .45f * hit)
         val t = 7f
         val (nx, ny) = normal(ax, ay, bx, by)
-        // champ de la barrière : aplat + moitié ombrée + bords nets
+        // barrier field: flat fill + shaded half + sharp edges
         cv.slab(ax, ay, bx, by, t, col, if (open) .16f else .26f + .2f * hit)
         cv.slab(ax + nx * t * .5f, ay + ny * t * .5f, bx + nx * t * .5f, by + ny * t * .5f, t * .5f, Color.BLACK, .16f)
         cv.slab(ax - nx * (t - 1), ay - ny * (t - 1), bx - nx * (t - 1), by - ny * (t - 1), 1f, col)
         cv.slab(ax + nx * (t - 1), ay + ny * (t - 1), bx + nx * (t - 1), by + ny * (t - 1), 1f, col, if (open) .5f else 1f)
         if (!open) {
-            // hachures du seuil : doublent la couleur (lisible en daltonisme)
+            // threshold hatching: doubles the colour (readable with colour blindness)
             val n = 7
             for (i in 1 until n) {
                 val u = i / n.toFloat()
@@ -660,7 +662,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
                 cv.line(cx - nx * t, cy - ny * t - 3, cx + nx * t, cy + ny * t + 3, 1f, col, .5f)
             }
         }
-        // projecteurs aux deux extrémités
+        // emitters at both ends
         val dx = bx - ax
         val dy = by - ay
         val l = sqrt(dx * dx + dy * dy).coerceAtLeast(1e-4f)
@@ -681,7 +683,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         return if (m.axis == 'x') px(p.x + off) to py(p.y) else px(p.x) to py(p.y + off)
     }
 
-    /** Photon ramassé pendant ce vol — il ne compte (et ne reste pris) que si la cible est atteinte. */
+    /** Photon collected during this flight — it only counts (and stays taken) if the target is reached. */
     private fun photonCounted(i: Int): Boolean {
         val s = sim ?: return false
         return s.collected[i] && (phase == Phase.FLIGHT || outcome == Status.WIN)
@@ -705,14 +707,14 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
                 val an = j.toFloat() / n * TAU + time * .4f
                 cv.line(x + cos(an) * 6 * k, y + sin(an) * 6 * k, x + cos(an) * 9.5f * k, y + sin(an) * 9.5f * k, .9f, Pal.mix(col, Pal.white, .3f), .8f)
             }
-            // losange plat + facette claire
+            // flat diamond + light facet
             val d = 3.8f * k * 1.41f
             cv.color(col)
             cv.shapes.triangle(x, y + d, x - d, y, x + d, y)
             cv.shapes.triangle(x, y - d, x - d, y, x + d, y)
             cv.color(Pal.white, .75f)
             cv.shapes.triangle(x, y + d, x - d, y, x, y)
-            // paillettes aléatoires
+            // random sparkles
             for (j in 0 until 3) {
                 val cyc = time * 1.3f + i * .37f + j * .33f
                 val n2 = kotlin.math.floor(cyc)
@@ -725,7 +727,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         }
     }
 
-    /** Portail : disques concentriques plats qui tournent, cœur lumineux, particules aspirées. */
+    /** Portal: rotating flat concentric discs, glowing core, particles drawn in. */
     private fun drawPortal() {
         val (x, y) = targetPos()
         val r = (level.target.r * boxS).toFloat() * .55f
@@ -755,7 +757,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         }
     }
 
-    /** Lanceur : anneau accélérateur, bobines, jauge d'énergie continue, buse orientée. */
+    /** Launcher: accelerator ring, coils, continuous energy gauge, oriented nozzle. */
     private fun drawLauncher() {
         val x = px(level.launcher.x)
         val y = py(level.launcher.y)
@@ -773,12 +775,12 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
             cv.shapes.rect(cx - 4.6f, cy - 3.2f, 4.6f, 3.2f, 9.2f, 6.4f, 1f, 1f, Math.toDegrees(a.toDouble()).toFloat())
             if (e > .02f) cv.disc(cx, cy, 1.4f, Pal.keyHi, e)
         }
-        // jauge d'énergie (continue) derrière la buse
+        // energy gauge (continuous) behind the nozzle
         val span = 1.6f
         val a0 = ang + Math.PI.toFloat() - span / 2
         cv.arc(x, y, rr + 9, a0, a0 + span, 3.4f, Pal.key, .2f)
         if (phase == Phase.AIM) cv.arc(x, y, rr + 9, a0, a0 + span * max(.02f, powerFrac), 3.4f, Pal.key, .95f)
-        // buse
+        // nozzle
         val cx = cos(ang)
         val cy = sin(ang)
         val nx = -cy
@@ -792,7 +794,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         s.triangle(p1x, p1y, p2x, p2y, p3x, p3y)
         s.triangle(p1x, p1y, p3x, p3y, p4x, p4y)
         cv.line(p2x, p2y, p3x, p3y, 1.4f, Pal.keyHi, .5f + .5f * en)
-        // éclair de tir
+        // muzzle flash
         if (phase == Phase.FLIGHT) {
             val u = (time - flightStart) / .45f
             if (u < 1f) {
@@ -806,7 +808,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         }
     }
 
-    /** Traînée de Quarky : ligne simple (style B) qui s'estompe. */
+    /** Quarky's trail: a simple line (B style) that fades out. */
     private fun drawTrail() {
         if (phase != Phase.FLIGHT && phase != Phase.OUTRO) return
         val n = min(trailN, TRAIL_DRAWN)
@@ -841,7 +843,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         }
     }
 
-    /** Couche 3 : poussière au premier plan, puis grain et vignette (≤ 3 %). */
+    /** Layer 3: foreground dust, then grain and vignette (≤ 3%). */
     private fun drawForeground() {
         val qx = pose.x - w / 2
         for (d in dust) {
@@ -857,17 +859,17 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         b.draw(cv.grain, 0f, 0f, w, h, o / 128f, 0f, o / 128f + w / 128f, h / 128f)
     }
 
-    // --- HUD (lunette) ----------------------------------------------------------
+    // --- HUD (bezel) -----------------------------------------------------------
 
     private fun drawTopBar() {
         val f = fonts ?: return
         val yc = h - TOP_BAR / 2 - 10
-        // retour à la carte
+        // back to the map
         roundButton(Btn.BACK, MARGIN + 18, yc) { x, y ->
             cv.line(x + 3, y + 7, x - 4, y, 1.8f, Pal.hud)
             cv.line(x - 4, y, x + 3, y - 7, 1.8f, Pal.hud)
         }
-        // compteur de Photons du tir en cours (deviennent les étoiles)
+        // Photon counter of the current shot (they become the stars)
         for (i in 0 until 3) {
             val x = MARGIN + 52f + i * 17
             val got = i < level.photons.size && photonCounted(i)
@@ -884,10 +886,10 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
                 cv.line(x - d, yc, x, yc + d, 1.2f, Pal.hudMuted, .7f)
             }
         }
-        // titre du niveau
+        // level title
         text(f.uiBold, info.title, w / 2, yc + 12, Pal.hud, Align.center)
         text(f.monoSmall, info.subtitle.uppercase(), w / 2, yc - 6, Pal.hudMuted, Align.center)
-        // relance
+        // restart
         roundButton(Btn.RESET, w - MARGIN - 18, yc) { x, y ->
             cv.arc(x, y, 7f, .5f, 5.3f, 1.8f, Pal.hud)
             val ax = x + cos(.5f) * 7
@@ -923,11 +925,11 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
 
     private fun drawReadouts(f: Fonts, left: Float, right: Float, top: Float, bottom: Float) {
         var y = top
-        text(f.monoSmall, "LECTURES DE L’INSTRUMENT", left, y, Pal.hudMuted)
-        text(f.mono, "ANGLE ${signed(aimAngle)}°", right, y, Pal.hud, Align.right)
+        text(f.monoSmall, txt.readingsHeader, left, y, Pal.hudMuted)
+        text(f.mono, "${txt.angle} ${signed(aimAngle)}°", right, y, Pal.hud, Align.right)
         y -= 40
         val en = energy()
-        meter(f, left, right, y, "ÉNERGIE DE QUARKY", fmt(en), en, null, Pal.key)
+        meter(f, left, right, y, txt.energy, fmt(en), en, null, Pal.key)
         y -= 44
         val barrier = level.obstacles.firstOrNull { it.type == "barrier" }
         if (barrier != null) {
@@ -935,21 +937,21 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
             val m = barrier.thresholdMotion
             val base = barrier.energyThreshold ?: 0.6
             val band = if (m != null) (base - abs(m.amplitude)) to (base + abs(m.amplitude)) else null
-            meter(f, left, right, y, "SEUIL DE LA BARRIÈRE", fmt(thr), thr, band, Pal.danger, en)
+            meter(f, left, right, y, txt.threshold, fmt(thr), thr, band, Pal.danger, en)
             val open = en >= thr
-            text(f.monoSmall, if (open) "PASSE" else "BLOQUE", right, y + 17, if (open) Pal.accent else Pal.danger, Align.right)
+            text(f.monoSmall, if (open) txt.passes else txt.blocked, right, y + 17, if (open) Pal.accent else Pal.danger, Align.right)
             y -= 40
         }
         val msg = when {
-            phase == Phase.AIM && failures >= 5 && level.hint != null -> "Indice : le pointillé mauve montre le départ de la trajectoire de référence."
-            phase == Phase.AIM -> "Tire Quarky vers l’arrière, puis relâche. Le seuil de la barrière oscille dès le lâcher."
+            phase == Phase.AIM && failures >= 5 && level.hint != null -> txt.hint
+            phase == Phase.AIM -> txt.aimHelp
             time - flashT < 1.6f && flash.isNotEmpty() -> flash
             else -> ""
         }
         if (msg.isNotEmpty()) wrapped(f.ui, msg, left, max(bottom + 34, y), right - left, Pal.hud)
     }
 
-    /** Jauge horizontale d'instrument, échelle 0 → 1.1. */
+    /** Horizontal instrument gauge, scale 0 → 1.1. */
     private fun meter(f: Fonts, left: Float, right: Float, y: Float, label: String, value: String, v: Double, band: Pair<Double, Double>?, c: Color, compare: Double? = null) {
         text(f.monoSmall, label, left, y + 17, Pal.hudMuted)
         text(f.mono, value, right - 60, y + 18, Pal.hud, Align.right)
@@ -973,12 +975,12 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
     private fun drawResult(f: Fonts, left: Float, right: Float, top: Float, bottom: Float) {
         var y = top
         val win = outcome == Status.WIN
-        text(f.monoSmall, "LECTURE DE L’INSTRUMENT", left, y, Pal.hudMuted)
+        text(f.monoSmall, txt.resultHeader, left, y, Pal.hudMuted)
         y -= 18
         val head = when (outcome) {
-            Status.WIN -> "Cible atteinte"
-            Status.TIMEOUT -> "Temps écoulé"
-            else -> "Rebond de trop"
+            Status.WIN -> txt.outcomeWin
+            Status.TIMEOUT -> txt.outcomeTimeout
+            else -> txt.outcomeLost
         }
         text(f.title, head, left, y, Pal.hud)
         if (win) {
@@ -986,22 +988,22 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         }
         y -= 34
         val line = when {
-            win && stars == 3 -> "Trois Photons en un seul vol : trajectoire parfaite !"
-            win -> "Un Photon t’attend encore : il existe une plus belle trajectoire."
-            outcome == Status.TIMEOUT -> "Quarky s’est attardée en chemin. Un tir plus direct ?"
-            else -> "Quarky a rebondi contre la paroi de la cavité. Ajuste l’énergie et retente !"
+            win && stars == 3 -> txt.msgPerfect
+            win -> txt.msgWin
+            outcome == Status.TIMEOUT -> txt.msgTimeout
+            else -> txt.msgLost
         }
         y = wrapped(f.ui, line, left, y, right - left, Pal.hud) - 12
-        if (win && level.codexText.isNotEmpty()) {
-            y = wrapped(f.ui, level.codexText, left, y, right - left, Pal.mid) - 4
-            text(f.monoSmall, "— CARNET DU LABO", right, y, Pal.hudMuted, Align.right)
+        if (win && info.codex.isNotEmpty()) {
+            y = wrapped(f.ui, info.codex, left, y, right - left, Pal.mid) - 4
+            text(f.monoSmall, txt.codexSignature, right, y, Pal.hudMuted, Align.right)
         }
         // actions
         val bw = (right - left - 12) / 2
         val bh = 44f
         val byy = bottom
-        actionButton(Btn.RETRY, left, byy, bw, bh, "REJOUER", primary = !win || stars < 3, f = f)
-        actionButton(Btn.MAP, left + bw + 12, byy, bw, bh, if (win) "CONTINUER" else "CARTE", primary = win && stars == 3, f = f)
+        actionButton(Btn.RETRY, left, byy, bw, bh, txt.retry, primary = !win || stars < 3, f = f)
+        actionButton(Btn.MAP, left + bw + 12, byy, bw, bh, if (win) txt.next else txt.map, primary = win && stars == 3, f = f)
     }
 
     private fun actionButton(id: Btn, x: Float, y: Float, bw: Float, bh: Float, label: String, primary: Boolean, f: Fonts) {
@@ -1025,7 +1027,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         font.draw(b, layout, x, y)
     }
 
-    /** Texte sur plusieurs lignes ; renvoie l'ordonnée sous le bloc. */
+    /** Multi-line text; returns the y below the block. */
     private fun wrapped(font: BitmapFont, s: String, x: Float, y: Float, width: Float, c: Color): Float {
         val b = cv.sprites()
         layout.setText(font, s, c, width, Align.left, true)

@@ -9,35 +9,35 @@ import kotlin.math.min
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-/** Expression de Quarky v2 (états procéduraux, skill art-direction). */
+/** Quarky v2 expression (procedural states, art-direction skill). */
 enum class Eyes { NORMAL, WIDE, HAPPY, SQUINT }
 enum class Mouth { SMILE, O, FLAT }
 
-/** Pose d'un frame : tout ce qui déforme ou anime le corps. */
+/** Pose for one frame: everything that deforms or animates the body. */
 class QuarkyPose {
     var x = 0f
     var y = 0f
     var r = 13f
     var alpha = 1f
-    /** Étirement le long de [ang] (squash & stretch piloté par la vitesse). */
+    /** Stretch along [ang] (speed-driven squash & stretch). */
     var stretch = 0f
     var ang = 0f
     var eyes = Eyes.NORMAL
     var mouth = Mouth.SMILE
-    /** Regard (-1..1). */
+    /** Gaze (-1..1). */
     var lookX = 0f
     var lookY = 0f
-    /** Copies de phase fantômes (mutation Quantique), 0..1. */
+    /** Ghost phase copies (Quantum mutation), 0..1. */
     var ghosts = 0f
-    /** Dissolution (échec), 0..1. */
+    /** Dissolve (failure), 0..1. */
     var fizzle = 0f
 }
 
 /**
- * Quarky v2 en rendu plat « B » : membrane gélatineuse (aplat sombre + zone
- * éclairée découpée par un disque décalé = croissant d'ombre), cœur lumineux,
- * contour clair, reflet gomme, grands yeux. Port de body()/drawEyes()/
- * drawQuarky() de stage1-art-direction/poc-v2/index.html (repère y vers le haut).
+ * Quarky v2 in flat "B" rendering: jelly membrane (dark fill + a lit area cut
+ * by an offset disc = shadow crescent), glowing core, light outline, gummy
+ * highlight, big eyes. Port of body()/drawEyes()/drawQuarky() from
+ * design/art-direction-v2/index.html (y axis pointing up).
  */
 class QuarkyRenderer(private val cv: Canvas) {
     private val n = 30
@@ -83,16 +83,16 @@ class QuarkyRenderer(private val cv: Canvas) {
         cv.glow(x, y, r * 1.9f, key, (if (ghost) .07f else .13f) * a)
         cv.additive(false)
 
-        // Membrane : contour ondulant (3 harmoniques), respiration, étirement.
+        // Membrane: wavy outline (3 harmonics), breathing, stretch.
         val tt = t + seed
         val br = 1 + sin(tt * 2.2f) * .022f
         val sx = (1 + p.stretch) * br
         val sy = 1 / (1 + p.stretch) / br
         val ca = cos(p.ang)
         val sa = sin(p.ang)
-        // Zone éclairée = membrane ∩ disque décalé vers la lumière (haut-gauche) :
-        // les deux formes sont étoilées depuis le centre, l'intersection prend
-        // le plus petit des deux rayons dans chaque direction.
+        // Lit area = membrane ∩ disc offset towards the light (top-left): both
+        // shapes are star-shaped from the centre, so the intersection takes the
+        // smaller of the two radii in each direction.
         val dcx = -.15f * r
         val dcy = .17f * r
         val dr = .98f * r
@@ -112,13 +112,13 @@ class QuarkyRenderer(private val cv: Canvas) {
         } else {
             cv.fan(x, y, xs, ys, n, Pal.keyShade, a)
             cv.fan(x, y, lx, ly, n, key, a)
-            // cœur lumineux (seul élément « lumineux » de la matière)
+            // glowing core (the only "luminous" element of the matter)
             cv.disc(x + .08f * r, y - .42f * r, .3f * r, Pal.keyHi, a)
             cv.additive(true)
             cv.glow(x + .08f * r, y - .38f * r, .7f * r, Pal.keyHi, .35f * a)
             cv.additive(false)
             cv.outline(x, y, xs, ys, n, 1.5f, Pal.keyRim, a)
-            // reflet gomme + liseré froid (rim light)
+            // gummy highlight + cool rim light
             cv.arc(x, y, r * .97f, -.45f, .95f, 1.3f, Pal.accent, .55f * a)
             cv.color(Pal.white, a)
             cv.shapes.ellipse(x - .42f * r - .22f * r, y + .5f * r - .1f * r, .44f * r, .2f * r, 34f, 16)

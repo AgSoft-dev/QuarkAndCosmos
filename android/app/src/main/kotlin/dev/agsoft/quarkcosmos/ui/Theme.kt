@@ -12,7 +12,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-/** Contrat couleur — Quantique (skill art-direction), côté menus. */
+/** Colour contract — Quantum (art-direction skill), menu side. */
 object QC {
     val key = Color(0xFFF472B6)
     val accent = Color(0xFF67E8F9)
@@ -30,7 +30,7 @@ object QC {
     val keyRim = Color(0xFFF8A9D1)
 }
 
-/** Polices OFL de la DA (mêmes fichiers que la vue libGDX, dans assets/fonts/). */
+/** OFL fonts of the art direction (same files as the libGDX view, in assets/fonts/). */
 class QcType(assets: AssetManager) {
     private val mono = FontFamily(Font(path = "fonts/JetBrainsMono-Medium.ttf", assetManager = assets))
     private val ui = FontFamily(
@@ -38,7 +38,7 @@ class QcType(assets: AssetManager) {
         Font(path = "fonts/FiraSans-SemiBold.ttf", assetManager = assets, weight = FontWeight.SemiBold),
     )
 
-    /** Lecture d'instrument : petite, capitales, espacée. */
+    /** Instrument reading: small, capitals, letter-spaced. */
     val label = TextStyle(fontFamily = mono, fontSize = 10.sp, letterSpacing = 1.4.sp, color = QC.hudMuted)
     val mono13 = TextStyle(fontFamily = mono, fontSize = 13.sp, letterSpacing = 1.sp, color = QC.hud)
     val body = TextStyle(fontFamily = ui, fontSize = 15.sp, lineHeight = 21.sp, color = QC.hud)

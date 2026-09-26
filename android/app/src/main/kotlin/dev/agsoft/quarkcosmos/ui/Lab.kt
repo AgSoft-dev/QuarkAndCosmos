@@ -20,7 +20,7 @@ import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.sin
 
-/** Temps qui s'écoule en continu (secondes), pour les animations procédurales. */
+/** Continuously flowing time (seconds), for procedural animations. */
 @Composable
 fun rememberSeconds(): State<Float> {
     val tr = rememberInfiniteTransition(label = "clock")
@@ -37,7 +37,7 @@ fun hash(n: Float): Float {
     return s - floor(s)
 }
 
-/** Halo doux (dégradé radial vers transparent). */
+/** Soft halo (radial gradient to transparent). */
 fun DrawScope.glow(c: Offset, r: Float, color: Color, alpha: Float) {
     if (r <= 0f || alpha <= 0f) return
     drawCircle(
@@ -47,8 +47,8 @@ fun DrawScope.glow(c: Offset, r: Float, color: Color, alpha: Float) {
 }
 
 /**
- * Fond « C » des menus : gradient profond, bokeh lointain, brume, poussière
- * (parallaxe lente), toujours sous la matière (luminance ≤ 20 %).
+ * "C" background of the menus: deep gradient, distant bokeh, fog, dust (slow
+ * parallax), always below the matter (luminance ≤ 20%).
  */
 @Composable
 fun LabBackground(key: Color = QC.key, modifier: Modifier = Modifier.fillMaxSize()) {

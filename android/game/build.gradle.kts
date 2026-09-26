@@ -1,7 +1,8 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-// Vue de jeu libGDX (JVM pur, sans dépendance Android) : écran de niveau,
-// rendu DA v2 (matière B + fond C), entrées. Le backend Android est dans :app.
+// libGDX game view (pure JVM, no Android dependency): level screen, art
+// direction v2 rendering (B matter + C background), input. The Android backend
+// lives in :app; player-facing strings come from :app through GameText.
 plugins {
     alias(libs.plugins.kotlin.jvm)
 }

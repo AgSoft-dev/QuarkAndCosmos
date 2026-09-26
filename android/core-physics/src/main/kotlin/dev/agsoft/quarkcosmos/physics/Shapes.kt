@@ -1,13 +1,13 @@
 package dev.agsoft.quarkcosmos.physics
 
 /**
- * Géométrie des obstacles (port de engine/shapes.py) : un disque (x, y, r), ou
- * avec `length` un segment plat de centre (x, y) orienté selon `angleDeg`,
- * d'épaisseur 2·r. Les calculs suivent l'ordre des opérations Python pour que
- * les trajectoires restent identiques bit à bit (cf. GoldenTest).
+ * Obstacle geometry (port of core/shapes.py): a disc (x, y, r), or with
+ * `length` a flat segment centred on (x, y) oriented by `angleDeg`, 2·r thick.
+ * Computations follow Python's order of operations so trajectories stay
+ * bit-identical (see GoldenTest).
  *
- * Aucune allocation : les résultats sont écrits dans [cx]/[cy] (point le plus
- * proche) — un objet Shapes par simulation, jamais partagé entre threads.
+ * No allocation: results are written to [cx]/[cy] (closest point) — one
+ * Shapes object per simulation, never shared between threads.
  */
 class Shapes {
     var cx = 0.0
@@ -17,7 +17,7 @@ class Shapes {
 
     fun radius(o: Obstacle): Double = o.r ?: if (o.length != null) SEGMENT_HALF_THICKNESS else DEFAULT_DISC_RADIUS
 
-    /** Point de l'obstacle (placé en ox, oy) le plus proche de (px, py) → [cx], [cy]. */
+    /** Point of the obstacle (placed at ox, oy) closest to (px, py) → [cx], [cy]. */
     fun closestPoint(o: Obstacle, ox: Double, oy: Double, px: Double, py: Double) {
         val length = o.length
         if (length == null) {
@@ -43,7 +43,7 @@ class Shapes {
         return Math.hypot(px - cx, py - cy)
     }
 
-    /** Vrai si (px, py) est à moins de radius + margin de l'obstacle placé en (ox, oy). */
+    /** True if (px, py) is closer than radius + margin to the obstacle placed at (ox, oy). */
     fun touching(o: Obstacle, ox: Double, oy: Double, px: Double, py: Double, margin: Double): Boolean {
         val reach = radius(o) + margin
         val dx = px - ox

@@ -2,9 +2,9 @@ name: android
 
 on:
   push:
-    paths: ["android/**", "stage3-physics-engine/levels/**", "stage3-physics-engine/tests/golden/**", ".github/workflows/android.yml"]
+    paths: ["android/**", "content/**", "levels-builder/tests/golden/**", ".github/workflows/android.yml"]
   pull_request:
-    paths: ["android/**", "stage3-physics-engine/levels/**", "stage3-physics-engine/tests/golden/**", ".github/workflows/android.yml"]
+    paths: ["android/**", "content/**", "levels-builder/tests/golden/**", ".github/workflows/android.yml"]
 
 jobs:
   build:
@@ -19,8 +19,8 @@ jobs:
           distribution: temurin
           java-version: "17"
       - uses: gradle/actions/setup-gradle@v4
-      # Physique Kotlin rejouée contre les trajectoires golden du moteur Python,
-      # puis APK de debug (le SDK Android est préinstallé sur ubuntu-latest).
+      # Kotlin physics replayed against the Python engine's golden trajectories,
+      # then the debug APK (the Android SDK is preinstalled on ubuntu-latest).
       - run: ./gradlew --no-daemon :core-physics:test :app:assembleDebug
       - uses: actions/upload-artifact@v4
         with:

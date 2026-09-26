@@ -1,0 +1,51 @@
+{
+  "schema_version": 3,
+  "id": "quantique-intrication-3",
+  "must_contact": [
+    [
+      "A",
+      "pass"
+    ],
+    [
+      "M",
+      "bounce"
+    ],
+    [
+      "B",
+      "pass"
+    ]
+  ],
+  "solvable": true,
+  "reference_solution": {
+    "params": {
+      "angle_deg": -5,
+      "power": 0.8,
+      "tap_time": 1.3
+    },
+    "photons_collected": 3,
+    "photon_ids": [
+      "p1",
+      "p2",
+      "p3"
+    ]
+  },
+  "max_photons_reachable": 3,
+  "tolerance": 0.0759,
+  "three_star_tolerance": 0.0015,
+  "bypass_solutions": 0,
+  "star_profile": {
+    "rays": 4650,
+    "valid_rays": 353,
+    "distinct_paths": 36,
+    "shares": {
+      "1": 0.7139,
+      "2": 0.2521,
+      "3": 0.0198
+    },
+    "target_shares": {
+      "1": 0.7066,
+      "2": 0.2494,
+      "3": 0.0439
+    }
+  }
+}

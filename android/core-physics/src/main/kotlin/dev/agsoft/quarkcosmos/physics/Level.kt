@@ -13,12 +13,12 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
-/** Version du format livré que ce runtime sait lire (cf. engine/export.py). */
-const val SUPPORTED_SCHEMA_VERSION = 2
+/** Version of the shipped format this runtime reads (see docs/level-schema.md). */
+const val SUPPORTED_SCHEMA_VERSION = 3
 
-/** Oscillation sinusoïdale d'une position (`motion`) ou d'un seuil (`threshold_motion`). */
+/** Sinusoidal oscillation of a position (`motion`) or a threshold (`threshold_motion`). */
 class Motion(val axis: Char, val amplitude: Double, val period: Double, val phase: Double) {
-    /** Décalage à l'instant t — même ordre d'opérations que simulate._oscillate. */
+    /** Offset at time t — same order of operations as simulate._oscillate. */
     fun offset(t: Double): Double = amplitude * Math.sin(2 * Math.PI * t / period + phase)
 }
 
@@ -33,9 +33,9 @@ class Obstacle(
     val type: String,
     val x: Double,
     val y: Double,
-    /** Rayon explicite, sinon celui par défaut de Shapes.radius. */
+    /** Explicit radius, otherwise the Shapes.radius default. */
     val r: Double?,
-    /** Longueur d'un segment ; null pour un disque. */
+    /** Length of a segment; null for a disc. */
     val length: Double?,
     val angleDeg: Double,
     val energyThreshold: Double?,
@@ -43,7 +43,7 @@ class Obstacle(
     val thresholdMotion: Motion?,
 )
 
-/** Plage de réglage d'un paramètre de lancer (`param_space`). */
+/** Setting range of a launch parameter (`param_space`). */
 sealed class ParamSpec {
     abstract val values: List<Any>
 
@@ -59,26 +59,25 @@ class Level(
     val scale: String,
     val concept: String,
     val difficulty: Int,
-    val codexText: String,
     val launcher: Point,
     val target: Target,
     val obstacles: List<Obstacle>,
     val photons: List<Photon>,
     val maxWallBounces: Int,
     val paramSpace: Map<String, ParamSpec>,
-    /** Paramètres de la solution de référence (indice « premier segment »). */
+    /** Parameters of the reference solution ("first segment" hint). */
     val hint: Map<String, Any>?,
 ) {
     companion object {
         private val json = Json { ignoreUnknownKeys = true }
 
-        /** Lit un fichier `levels/<nom>.json` (format livré v2). */
+        /** Read a `content/levels/<scale>/<name>.json` file (shipped format v3). */
         fun parse(text: String): Level = fromJson(json.parseToJsonElement(text).jsonObject)
 
         private fun fromJson(o: JsonObject): Level {
             val schema = o["schema_version"]?.jsonPrimitive?.int
             require(schema == SUPPORTED_SCHEMA_VERSION) {
-                "schema_version $schema non supporté (attendu $SUPPORTED_SCHEMA_VERSION)"
+                "unsupported schema_version $schema (expected $SUPPORTED_SCHEMA_VERSION)"
             }
             val launcher = o.obj("launcher")
             val target = o.obj("target")
@@ -87,7 +86,6 @@ class Level(
                 scale = o.str("scale"),
                 concept = o.str("concept"),
                 difficulty = o["difficulty"]!!.jsonPrimitive.int,
-                codexText = o["codex_text"]?.jsonPrimitive?.content ?: "",
                 launcher = Point(launcher.num("x"), launcher.num("y")),
                 target = Target(
                     target.num("x"), target.num("y"),
@@ -131,7 +129,7 @@ class Level(
         private fun paramSpec(o: JsonObject): ParamSpec = when (val type = o.str("type")) {
             "range" -> ParamSpec.Range(o.num("min"), o.num("max"), o.num("step"))
             "choice" -> ParamSpec.Choice(o["values"]!!.jsonArray.map { scalar(it) })
-            else -> error("param_space type inconnu : $type")
+            else -> error("unknown param_space type: $type")
         }
 
         private fun scalar(e: JsonElement): Any {

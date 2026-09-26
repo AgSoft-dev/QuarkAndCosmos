@@ -15,11 +15,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
+import dev.agsoft.quarkcosmos.R
 import kotlin.math.sin
 
-/** Accueil : le labo vu à travers l'instrument, Quarky au repos, « Jouer ». */
+/** Welcome: the lab seen through the instrument, Quarky idling, "Play". */
 @Composable
 fun WelcomeScreen(onPlay: () -> Unit) {
     val type = LocalType.current
@@ -31,9 +33,9 @@ fun WelcomeScreen(onPlay: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(Modifier.weight(1f))
-            BasicText("DÉTECTEUR · CAVITÉ 01", style = type.label)
+            BasicText(stringResource(R.string.welcome_instrument), style = type.label)
             Spacer(Modifier.height(18.dp))
-            // Quarky dans la lunette de l'instrument
+            // Quarky in the instrument's eyepiece
             Canvas(Modifier.size(220.dp)) {
                 val c = Offset(size.width / 2, size.height / 2)
                 val r = size.minDimension / 2
@@ -45,7 +47,7 @@ fun WelcomeScreen(onPlay: () -> Unit) {
                     val dy = kotlin.math.sin(a)
                     drawLine(QC.hudMuted.copy(alpha = .3f), Offset(c.x + dx * (r - 2), c.y + dy * (r - 2)), Offset(c.x + dx * (r - 2 - l), c.y + dy * (r - 2 - l)), 1.dp.toPx())
                 }
-                // franges nettes derrière Quarky
+                // sharp fringes behind Quarky
                 for (k in -4..4) {
                     val x = c.x + k * 18.dp.toPx() + sin(t * .4f) * 6.dp.toPx()
                     drawLine(QC.key.copy(alpha = .05f * (1 - kotlin.math.abs(k) / 5f)), Offset(x, c.y - r * .7f), Offset(x, c.y + r * .7f), 7.dp.toPx())
@@ -55,11 +57,11 @@ fun WelcomeScreen(onPlay: () -> Unit) {
             Spacer(Modifier.height(28.dp))
             BasicText("QUARK & COSMOS", style = type.logo)
             Spacer(Modifier.height(12.dp))
-            Caption("Née au cœur d’une expérience, Quarky part explorer l’univers — de l’infiniment petit à l’infiniment grand.")
+            Caption(stringResource(R.string.welcome_tagline))
             Spacer(Modifier.weight(1f))
-            LabButton("Jouer", Modifier.fillMaxWidth(), onClick = onPlay)
+            LabButton(stringResource(R.string.welcome_play), Modifier.fillMaxWidth(), onClick = onPlay)
             Spacer(Modifier.height(14.dp))
-            BasicText("POC · TEST INTERNE", style = type.label)
+            BasicText(stringResource(R.string.welcome_build), style = type.label)
         }
     }
 }

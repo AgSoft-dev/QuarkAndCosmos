@@ -1,44 +1,57 @@
 ---
 name: android-architecture
-description: Architecture validée de l'app Android de Quark & Cosmos (POC Stage 5) — modules Gradle (:core-physics Kotlin pur, :game libGDX, :app coque Compose), règle de déterminisme Python ⇄ Kotlin par trajectoires golden, budgets de performance et d'APK, conventions (minSdk 26, portrait, niveaux copiés depuis le moteur). Charger avant toute modification du dossier android/ ou toute spec technique Android.
+description: Validated architecture of the Quark & Cosmos Android app (Stage 5 POC) — Gradle modules (:core-physics pure Kotlin, :game libGDX, :app Compose shell), Python ⇄ Kotlin determinism through golden trajectories, English/French localisation, performance and APK budgets, conventions (minSdk 26, portrait, content copied from content/). Load before any change to the android/ folder or any Android technical spec.
 ---
 
-# Architecture Android — Quark & Cosmos
+# Android architecture — Quark & Cosmos
 
-Décision utilisateur (gate todo.md §4.2) : **libGDX pour la vue de jeu + une coque Android native en Kotlin** (menus Compose). Code dans `android/`, ouvert tel quel dans Android Studio. Détail d'usage : `android/README.md`.
+User decision (`todo.md` §4.2 gate, [ADR-0004](../../../docs/decisions/ADR-0004-android-engine.md)): **libGDX for the game view + a thin native Kotlin shell** (Compose menus). Code in `android/`, opened as is in Android Studio. Usage: `android/README.md`.
 
 ## Modules
 
-| Module | Contenu | Ne doit jamais dépendre de |
+| Module | Contents | Must never depend on |
 |---|---|---|
-| `:core-physics` | Port du moteur Python : `Level` (JSON livré v2), `Simulation` (un pas = `DT`), `Shapes`, `Handlers`, `ParamGrid` | Android, libGDX |
-| `:game` | libGDX (JVM) : `LevelScreen`, rendu procédural `render/` (Canvas, Quarky v2, palette) | Android (passe par `GameHost`) |
-| `:app` | `MainActivity` (Compose : accueil, échelles, carte), `GameActivity` (libGDX, implémente `GameHost`), `Progress` (DataStore), `Catalog` | — |
+| `:core-physics` | Port of the Python engine: `Level` (shipped JSON v3), `Simulation` (one step = `DT`), `Shapes`, `Handlers`, `ParamGrid` | Android, libGDX |
+| `:game` | libGDX (JVM): `LevelScreen`, procedural rendering in `render/` (Canvas, Quarky v2, palette); `GameHost` / `LevelInfo` / `GameText` = the bridge to the shell | Android (goes through `GameHost`) |
+| `:app` | `MainActivity` (Compose: welcome, scales, map), `GameActivity` (libGDX, implements `GameHost`, builds `GameText` from resources, loads the Codex line), `Progress` (DataStore), `Catalog` | — |
 
-Prévus plus tard (todo.md §4.4) : `:core-content` (chargement niveaux/Codex), `:feature-codex` (Compose).
+Planned later (`todo.md` §4.4): `:core-content` (level/Codex loading), `:feature-codex` (Compose).
 
-## Règle de déterminisme (non négociable)
+## Determinism rule (non-negotiable)
 
-- **Python = création + validation ; Kotlin = exécution.** `docs/physics-spec.md` est le contrat ; en cas d'écart, le code Python fait foi.
-- Toute évolution de physique passe par : moteur Python → `python3 cli.py golden` → port Kotlin → `GoldenTest` vert (positions à 1e-6 à chaque pas, même issue, mêmes Photons, mêmes contacts).
-- Suivre l'ordre des opérations Python (arrondi IEEE identique) : `Math.hypot`, `Math.toRadians`, `2 * d * n`, `Math.rint` là où Python arrondit.
-- La boucle de jeu exécute des **pas entiers** de `DT` (temps réel accumulé) et interpole seulement l'affichage.
-- Les réglages du joueur sont **calés sur la grille `param_space`** (`ParamGrid.snap`) : c'est sur cette grille que le validateur a prouvé solvabilité et étoiles.
-- Porter un concept = ses handlers dans `Handlers.forType` + ses niveaux dans `GOLDEN_LEVELS` (engine/golden.py). Un type non porté lève `UnsupportedObstacle`.
+- **Python = creation + validation; Kotlin = execution** ([ADR-0005](../../../docs/decisions/ADR-0005-golden-trajectories.md)). `docs/physics-spec.md` is the contract; if they disagree, the Python code wins.
+- Every physics change goes: Python engine → `python3 -m quarkcosmos_levels golden` → Kotlin port → `GoldenTest` green (positions within 1e-6 at every step, same outcome, same Photons, same contacts).
+- Follow Python's order of operations (identical IEEE rounding): `Math.hypot`, `Math.toRadians`, `2 * d * n`, `Math.rint` where Python rounds.
+- The game loop runs **whole** `DT` steps (accumulated real time) and only interpolates the display.
+- Player settings are **snapped to the `param_space` grid** (`ParamGrid.snap`): the validator proved solvability and stars on that grid.
+- Porting a concept = its handlers in `Handlers.forType` + its levels in `GOLDEN_LEVELS` (`export/golden.py`). An unported type throws `UnsupportedObstacle`.
+
+## Localisation (English + French)
+
+- Every player-facing string lives in `app/src/main/res/values/strings.xml` (English, default) **and** `values-fr/strings.xml` (French), same keys. French typography: ` ` before `: ! ?`.
+- Compose reads them with `stringResource` / `pluralStringResource`. The libGDX view has no resources: `GameActivity` fills a `GameText` (defaults = English, used by desktop tooling). Never hard-code a string in `:game`.
+- Codex lines: `content/codex/<lang>/quantique.json`, copied into `assets/codex/`; the language folder is the `codex_lang` resource (`en` / `fr`), so it follows the app locale.
+- Per-app language on Android 13+: `androidResources.generateLocaleConfig = true` + `res/resources.properties` (`unqualifiedResLocale=en-US`).
+- Fonts (`render/Fonts.kt`) must include every glyph used by both languages; check both layouts when adding a string (French is usually longer).
 
 ## Conventions
 
-- `minSdk 26` (Android 8.0), `targetSdk`/`compileSdk` = exigence Play courante, portrait.
-- Niveaux : jamais dupliqués dans `android/` ; la tâche `copyLevels` copie `stage3-physics-engine/levels/*.json` (pas `meta/`) dans les assets à chaque build.
-- Rendu 100 % procédural (aucune image livrée) ; polices OFL (JetBrains Mono, Fira Sans) dans `app/src/main/assets/fonts/`, partagées par libGDX et Compose.
-- Textes in-game en français, ton du skill `storytelling` ; rendu selon le skill `art-direction` (DA v2).
-- Résultat d'un niveau = lecture d'instrument dans le panneau du bas, jamais un pop-up sur la zone de jeu.
+- `minSdk 26` (Android 8.0), `targetSdk`/`compileSdk` = current Play requirement, portrait.
+- Content is never duplicated in `android/`: the `copyContent` task copies `content/levels/quantique/*.json` and `content/codex/*/*.json` into the assets at every build.
+- 100% procedural rendering (no shipped image); OFL fonts (JetBrains Mono, Fira Sans) in `app/src/main/assets/fonts/`, shared by libGDX and Compose.
+- In-game text follows the `storytelling` tone; rendering follows `art-direction` (art direction v2).
+- A level's result = an instrument reading in the bottom panel, never a pop-up over the play area.
 
-## Budgets (todo.md §4.4)
+## Budgets (`todo.md` §4.4)
 
-- 16,6 ms/frame, physique ≤ 1 ms, ≤ 50 draw calls, overdraw ≤ 2,5×, **aucune allocation dans la boucle** (tableaux préalloués).
-- APK < 20 Mo (beta < 12 Mo).
+- 16.6 ms/frame, physics ≤ 1 ms, ≤ 50 draw calls, overdraw ≤ 2.5×, **no allocation in the loop** (preallocated arrays).
+- APK < 20 MB (beta < 12 MB).
 
-## Statut
+## Status
 
-POC validé côté structure : Tunnel 1 jouable, 6 autres nœuds verrouillés, pas d'audio ni de Codex. Le vrai bloom (FBO ¼ de résolution, 2 flous) et la mesure sur téléphone d'entrée de gamme restent à faire (spike §4.2).
+POC structure validated: Tunnel 1 playable in English and French, the 6 other nodes locked, no audio or Codex screen yet. The real bloom (¼-res FBO, 2 blurs) and the low-end phone measurement remain (§4.2 spike).
+
+## Changelog
+
+- 2026-09-26 — S1: translated to English; EN/FR localisation (`GameText`, `values-fr/`, Codex per language); content read from `content/` (schema v3).
+- 2026-09-26 — POC: modules, golden replay, Tunnel 1.

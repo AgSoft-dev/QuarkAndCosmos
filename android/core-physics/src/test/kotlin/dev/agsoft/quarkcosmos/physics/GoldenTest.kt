@@ -13,18 +13,19 @@ import org.junit.Test
 import java.io.File
 
 /**
- * Contrat Python ⇄ Kotlin (todo.md §4.3) : chaque lancer golden écrit par
- * `python3 cli.py golden` (engine/golden.py) est rejoué ici ; position à
- * chaque pas à 1e-6 près, même issue, mêmes Photons, mêmes contacts.
+ * Python ⇄ Kotlin contract (docs/decisions/ADR-0005): every golden launch written
+ * by `python3 -m quarkcosmos_levels golden` (export/golden.py) is replayed here;
+ * position at every step within 1e-6, same outcome, same Photons, same contacts.
  */
 class GoldenTest {
-    private val stage3 = File(System.getProperty("stage3.dir") ?: "../../stage3-physics-engine")
+    private val levelsDir = File(System.getProperty("levels.dir") ?: "../../content/levels/quantique")
+    private val goldenDir = File(System.getProperty("golden.dir") ?: "../../levels-builder/tests/golden")
 
-    private fun level(name: String) = Level.parse(File(stage3, "levels/$name.json").readText())
+    private fun level(name: String) = Level.parse(File(levelsDir, "$name.json").readText())
 
     private fun replay(name: String) {
         val level = level(name)
-        val golden = Json.parseToJsonElement(File(stage3, "tests/golden/$name.golden.json").readText()).jsonObject
+        val golden = Json.parseToJsonElement(File(goldenDir, "$name.golden.json").readText()).jsonObject
         assertEquals(level.id, golden["level_id"]!!.jsonPrimitive.content)
         val cases = golden["cases"]!!.jsonArray
         assertTrue(cases.size >= 3)
@@ -36,9 +37,9 @@ class GoldenTest {
             for ((i, p) in trail.withIndex()) {
                 val (gx, gy) = p.jsonArray.map { it.jsonPrimitive.double }
                 val stepped = sim.step()
-                assertEquals("$label x au pas $i", gx, sim.movedX, 1e-6)
-                assertEquals("$label y au pas $i", gy, sim.movedY, 1e-6)
-                assertEquals("$label fin au pas $i", i < trail.size - 1, stepped)
+                assertEquals("$label x at step $i", gx, sim.movedX, 1e-6)
+                assertEquals("$label y at step $i", gy, sim.movedY, 1e-6)
+                assertEquals("$label end at step $i", i < trail.size - 1, stepped)
             }
             val success = c["success"]!!.jsonPrimitive.boolean
             val reason = c["reason"]!!.jsonPrimitive.content
@@ -46,13 +47,13 @@ class GoldenTest {
                 success -> Status.WIN
                 reason == "timeout" -> Status.TIMEOUT
                 reason == "lost:too_many_wall_bounces" -> Status.LOST_WALL_BOUNCES
-                else -> error("issue inconnue $reason")
+                else -> error("unknown outcome $reason")
             }
             assertEquals(label, expected, sim.status)
             assertEquals("$label steps", c["steps"]!!.jsonPrimitive.int, sim.endStep)
             val photons = level.photons.filterIndexed { i, _ -> sim.collected[i] }.map { it.id }.sorted()
             val goldenPhotons = c["photons"]!!.jsonArray.map { it.jsonPrimitive.content }
-            // Python ne compte les Photons que si la cible est atteinte.
+            // Python only counts Photons when the target is reached.
             assertEquals("$label photons", goldenPhotons, if (success) photons else emptyList<String>())
             val contacts = sim.contacts.map { (i, e) -> listOf(level.obstacles[i].id, e.wire) }
             val goldenContacts = c["contacts"]!!.jsonArray.map { pair -> pair.jsonArray.map { it.jsonPrimitive.content } }

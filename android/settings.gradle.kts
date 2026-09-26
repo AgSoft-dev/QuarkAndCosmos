@@ -1,7 +1,7 @@
-// Quark & Cosmos — POC Android (Stage 5, cf. todo.md §4.4).
-//   :core-physics  Kotlin pur : port du moteur Python (stage3-physics-engine), testé contre les golden
-//   :game          libGDX (JVM) : écran de niveau, rendu DA v2, entrées
-//   :app           coque Android : menus Compose, activité libGDX, sauvegarde
+// Quark & Cosmos — Android POC (Stage 5, see todo.md §4.4).
+//   :core-physics  pure Kotlin: port of the Python engine (levels-builder), tested against the goldens
+//   :game          libGDX (JVM): level screen, art direction v2 rendering, input
+//   :app           Android shell: Compose menus, libGDX activity, saving, EN/FR strings
 pluginManagement {
     repositories {
         google {
