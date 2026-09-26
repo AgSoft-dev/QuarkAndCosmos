@@ -52,9 +52,13 @@ def reflect_velocity(obstacle, pos, vel):
 
 def tunnel_barrier(obstacle, pos, vel, params, state):
     """
-    Crossing under an energy condition: if the speed at contact reaches the
-    barrier's threshold, the particle goes through (tunnel effect);
-    otherwise it bounces like a classical wall.
+    Deterministic tunnel crossing. The barrier is taller than any launch
+    energy, so the particle never goes *over* it; `energy_threshold` is the
+    tunnel threshold: the lowest speed at which it gets *through*. In real
+    physics the crossing is a probability that rises with the energy and
+    falls fast with the thickness; the game turns it into a sharp rule
+    (ADR-0008, physics-pedagogy skill). Below the threshold it bounces like
+    a classical wall.
     """
     if vec.mag(vel) >= obstacle.get("energy_threshold", 0.6):
         return vel, "pass"

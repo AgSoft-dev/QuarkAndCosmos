@@ -19,7 +19,7 @@ object Handlers {
         ContactEvent.BOUNCE
     }
 
-    /** Tunnel effect (tunnel_barrier): passes if the speed reaches the threshold, otherwise bounces. */
+    /** Tunnel effect (tunnel_barrier): the barrier is taller than any launch energy; passes *through* if the speed reaches the tunnel threshold, otherwise bounces. */
     val barrier: Handler = { sim, o, ox, oy, threshold ->
         if (sim.speed >= threshold) ContactEvent.PASS
         else {

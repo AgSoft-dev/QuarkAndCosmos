@@ -50,15 +50,15 @@
     <string name="concept_dualite">Dualité onde-particule</string>
 
     <!-- Level screen -->
-    <string name="game_flash_pass">Effet tunnel : assez d’énergie, Quarky traverse !</string>
-    <string name="game_flash_blocked">Énergie sous le seuil : la barrière la renvoie.</string>
+    <string name="game_flash_pass">Effet tunnel : Quarky a traversé la barrière, sans passer par-dessus !</string>
+    <string name="game_flash_blocked">Sous le seuil tunnel : la barrière la renvoie.</string>
     <string name="game_readings">LECTURES DE L’INSTRUMENT</string>
     <string name="game_angle">ANGLE</string>
     <string name="game_energy">ÉNERGIE DE QUARKY</string>
-    <string name="game_threshold">SEUIL DE LA BARRIÈRE</string>
+    <string name="game_threshold">SEUIL TUNNEL</string>
     <string name="game_passes">PASSE</string>
     <string name="game_blocked">BLOQUE</string>
-    <string name="game_aim_help">Tire vers la gauche pour l’énergie, glisse vers le haut ou le bas pour viser, puis relâche. Le seuil de la barrière oscille dès le lâcher.</string>
+    <string name="game_aim_help">Tire vers la gauche pour l’énergie, glisse vers le haut ou le bas pour viser, puis relâche. Le seuil tunnel oscille dès le lâcher.</string>
     <string name="game_hint">Indice : le pointillé mauve montre le départ de la trajectoire de référence.</string>
     <string name="game_result">LECTURE DE L’INSTRUMENT</string>
     <string name="game_outcome_win">Cible atteinte</string>

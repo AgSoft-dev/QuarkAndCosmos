@@ -53,14 +53,14 @@ These are errors, not simplifications. The `physics-reviewer` agent rejects them
 
 Order and ids from `gameplay-mechanics` (single source). Concept ids stay French data keys. Status of each mechanic: **approved** by the user on 2026-09-26 ([ADR-0008](../../../docs/decisions/ADR-0008-quantum-concept-fixes.md)); superposition and `TAP_MIN_TIME` are already implemented, the other fixes are implemented in S5 (`todo.md`). Until then the shipped levels use the "current" mechanics described in `gameplay-mechanics`.
 
-Codex drafts below are **drafts for review**, not shipped text: the shipped lines stay in `content/codex/{en,fr}/quantique.json` until an S5/Codex PR replaces them (with a `physics-reviewer` pass and, per §2.1, a teacher review). Each draft is ≤ 280 characters in both languages. Hypothesis cards are for the before-level step of the loop (not implemented).
+The shipped lines in `content/codex/{en,fr}/quantique.json` were rewritten from the drafts below on 2026-09-26 (user request), adjusted so they stay true for the current levels as well as the S5 mechanics (no mention of rung counts, crystals or slit widths the current levels don't show). The drafts remain the target once S5 ships; the §2.1 teacher review is still to do. Each draft is ≤ 280 characters in both languages. Hypothesis cards are for the before-level step of the loop (not implemented).
 
 ### 1 — `tunnel` — Tunnel effect
 
 - **One-liner:** a tiny particle can sometimes cross a wall it doesn't have the energy to climb; the thinner the wall, the more often.
 - **Rule the player predicts:** thin wall → I get through; thick wall → I bounce, whatever my power.
 - **Approved mechanic:** the barrier has a **visible thickness**. A barrier thinner than a threshold is crossed although Quarky's energy is below its height; a thick one is never crossed. The player chooses which of 2–3 barriers of different thickness to aim at. The oscillating element becomes a **breathing barrier** (its thickness varies over time), so the arrival instant matters.
-- **Implementation guidance (S5):** every barrier is taller than the launcher's maximum energy, so *every* crossing is a tunnel crossing (never a classical climb). Optional, closer to reality: the threshold thickness grows slightly with speed (a particle closer to the top tunnels more easily), which keeps the power dial meaningful.
+- **Tunnel model (user decision 2026-09-26: "the most physical option that helps the gameplay"):** every barrier has a **height V above the launcher's maximum energy**, so no crossing is ever a classical climb. Real transmission falls like e^(−2κd) with κ ∝ √(V − E): it drops fast with the thickness d and rises as the energy E gets closer to V. The game turns it into a sharp rule at a fixed transmission: Quarky crosses iff **√(V − E) · d ≤ k**, i.e. its energy reaches the **tunnel threshold E_t(d) = V − (k/d)²**. So a thin barrier has a low threshold, a thicker one a higher threshold, and one thick enough to put E_t above the maximum energy is never crossed. Both levers stay: *which barrier* (thickness) and *how much energy*. The breathing barrier (thickness over time) makes E_t oscillate — the current Tunnel 1's oscillating threshold is exactly this, read in the HUD as "tunnel threshold".
 - **In-level feedback:** probability fringes light up on the far side of a barrier when the crossing will succeed; the barrier's thickness is drawn as matter (flat fill), the fringes as invisible physics.
 - **Codex anchor:** scanning tunnelling microscope (STM, Nobel 1986), flash memory.
 - **In real physics…** crossing is a matter of probability, which falls very fast (exponentially) as the barrier gets thicker; the game turns it into a sharp rule: thin = always, thick = never.
@@ -100,6 +100,7 @@ Codex drafts below are **drafts for review**, not shipped text: the shipped line
 - **One-liner:** the more precisely you know *where* it is, the less precisely you know *how fast* it goes, and the other way round.
 - **Rule the player predicts:** a narrow aim makes my speed fuzzy; a sure speed makes my aim fuzzy.
 - **Approved mechanic:** the precision dial is shown as **two linked bars** (position cone ↔ speed spread); the preview draws the **cone** of possible trajectories instead of a single line. The target oscillates.
+- **Uncertainty model (user decision 2026-09-26: "a cone of probability"):** the precision dial sets a **cone of probability** for the direction and, in inverse proportion, a spread for the speed. The actual shot is **drawn inside that cone** (and inside the speed spread) from a distribution peaked on the centre line, truncated at the drawn edges, with a **seeded deterministic draw** per attempt so replays and golden trajectories stay reproducible. The validator proves the level on the **whole cone**: at least one dial/aim setting where every trajectory of the cone (sampled edges + centre, both speed extremes) reaches the target. The skill is to pick a precision where both spreads fit the gap; a wide cone is a gamble, not a guaranteed loss.
 - **In-level feedback:** the trajectory cone widens/narrows live as the dial moves; the two bars move in opposite directions.
 - **Codex anchor:** why an electron can't sit still inside an atom (squeezed into so small a space, its speed can't be zero); limits of measurement at the atomic scale.
 - **In real physics…** the trade-off is between position and momentum (mass × velocity), Δx·Δp ≥ h/4π, and it only matters for tiny particles. The game maps it onto the aim and the launch speed, on a scale where it would really be unnoticeable.
@@ -181,8 +182,9 @@ Apply to every Codex line, player-facing string, handler docstring and concept s
 
 ## Status
 
-Created 2026-09-26 (S4). The **fixed Quantum mechanics are approved** by the user ([ADR-0008](../../../docs/decisions/ADR-0008-quantum-concept-fixes.md)); implementation is S5. The Core/Enrichment labels are a proposal pending the §2.1 `[GATE]`. The Codex drafts above are unreviewed drafts; the shipped Codex text is unchanged.
+Created 2026-09-26 (S4). The **fixed Quantum mechanics are approved** by the user ([ADR-0008](../../../docs/decisions/ADR-0008-quantum-concept-fixes.md)); implementation is S5. The Core/Enrichment labels are a proposal pending the §2.1 `[GATE]`. The shipped Codex lines and the Tunnel in-game strings were corrected against this skill on 2026-09-26; tunnel and uncertainty models decided (see those sections).
 
 ## Changelog
 
+- 2026-09-26 — Tunnel model (height above max energy, threshold E_t(d) = V − (k/d)²) and uncertainty model (seeded draw inside a cone of probability, validated on the whole cone) decided by the user; shipped Codex lines and Tunnel strings corrected.
 - 2026-09-26 — Created (S4): target and principles, forbidden simplifications, Core/Enrichment proposal, per-concept tables with the approved §2.2 fixes (ADR-0008), EN/FR Codex drafts and hypothesis cards, Codex writing rules, §2.3 loop as guidance, review checklist.

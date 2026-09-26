@@ -2,14 +2,14 @@
   "schema_version": 1,
   "scale": "quantique",
   "lang": "fr",
-  "_comment": "Codex line shown after a level, keyed by concept id. Draft text: the tunnel line is scheduled for a physics fix (todo.md §2 / S4).",
+  "_comment": "Codex line shown after a level, keyed by concept id. Reviewed against the physics-pedagogy skill (2026-09-26): no forbidden simplification, real-world anchor, ≤ 280 characters.",
   "lines": {
-    "tunnel": "« Assez d'énergie, et même un mur n'est plus vraiment un mur. »",
-    "superposition": "« Tu as suivi les deux chemins à la fois, jusqu'à ce que je regarde... et que l'un des deux devienne réel. »",
-    "intrication": "« Actionne le levier ici, et là-bas, à distance, quelque chose bouge. Personne ne sait vraiment pourquoi ça va aussi vite. »",
-    "incertitude": "« Plus tu vises pile, moins tu sais à quelle vitesse tu iras. C'est le prix à payer pour être précis·e. »",
-    "quantification": "« Pas de réglage continu ici : seulement quelques crans d'énergie possibles, ni plus ni moins. »",
-    "spin": "« Ton spin détermine qui t'attire et qui te repousse — une boussole invisible. »",
-    "dualite": "« Onde ou particule ? Aujourd'hui, tu as choisi de te faufiler comme une onde. »"
+    "tunnel": "« Tu n'avais pas l'énergie de passer par-dessus ce mur, et pourtant te voilà de l'autre côté. Les toutes petites particules le font parfois, d'autant plus souvent que le mur est fin. Mon microscope à effet tunnel s'en sert pour voir les atomes un par un. »",
+    "superposition": "« Tant que je ne regardais pas, tu suivais les deux chemins à la fois. La mesure a rendu l'un des deux réel. Les ordinateurs quantiques jouent au même jeu : leurs qubits valent 0 et 1 en même temps, jusqu'à la lecture. »",
+    "intrication": "« Mesure l'une de deux particules intriquées et tu connais l'autre aussitôt, même très loin, sans qu'aucun message ne voyage entre elles. Aspect, Clauser et Zeilinger ont reçu le Nobel 2022 pour l'avoir testé. »",
+    "incertitude": "« Plus tu fixais précisément où aller, plus ta vitesse devenait floue. Pour un électron, c'est une loi de la nature, pas un instrument maladroit. C'est même pour ça qu'un électron ne peut pas rester parfaitement immobile dans un atome. »",
+    "quantification": "« Seules quelques énergies étaient permises, rien entre les deux. Les atomes fonctionnent pareil : chaque saut entre deux niveaux émet une lumière d'une couleur précise. Voilà pourquoi une enseigne au néon brille rouge-orangé, et pas de toutes les couleurs. »",
+    "spin": "« Mesuré selon une direction, ton spin n'a que deux réponses : haut ou bas, jamais entre les deux. Stern et Gerlach ont vu cette séparation avec des atomes d'argent en 1922. Aujourd'hui, l'IRM bascule le spin des protons du corps pour voir à l'intérieur. »",
+    "dualite": "« En particule tu as rebondi ; en onde tu t'es faufilée et tu t'es étalée. Les électrons le font aussi : en 1927, Davisson et Germer les ont vus diffracter sur un cristal de nickel, comme des ondes lumineuses. »"
   }
 }

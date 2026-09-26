@@ -39,15 +39,15 @@ class LevelInfo(
  * tooling.
  */
 class GameText(
-    val flashPass: String = "Tunnel effect: enough energy, Quarky gets through!",
-    val flashBlocked: String = "Energy below the threshold: the barrier sends Quarky back.",
+    val flashPass: String = "Tunnel effect: Quarky went through the barrier, not over it!",
+    val flashBlocked: String = "Below the tunnel threshold: the barrier sends Quarky back.",
     val readingsHeader: String = "INSTRUMENT READINGS",
     val angle: String = "ANGLE",
     val energy: String = "QUARKY’S ENERGY",
-    val threshold: String = "BARRIER THRESHOLD",
+    val threshold: String = "TUNNEL THRESHOLD",
     val passes: String = "PASSES",
     val blocked: String = "BLOCKED",
-    val aimHelp: String = "Pull left for energy, slide up or down to aim, then let go. The barrier’s threshold starts oscillating at release.",
+    val aimHelp: String = "Pull left for energy, slide up or down to aim, then let go. The tunnel threshold starts oscillating at release.",
     val hint: String = "Hint: the violet dotted line shows the start of the reference path.",
     val resultHeader: String = "INSTRUMENT READING",
     val outcomeWin: String = "Target reached",
