@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "id": "quantique-tunnel-1",
   "scale": "quantique",
   "concept": "tunnel",
@@ -10,20 +10,29 @@
   },
   "target": {
     "x": 0.86,
-    "y": 0.5,
+    "y": 0.6,
     "r": 0.05
   },
   "obstacles": [
     {
-      "id": "barrier",
+      "id": "thick",
       "type": "barrier",
       "x": 0.5,
-      "y": 0.5,
-      "length": 0.2,
+      "y": 0.44,
+      "length": 0.12,
       "angle_deg": 90.0,
-      "energy_threshold": 0.6,
-      "threshold_motion": {
-        "amplitude": 0.45,
+      "thickness": 0.05
+    },
+    {
+      "id": "thin",
+      "type": "barrier",
+      "x": 0.5,
+      "y": 0.56,
+      "length": 0.12,
+      "angle_deg": 90.0,
+      "thickness": 0.03,
+      "thickness_motion": {
+        "amplitude": 0.012,
         "period": 1.0,
         "phase": 0.0
       }
@@ -32,43 +41,55 @@
       "id": "wTop",
       "type": "wall",
       "x": 0.5,
-      "y": 0.175,
-      "length": 0.45,
+      "y": 0.165,
+      "length": 0.43,
       "angle_deg": 90.0
     },
     {
       "id": "wBot",
       "type": "wall",
       "x": 0.5,
-      "y": 0.825,
-      "length": 0.45,
+      "y": 0.835,
+      "length": 0.43,
       "angle_deg": 90.0
     }
   ],
   "photons": [
     {
       "id": "p1",
-      "x": 0.243,
-      "y": 0.49,
+      "x": 0.18,
+      "y": 0.507,
+      "r": 0.03,
+      "motion": {
+        "axis": "y",
+        "amplitude": 0.04,
+        "period": 0.25,
+        "phase": 2.2619
+      }
+    },
+    {
+      "id": "p2",
+      "x": 0.254,
+      "y": 0.514,
       "r": 0.03,
       "motion": {
         "axis": "y",
         "amplitude": 0.04,
         "period": 0.5,
-        "phase": 3.5186
+        "phase": 2.3876
       }
     },
     {
-      "id": "p2",
-      "x": 0.437,
-      "y": 0.476,
-      "r": 0.03
-    },
-    {
       "id": "p3",
-      "x": 0.748,
-      "y": 0.455,
-      "r": 0.03
+      "x": 0.314,
+      "y": 0.519,
+      "r": 0.03,
+      "motion": {
+        "axis": "y",
+        "amplitude": 0.08,
+        "period": 0.5,
+        "phase": 0.8796
+      }
     }
   ],
   "max_wall_bounces": 0,
@@ -88,8 +109,8 @@
   },
   "hint": {
     "params": {
-      "angle_deg": -4,
-      "power": 0.45
+      "angle_deg": 4,
+      "power": 0.55
     }
   }
 }

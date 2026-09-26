@@ -11,47 +11,43 @@ CONCEPT = "spin"
 CODEX_KEY = "spin"
 
 
-def spin_pole(obstacle, pos, vel, params, state):
+def stern_gerlach(obstacle, pos, vel, params, state):
     """
-    Spin polarity (+/-) deciding whether the obstacle attracts or repels.
-    Pre-launch setting (spin_up = starting polarity, see gameplay-mechanics)
-    AND in-flight action: a tap (params["tap_time"]) flips the polarity once
-    during the flight — two variables combine to aim for the right contact at
-    the right instant.
+    Stern–Gerlach magnet (ADR-0008): its field is stronger on one side
+    (`up_deg`, the direction of that side). Spin up is deflected TOWARDS it,
+    spin down AWAY from it, by `kick_deg` (norm kept). Pre-launch setting
+    (`spin_up`, default true) and in-flight action: a tap flips the spin once.
+    In real physics the deflection comes from the field gradient and a
+    measured spin only ever gives these two answers (physics-pedagogy skill).
     """
     spin_up = params.get("spin_up", True)
     if state.get("tapped", False):
         spin_up = not spin_up
-    pole = obstacle.get("pole", "+")
-    attract = (spin_up and pole == "+") or (not spin_up and pole == "-")
-    kick = obstacle.get("kick_deg", 40)
-    kick = kick if attract else -kick
-    ang = vec.angle_of(vel) + kick
-    return vec.from_angle(ang, vec.mag(vel)), "deflect"
+    side = vec.from_angle(obstacle.get("up_deg", -90.0))
+    towards = side if spin_up else vec.scale(side, -1.0)
+    # rotate the velocity towards `towards`: sign of the 2D cross product
+    cross = vel[0] * towards[1] - vel[1] * towards[0]
+    kick = abs(obstacle.get("kick_deg", 40)) * (1.0 if cross >= 0.0 else -1.0)
+    return vec.from_angle(vec.angle_of(vel) + kick, vec.mag(vel)), "deflect"
 
 
 # Default handler of the concept's obstacles, and the obstacle types it owns.
-DEFAULT_HANDLER = spin_pole
-HANDLERS = {"pole": spin_pole}
+DEFAULT_HANDLER = stern_gerlach
+HANDLERS = {"magnet": stern_gerlach}
 
 
 def _level_1():
-    # Combines with the pre-launch setting (spin_up = starting polarity): a
-    # tap during the flight (see gameplay-mechanics) flips the polarity once —
-    # two variables instead of one to aim for the right contact.
-    # Target placed on the "repelled" branch (downward deflection): either
-    # start spin down, or start spin up and tap BEFORE touching the pole. The
-    # deflection applies only once per contact (see simulate.py) — the old
-    # target (0.867, 0.69) was only reached thanks to a deflection re-applied
-    # at every step, and only within 1° of aim.
+    # Discover (beta level): one Stern–Gerlach magnet, strong side up. Spin up
+    # is deflected up, spin down down. The portal sits on the DOWN branch:
+    # start spin down, or start spin up and flip the spin (tap) before the
+    # magnet — two variables (pre-launch spin + in-flight flip) to aim for.
     return {
         "launcher": {"x": 0.1, "y": 0.5},
         "target": {"x": 0.72, "y": 0.84, "r": 0.05},
         "obstacles": [
-            {"id": "pole", "type": "pole", "x": 0.4, "y": 0.42, "r": 0.06,
-             "pole": "+", "kick_deg": -60},
+            {"id": "magnet", "type": "magnet", "x": 0.4, "y": 0.42, "r": 0.06, "up_deg": -90, "kick_deg": 60},
         ],
-        "must_contact": [["pole", "deflect"]],
+        "must_contact": [["magnet", "deflect"]],
         "param_space": {
             "angle_deg": {"type": "range", "min": -20, "max": 0, "step": 1},
             "power": {"type": "choice", "values": [0.5, 0.7]},
@@ -62,16 +58,15 @@ def _level_1():
 
 
 def _level_2():
-    # Two "+" poles in series (cascaded Stern-Gerlach style), each deflecting
-    # by 45°: spin up = attracted (upwards), spin down = repelled. To rise at
-    # A then return to horizontal at B, start spin up and flip the spin
-    # BETWEEN the two poles. The only combination.
+    # Two magnets in series (cascaded Stern–Gerlach), strong side up, 45°
+    # each: spin up goes up, spin down goes down. To rise at A then return to
+    # horizontal at B, start spin up and flip the spin BETWEEN the magnets.
     return {
         "launcher": {"x": 0.1, "y": 0.72},
         "target": {"x": 0.86, "y": 0.51, "r": 0.05},
         "obstacles": [
-            {"id": "A", "type": "pole", "x": 0.36, "y": 0.72, "r": 0.06, "pole": "+", "kick_deg": -45},
-            {"id": "B", "type": "pole", "x": 0.555, "y": 0.465, "r": 0.06, "pole": "+", "kick_deg": -45},
+            {"id": "A", "type": "magnet", "x": 0.36, "y": 0.72, "r": 0.06, "up_deg": -90, "kick_deg": 45},
+            {"id": "B", "type": "magnet", "x": 0.555, "y": 0.465, "r": 0.06, "up_deg": -90, "kick_deg": 45},
         ],
         "must_contact": [["A", "deflect"], ["B", "deflect"]],
         # no bank shots: touching a wall = particle lost
@@ -86,18 +81,18 @@ def _level_2():
 
 
 def _level_3():
-    # Three poles with signs +, −, + (deflections 40°, 40°, 60°): the player
-    # must READ each pole's sign. Rise at A (spin up, attracted by +), rise
-    # again at B (pole −, must be attracted so spin down: flip between A and
-    # B), then come back down at C (pole +, spin down = repelled). Pole C
-    # oscillates: the power must also time the arrival.
+    # Three magnets, the middle one mounted upside down (strong side DOWN):
+    # the player must READ each magnet's orientation. Rise at A (spin up),
+    # rise again at B (upside down: needs spin down, so flip between A and
+    # B), then come back down at C (spin down). Magnet C oscillates: the
+    # power must also time the arrival.
     return {
         "launcher": {"x": 0.1, "y": 0.9},
         "target": {"x": 0.792, "y": 0.416, "r": 0.05},
         "obstacles": [
-            {"id": "A", "type": "pole", "x": 0.32, "y": 0.9, "r": 0.06, "pole": "+", "kick_deg": -40},
-            {"id": "B", "type": "pole", "x": 0.49, "y": 0.707, "r": 0.06, "pole": "-", "kick_deg": -40},
-            {"id": "C", "type": "pole", "x": 0.492, "y": 0.47, "r": 0.06, "pole": "+", "kick_deg": -60,
+            {"id": "A", "type": "magnet", "x": 0.32, "y": 0.9, "r": 0.06, "up_deg": -90, "kick_deg": 40},
+            {"id": "B", "type": "magnet", "x": 0.49, "y": 0.707, "r": 0.06, "up_deg": 90, "kick_deg": 40},
+            {"id": "C", "type": "magnet", "x": 0.492, "y": 0.47, "r": 0.06, "up_deg": -90, "kick_deg": 60,
              "motion": {"axis": "x", "amplitude": 0.05, "period": 1.2}},
         ],
         "must_contact": [["A", "deflect"], ["B", "deflect"], ["C", "deflect"]],

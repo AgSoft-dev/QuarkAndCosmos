@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "id": "quantique-intrication-3",
   "must_contact": [
     [
@@ -9,6 +9,10 @@
     [
       "M",
       "bounce"
+    ],
+    [
+      "crystal",
+      "measure"
     ],
     [
       "B",

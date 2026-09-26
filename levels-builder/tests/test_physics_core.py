@@ -120,11 +120,23 @@ def test_wall_and_mirror_reflect():
         assert ev == "bounce" and vel == pytest.approx((-0.5, 0.1))
 
 
-def test_barrier_passes_at_or_above_the_tunnel_threshold():
-    b = dict(VERTICAL, type="barrier", energy_threshold=0.6)
-    assert _call("tunnel", b, (0.49, 0.5), (0.6, 0.0)) == ((0.6, 0.0), "pass")
-    vel, ev = _call("tunnel", b, (0.49, 0.5), (0.5, 0.0))
-    assert ev == "bounce" and vel == pytest.approx((-0.5, 0.0))
+def test_barrier_tunnel_threshold_follows_thickness():
+    from quarkcosmos_levels.concepts.tunnel import tunnel_threshold
+    thin = dict(VERTICAL, type="barrier", thickness=0.03)
+    e_t = tunnel_threshold(0.03)
+    assert e_t == pytest.approx(0.7989, abs=1e-4)
+    assert _call("tunnel", thin, (0.49, 0.5), (e_t, 0.0)) == ((e_t, 0.0), "pass")
+    vel, ev = _call("tunnel", thin, (0.49, 0.5), (e_t - 0.01, 0.0))
+    assert ev == "bounce" and vel[0] < 0
+    # thicker = higher threshold; thick enough = above any launch energy
+    assert tunnel_threshold(0.02) < tunnel_threshold(0.03) < tunnel_threshold(0.04) < 1.0 < tunnel_threshold(0.05)
+
+
+def test_breathing_barrier_contact_band_follows_thickness():
+    b = {"id": "b", "type": "barrier", "x": 0.5, "y": 0.5, "length": 0.4, "angle_deg": 90,
+         "thickness": 0.03, "thickness_motion": {"amplitude": 0.012, "period": 1.0}}
+    assert shapes.radius(b) == pytest.approx(0.015)
+    assert check_limits(dict(_level([b]), param_space={"power": {"type": "choice", "values": [0.95]}})) == []
 
 
 def test_splitter_splits_and_reflected_copy_is_mirrored():
@@ -142,12 +154,72 @@ def test_gates_open_and_close_with_the_tap():
     assert _call("intrication", ga, (0.49, 0.5), (0.5, 0.0), state={"tapped": True})[1] == "bounce"
 
 
-def test_pole_deflects_by_kick_and_flips_with_the_tap():
-    p = {"type": "pole", "x": 0.5, "y": 0.5, "r": 0.05, "pole": "+", "kick_deg": 30}
-    vel, ev = _call("spin", p, (0.46, 0.5), (0.5, 0.0), params={"spin_up": True})
-    assert ev == "deflect" and vec.angle_of(vel) == pytest.approx(30) and vec.mag(vel) == pytest.approx(0.5)
-    vel, _ = _call("spin", p, (0.46, 0.5), (0.5, 0.0), params={"spin_up": True}, state={"tapped": True})
-    assert vec.angle_of(vel) == pytest.approx(-30)
+def test_stern_gerlach_spin_up_towards_strong_side_down_away():
+    m = {"type": "magnet", "x": 0.5, "y": 0.5, "r": 0.05, "up_deg": -90, "kick_deg": 30}
+    vel, ev = _call("spin", m, (0.46, 0.5), (0.5, 0.0), params={"spin_up": True})
+    assert ev == "deflect" and vec.angle_of(vel) == pytest.approx(-30) and vec.mag(vel) == pytest.approx(0.5)
+    vel, _ = _call("spin", m, (0.46, 0.5), (0.5, 0.0), params={"spin_up": False})
+    assert vec.angle_of(vel) == pytest.approx(30)
+    vel, _ = _call("spin", m, (0.46, 0.5), (0.5, 0.0), params={"spin_up": True}, state={"tapped": True})
+    assert vec.angle_of(vel) == pytest.approx(30)
+    # leftward flight: spin up still goes towards the strong side (up)
+    vel, _ = _call("spin", m, (0.54, 0.5), (-0.5, 0.0), params={"spin_up": True})
+    assert vel[1] < 0
+
+
+def test_rung_lock_accepts_one_exact_rung_and_the_tap_jumps_down():
+    lock = {"id": "L", "type": "lock", "x": 0.5, "y": 0.5, "length": 0.3, "angle_deg": 90, "rung": 2}
+    assert _call("quantification", lock, (0.49, 0.5), (0.65, 0.0), state={"rung": 2})[1] == "pass"
+    for rung in (1, 3):
+        assert _call("quantification", lock, (0.49, 0.5), (0.65, 0.0), state={"rung": rung})[1] == "bounce"
+    level = _level([lock], concept_id="quantification", target=(0.85, 0.5))
+    level["rungs"] = [0.35, 0.5, 0.65, 0.8]
+    assert simulate(level, {"angle_deg": 0, "rung": 2}).success
+    assert not simulate(level, {"angle_deg": 0, "rung": 3}).success
+    jumped = simulate(level, {"angle_deg": 0, "rung": 3, "tap_time": 0.2})
+    assert jumped.success and ("quarky", "emit") in jumped.contacts
+
+
+def test_colour_matched_photon_only_on_its_rung():
+    level = _level([], concept_id="quantification", target=(0.85, 0.5))
+    level["rungs"] = [0.35, 0.5, 0.65, 0.8]
+    level["photons"] = [{"id": "p", "x": 0.4, "y": 0.5, "r": 0.02, "rung": 1}]
+    assert simulate(level, {"angle_deg": 0, "rung": 1}).photons_collected == {"p"}
+    assert simulate(level, {"angle_deg": 0, "rung": 2}).photons_collected == set()
+
+
+def test_slit_particle_bounces_wave_diffracts_into_a_fan():
+    grating = {"type": "slit", "x": 0.5, "y": 0.5, "length": 1.0, "angle_deg": 90, "aperture": 0.06}
+    assert _call("dualite", grating, (0.49, 0.5), (0.5, 0.0))[1] == "bounce"
+    vel, ev = _call("dualite", grating, (0.49, 0.5), (0.5, 0.0), state={"tapped": True})
+    assert ev == "diffract" and vel == pytest.approx((0.5, 0.0))
+    # halfway down the aperture: turned by half the fan (25° / 2), downwards
+    low, _ = _call("dualite", grating, (0.49, 0.515), (0.5, 0.0), state={"tapped": True})
+    assert vec.angle_of(low) == pytest.approx(12.5) and vec.mag(low) == pytest.approx(0.5)
+    # a wave hitting the grating outside the aperture bounces
+    assert _call("dualite", grating, (0.49, 0.7), (0.5, 0.0), state={"tapped": True})[1] == "bounce"
+
+
+def test_tap_measures_the_near_crystal_and_the_far_gate_opens():
+    crystal = {"id": "c", "type": "crystal", "x": 0.2, "y": 0.3, "r": 0.03}
+    gate = {"id": "g", "type": "gate", "x": 0.5, "y": 0.5, "length": 0.3, "angle_deg": 90, "pair": "c"}
+    level = _level([crystal, gate], concept_id="intrication", target=(0.85, 0.5))
+    res = simulate(level, {"angle_deg": 0, "power": 0.7, "tap_time": 0.2})
+    assert res.success and res.contacts[:2] == [("c", "measure"), ("g", "pass")]
+    assert not simulate(level, {"angle_deg": 0, "power": 0.7}).success
+
+
+def test_cone_proof_requires_every_draw_to_win():
+    from quarkcosmos_levels.core.simulate import cone_spreads, simulate_cone
+    level = _level([], concept_id="incertitude", target=(0.85, 0.5))
+    level["cone"] = {"speed": 0.7, "angle": [0.5, 6.0], "speed_spread": 0.5}
+    assert cone_spreads(level, 1.0) == pytest.approx((0.5, 0.5))
+    assert cone_spreads(level, 0.3) == pytest.approx((0.5 + 0.7 * 5.5, 0.15))
+    assert simulate_cone(level, {"angle_deg": 0, "precision": 0.7}).success
+    # a far portal the centre line reaches but the edges of a wide cone miss
+    level["target"] = {"x": 0.95, "y": 0.5, "r": 0.02}
+    assert simulate(level, {"angle_deg": 0, "precision": 0.3}).success
+    assert not simulate_cone(level, {"angle_deg": 0, "precision": 0.3}).success
 
 
 def test_surface_particle_bounces_wave_crosses_at_180():
@@ -172,7 +244,7 @@ def test_every_shipped_level_respects_the_anti_tunnelling_limits():
 
     from quarkcosmos_levels import paths
     from quarkcosmos_levels.export.levels import read_level
-    files = sorted(glob.glob(os.path.join(str(paths.LEVELS_DIR), "*.json")))
+    files = sorted(glob.glob(os.path.join(str(paths.LEVELS_DIR), "quantique_*.json")))
     assert files
     for f in files:
         assert check_limits(read_level(f)) == [], f

@@ -116,7 +116,8 @@ class Simulation(val level: Level, params: Map<String, Any>, private val listene
             var ox = o.x
             var oy = o.y
             o.motion?.let { m -> if (m.axis == 'x') ox += m.offset(t) else oy += m.offset(t) }
-            if (!shapes.touching(o, ox, oy, x, y, COLLISION_EPS)) {
+            val radius = radiusAt(o, t)
+            if (!shapes.touching(o, ox, oy, x, y, COLLISION_EPS, radius)) {
                 inContact[i] = false
                 continue
             }
@@ -126,7 +127,7 @@ class Simulation(val level: Level, params: Map<String, Any>, private val listene
             val vxIn = vx
             val vyIn = vy
             val event = handlers[i](this, o, ox, oy, threshold)
-            if (event == ContactEvent.BOUNCE) mirrorOut(o, ox, oy, vxIn, vyIn)
+            if (event == ContactEvent.BOUNCE) mirrorOut(o, ox, oy, radius, vxIn, vyIn)
             listener?.onContact(i, event)
             if (o.type == "wall") {
                 if (++wallBounces > level.maxWallBounces) return finish(Status.LOST_WALL_BOUNCES, step)
@@ -195,12 +196,12 @@ class Simulation(val level: Level, params: Map<String, Any>, private val listene
 
     /** After a reflection, mirror the penetration out of the contact surface
      *  (radius + EPS) — simulate._mirror_out, same order of operations. */
-    private fun mirrorOut(o: Obstacle, ox: Double, oy: Double, vxIn: Double, vyIn: Double) {
+    private fun mirrorOut(o: Obstacle, ox: Double, oy: Double, radius: Double, vxIn: Double, vyIn: Double) {
         shapes.closestPoint(o, ox, oy, x, y)
         val nx = x - shapes.cx
         val ny = y - shapes.cy
         val d = Math.hypot(nx, ny)
-        val reach = shapes.radius(o) + COLLISION_EPS
+        val reach = radius + COLLISION_EPS
         if (d < 1e-9 || d >= reach || vxIn * nx + vyIn * ny >= 0.0 || vx * nx + vy * ny <= 0.0) return
         val k = 2 * (reach - d) / d
         x += nx * k
@@ -211,8 +212,27 @@ class Simulation(val level: Level, params: Map<String, Any>, private val listene
     val speed get() = Math.hypot(vx, vy)
 
     companion object {
-        /** Effective energy threshold at time t (simulate._effective_threshold). */
+        /** Effective barrier thickness at time t (simulate._effective_thickness). */
+        fun thicknessAt(o: Obstacle, t: Double): Double {
+            val base = o.thickness ?: return 0.0
+            val m = o.thicknessMotion ?: return base
+            return base + m.offset(t)
+        }
+
+        /** Tunnel threshold of a barrier of thickness d (tunnel.tunnel_threshold). */
+        fun tunnelThreshold(d: Double, height: Double = TUNNEL_HEIGHT): Double {
+            val q = TUNNEL_K / d
+            return height - q * q
+        }
+
+        /** Effective contact radius at time t (a breathing barrier's thickness / 2). */
+        private fun radiusAt(o: Obstacle, t: Double): Double =
+            if (o.thickness != null) thicknessAt(o, t) / 2 else Shapes.defaultRadius(o)
+
+        /** Effective energy threshold at time t: the tunnel threshold of the
+         *  barrier's current thickness, or a legacy threshold (simulate._effective_threshold). */
         fun effectiveThreshold(o: Obstacle, t: Double): Double {
+            if (o.thickness != null) return tunnelThreshold(thicknessAt(o, t), o.height ?: TUNNEL_HEIGHT)
             val base = o.energyThreshold ?: DEFAULT_ENERGY_THRESHOLD
             val m = o.thresholdMotion ?: return base
             return base + m.offset(t)

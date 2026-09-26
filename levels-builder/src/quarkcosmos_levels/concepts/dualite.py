@@ -3,7 +3,9 @@ Concept `dualite` — Wave–particle duality. Plugin of the concept registry (c
 the default handler, the obstacle types it owns, and the level template of each
 difficulty (1 discover → 2 sequence → 3 chain, see the gameplay-mechanics skill).
 """
-from ..core import vec
+import math
+
+from ..core import shapes, vec
 from ..core.simulate import TAP_MIN_TIME
 from .common import seg
 from .handlers import _bounce
@@ -36,25 +38,55 @@ def dualite_surface(obstacle, pos, vel, params, state):
     return vel2, "bounce"
 
 
+def slit(obstacle, pos, vel, params, state):
+    """
+    A grating (a flat segment) with one slit NARROWER than Quarky: the
+    aperture, `aperture` wide, centred `aperture_at` along the grating from its
+    centre (ADR-0008). As a PARTICLE (before the tap) Quarky bounces off the
+    grating, slit included. As a WAVE (after the tap) it diffracts through the
+    aperture and spreads into a fan: the exit direction is the grating's
+    normal, turned by up to `fan_deg` (default 25°) towards the side of the
+    aperture it went through — deterministic, so the player can aim at a
+    direction of the fan; elsewhere on the grating a wave bounces too. In real
+    physics the wave spreads over the whole fan and Quarky would be detected
+    at one random spot of it (physics-pedagogy skill).
+    """
+    a, b = shapes.endpoints(obstacle)
+    along = vec.normalize(vec.sub(b, a))
+    centre = vec.add((obstacle["x"], obstacle["y"]), vec.scale(along, obstacle.get("aperture_at", 0.0)))
+    s = vec.dot(vec.sub(pos, centre), along)
+    half = obstacle["aperture"] / 2
+    if not state.get("tapped", False) or abs(s) > half:
+        return vec.reflect(vel, shapes.normal(obstacle, pos)), "bounce"
+    normal = (-along[1], along[0])
+    if vec.dot(vel, normal) < 0.0:
+        normal = (-normal[0], -normal[1])  # exit on the far side
+    u = s / half
+    theta = math.radians(u * obstacle.get("fan_deg", 25.0))
+    exit_dir = vec.add(vec.scale(normal, math.cos(theta)), vec.scale(along, math.sin(theta)))
+    return vec.scale(vec.normalize(exit_dir), vec.mag(vel)), "diffract"
+
+
 # Default handler of the concept's obstacles, and the obstacle types it owns.
 DEFAULT_HANDLER = dualite_surface
-HANDLERS = {"surface": dualite_surface}
+HANDLERS = {"surface": dualite_surface, "slit": slit}
 
 
 def _level_1():
-    # An in-flight action (see gameplay-mechanics) replaces the pre-launch
-    # setting: Quarky starts in particle mode, a tap during the flight
-    # (tap_time) switches to wave mode for the rest of the path.
+    # Discover (beta level): a grating with one slit NARROWER than Quarky.
+    # As a particle, Quarky bounces off it; tap in flight to become a wave and
+    # it diffracts through, spreading into a fan. The portal is off-axis: go
+    # through the lower part of the slit to leave along the fan towards it.
     return {
-        "launcher": {"x": 0.08, "y": 0.3},
-        "target": {"x": 0.85, "y": 0.3, "r": 0.05},
+        "launcher": {"x": 0.1, "y": 0.5},
+        "target": {"x": 0.86, "y": 0.64, "r": 0.05},
         "obstacles": [
-            {"id": "surface", "type": "surface", "x": 0.35, "y": 0.3, "r": 0.05,
-             "interference_offset_deg": 180},
+            seg("slit", "slit", 0.4, -0.05, 0.4, 1.05, aperture=0.06),
         ],
-        "must_contact": [["surface", "wave"]],
+        "must_contact": [["slit", "diffract"]],
+        "max_wall_bounces": 0,
         "param_space": {
-            "angle_deg": {"type": "range", "min": -3, "max": 3, "step": 1},
+            "angle_deg": {"type": "range", "min": -8, "max": 8, "step": 1},
             "power": {"type": "choice", "values": [0.5, 0.7]},
             "tap_time": {"type": "range", "min": TAP_MIN_TIME, "max": 0.7, "step": 0.05},
         },
@@ -62,10 +94,9 @@ def _level_1():
 
 
 def _level_2():
-    # Two-step sequence, flat surfaces (angle of incidence = angle of
-    # reflection): s1 is a 45° mirror that sends a PARTICLE upwards; s2 is a
-    # window in the ceiling of the lower chamber that can only be crossed as
-    # a WAVE. The tap must land between the two contacts: too early, Quarky
+    # Two-step sequence: s1 is a 45° surface that sends a PARTICLE upwards;
+    # s2 is a slit in the ceiling of the lower chamber that only a WAVE gets
+    # through (diffracting into a fan). The tap must land between the two contacts: too early, Quarky
     # crosses s1 as a wave and flies off to the right; too late, it bounces
     # off s2 like a particle.
     return {
@@ -73,13 +104,12 @@ def _level_2():
         "target": {"x": 0.45, "y": 0.14, "r": 0.05},
         "obstacles": [
             seg("s1", "surface", 0.38, 0.87, 0.52, 0.73, interference_offset_deg=180),
-            seg("s2", "surface", 0.35, 0.42, 0.55, 0.42, interference_offset_deg=180),
-            seg("ceilL", "wall", -0.05, 0.42, 0.35, 0.42),
-            seg("ceilR", "wall", 0.55, 0.42, 1.05, 0.42),
+            # the ceiling is the grating, its slit at x = 0.45
+            seg("s2", "slit", -0.05, 0.42, 1.05, 0.42, aperture=0.06, aperture_at=-0.05),
         ],
-        "must_contact": [["s1", "bounce"], ["s2", "wave"]],
+        "must_contact": [["s1", "bounce"], ["s2", "diffract"]],
         "param_space": {
-            "angle_deg": {"type": "range", "min": -15, "max": 15, "step": 1},
+            "angle_deg": {"type": "range", "min": -6, "max": 2, "step": 1},
             "power": {"type": "range", "min": 0.4, "max": 0.9, "step": 0.1},
             "tap_time": {"type": "range", "min": TAP_MIN_TIME, "max": 1.6, "step": 0.05},
         },
@@ -88,29 +118,30 @@ def _level_2():
 
 def _level_3():
     # Chain: two particle bounces (mirrors s1 then s2: right -> up -> right),
-    # then a wave crossing of window s3 into the right chamber, where the
+    # then a wave diffracting through slit s3 into the right chamber, where the
     # target drifts. The tap must land between s2 and s3, and the power times
     # the arrival against the moving target.
     return {
         "launcher": {"x": 0.1, "y": 0.85},
-        "target": {"x": 0.86, "y": 0.45, "r": 0.05,
+        "target": {"x": 0.86, "y": 0.45, "r": 0.055,
                    "motion": {"axis": "y", "amplitude": 0.08, "period": 1.6}},
         "obstacles": [
             seg("s1", "surface", 0.25, 0.92, 0.39, 0.78, interference_offset_deg=180),
             seg("s2", "surface", 0.18, 0.59, 0.39, 0.38, interference_offset_deg=180),
-            seg("s3", "surface", 0.65, 0.33, 0.65, 0.57, interference_offset_deg=180),
-            seg("wallTop", "wall", 0.65, -0.05, 0.65, 0.33),
-            seg("wallBot", "wall", 0.65, 0.57, 0.65, 1.05),
+            # the right-hand wall is the grating, its slit at y = 0.45
+            seg("s3", "slit", 0.65, -0.05, 0.65, 1.05, aperture=0.06, aperture_at=-0.05),
             seg("shelf", "wall", 0.42, 0.66, 0.65, 0.66),
             # lid above s2: in wave mode too early, Quarky crosses s2 upwards
             # and must not reach s3 via the ceiling
             seg("lid", "wall", 0.18, 0.26, 0.5, 0.26),
         ],
-        "must_contact": [["s1", "bounce"], ["s2", "bounce"], ["s3", "wave"]],
+        # any route that ends by diffracting through s3 uses the mechanic (a
+        # wave crossing s1 early, then bouncing, is a richer route, not a bypass)
+        "must_contact": [["s3", "diffract"]],
         "param_space": {
-            "angle_deg": {"type": "range", "min": -15, "max": 15, "step": 1},
+            "angle_deg": {"type": "range", "min": -8, "max": 1, "step": 1},
             "power": {"type": "range", "min": 0.4, "max": 0.9, "step": 0.1},
-            "tap_time": {"type": "range", "min": TAP_MIN_TIME, "max": 2.2, "step": 0.05},
+            "tap_time": {"type": "range", "min": 0.5, "max": 2.2, "step": 0.05},
         },
     }
 

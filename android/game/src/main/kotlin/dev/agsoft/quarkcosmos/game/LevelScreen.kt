@@ -32,6 +32,7 @@ import dev.agsoft.quarkcosmos.physics.SEGMENT_HALF_THICKNESS
 import dev.agsoft.quarkcosmos.physics.SimListener
 import dev.agsoft.quarkcosmos.physics.Simulation
 import dev.agsoft.quarkcosmos.physics.Status
+import dev.agsoft.quarkcosmos.physics.TUNNEL_HEIGHT
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -677,7 +678,9 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         val open = energy() >= thr
         val hit = max(0f, 1 - (time - barrierHitT) / .5f)
         val col = if (open) Pal.accent else Pal.mix(Pal.key, Pal.danger, .55f + .45f * hit)
-        val t = 7f
+        // half-thickness on screen: the barrier's real (breathing) thickness, so
+        // "thin enough to tunnel through" is read directly (ADR-0008)
+        val t = if (o.thickness != null) max(2.5f, (Simulation.thicknessAt(o, clock.toDouble()) * boxS / 2).toFloat()) else 7f
         val (nx, ny) = normal(ax, ay, bx, by)
         // barrier field: flat fill + shaded half + sharp edges
         cv.slab(ax, ay, bx, by, t, col, if (open) .16f else .26f + .2f * hit)
@@ -891,6 +894,53 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         b.draw(cv.grain, 0f, 0f, w, h, o / 128f, 0f, o / 128f + w / 128f, h / 128f)
     }
 
+    // --- tunnel readings ----------------------------------------------------------
+
+    /** The barrier the shot is heading for: first hit along the aim line (or
+     *  Quarky's velocity in flight), else the first barrier of the level. */
+    private fun aimedBarrier(): Obstacle? {
+        val barriers = level.obstacles.filter { it.type == "barrier" }
+        if (barriers.size <= 1) return barriers.firstOrNull()
+        val s = sim
+        val (x0, y0, dx, dy) = if (s != null && phase == Phase.FLIGHT) {
+            doubleArrayOf(s.x, s.y, s.vx, s.vy).toList()
+        } else {
+            val a = Math.toRadians(aimAngle)
+            doubleArrayOf(level.launcher.x, level.launcher.y, Math.cos(a), Math.sin(a)).toList()
+        }
+        var best: Obstacle? = null
+        var bestT = Double.MAX_VALUE
+        for (o in barriers) {
+            val len = o.length ?: continue
+            val a = Math.toRadians(o.angleDeg)
+            val ux = Math.cos(a) * len / 2
+            val uy = Math.sin(a) * len / 2
+            // ray (x0,y0)+t(dx,dy) against segment centre ± u
+            val det = dx * (-2 * uy) - dy * (-2 * ux)
+            if (Math.abs(det) < 1e-12) continue
+            val rx = (o.x - ux) - x0
+            val ry = (o.y - uy) - y0
+            val t = (rx * (-2 * uy) - ry * (-2 * ux)) / det
+            val u = (dx * ry - dy * rx) / det
+            if (t > 0 && u in -0.05..1.05 && t < bestT) { bestT = t; best = o }
+        }
+        return best ?: barriers.first()
+    }
+
+    /** Range the threshold sweeps over (a breathing barrier, or a legacy oscillating threshold). */
+    private fun thresholdBand(o: Obstacle): Pair<Double, Double>? {
+        val tm = o.thicknessMotion
+        val th = o.thickness
+        if (th != null) {
+            if (tm == null) return null
+            val h = o.height ?: TUNNEL_HEIGHT
+            return Simulation.tunnelThreshold(th - abs(tm.amplitude), h) to Simulation.tunnelThreshold(th + abs(tm.amplitude), h)
+        }
+        val m = o.thresholdMotion ?: return null
+        val base = o.energyThreshold ?: 0.6
+        return (base - abs(m.amplitude)) to (base + abs(m.amplitude))
+    }
+
     // --- drag rail: how far the pull can go --------------------------------------
 
     /** While dragging: a faint rail from the drag start to the full-energy point,
@@ -1089,12 +1139,10 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         val en = energy()
         meter(f, left, right, y, txt.energy, fmt(en), en, null, Pal.key)
         y -= 44
-        val barrier = level.obstacles.firstOrNull { it.type == "barrier" }
+        val barrier = aimedBarrier()
         if (barrier != null) {
             val thr = Simulation.effectiveThreshold(barrier, clock.toDouble())
-            val m = barrier.thresholdMotion
-            val base = barrier.energyThreshold ?: 0.6
-            val band = if (m != null) (base - abs(m.amplitude)) to (base + abs(m.amplitude)) else null
+            val band = thresholdBand(barrier)
             meter(f, left, right, y, txt.threshold, fmt(thr), thr, band, Pal.danger, en)
             val open = en >= thr
             text(f.monoSmall, if (open) txt.passes else txt.blocked, right, y + 17, if (open) Pal.accent else Pal.danger, Align.right)

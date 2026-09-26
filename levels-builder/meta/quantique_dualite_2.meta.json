@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "id": "quantique-dualite-2",
   "must_contact": [
     [
@@ -8,15 +8,15 @@
     ],
     [
       "s2",
-      "wave"
+      "diffract"
     ]
   ],
   "solvable": true,
   "reference_solution": {
     "params": {
-      "angle_deg": 1,
-      "power": 0.4,
-      "tap_time": 0.85
+      "angle_deg": -1,
+      "power": 0.7,
+      "tap_time": 1.0
     },
     "photons_collected": 3,
     "photon_ids": [
@@ -26,17 +26,17 @@
     ]
   },
   "max_photons_reachable": 3,
-  "tolerance": 0.0897,
-  "three_star_tolerance": 0.016,
+  "tolerance": 0.0568,
+  "three_star_tolerance": 0.0114,
   "bypass_solutions": 0,
   "star_profile": {
-    "rays": 5766,
-    "valid_rays": 517,
-    "distinct_paths": 47,
+    "rays": 1674,
+    "valid_rays": 95,
+    "distinct_paths": 9,
     "shares": {
-      "1": 0.8182,
-      "2": 0.4468,
-      "3": 0.1779
+      "1": 0.8211,
+      "2": 0.4632,
+      "3": 0.2
     },
     "target_shares": {
       "1": 0.8226,

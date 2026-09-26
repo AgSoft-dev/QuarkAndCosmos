@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "id": "quantique-superposition-2",
   "must_contact": [
     [
@@ -11,8 +11,8 @@
   "reference_solution": {
     "params": {
       "angle_deg": -87,
-      "power": 0.6,
-      "tap_time": 0.6
+      "power": 0.8,
+      "tap_time": 0.5
     },
     "photons_collected": 3,
     "photon_ids": [
@@ -30,8 +30,8 @@
     "valid_rays": 152,
     "distinct_paths": 31,
     "shares": {
-      "1": 0.8355,
-      "2": 0.4737,
+      "1": 0.7961,
+      "2": 0.4276,
       "3": 0.1711
     },
     "target_shares": {

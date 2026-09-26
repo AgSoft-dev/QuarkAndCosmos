@@ -17,6 +17,9 @@ SEGMENT_HALF_THICKNESS = 0.012
 
 
 def radius(obs):
+    if "thickness" in obs:
+        # a tunnel barrier's visible thickness is its contact band (2 r)
+        return obs["thickness"] / 2
     return obs.get("r", SEGMENT_HALF_THICKNESS if ("length" in obs or "points" in obs) else 0.03)
 
 

@@ -19,7 +19,7 @@ The user approves the §2.2 fixed mechanics for the Quantum world:
 Already implemented and unchanged by this ADR: two-ghost superposition ([ADR-0002](ADR-0002-two-ghost-superposition.md)) and the `TAP_MIN_TIME` tap floor (0.1 s).
 
 ## Consequences
-- Implementation is **S5** (`todo.md`): engine handlers, generator templates, validator, `docs/physics-spec.md`, regenerated levels/metas/goldens, then the Kotlin port. Until then the shipped levels keep the current mechanics described in `gameplay-mechanics`.
+- **Implemented in S5 (2026-09-26)**, schema v4 (`docs/level-schema.md`, `docs/physics-spec.md`); quantisation's in-flight action is a jump down one rung (emission), entanglement's near crystal is a `crystal` obstacle measured by the tap, duality's slit is a grating with an aperture. Planned then as engine handlers, generator templates, validator, `docs/physics-spec.md`, regenerated levels/metas/goldens, then the Kotlin port. Until then the shipped levels keep the current mechanics described in `gameplay-mechanics`.
 - **Tunnel 1**, played by the Android POC, changes layout and handler: its golden trajectories and `:core-physics` are updated in the same S5 work.
 - Codex lines for the fixed concepts are rewritten against the `physics-pedagogy` drafts (English and French) with a `physics-reviewer` pass; the shipped text is not changed by this ADR.
 - ~~Open: four rungs vs the three Photon ray counts~~ — decided below.

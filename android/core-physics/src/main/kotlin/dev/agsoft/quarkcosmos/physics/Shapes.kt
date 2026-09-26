@@ -11,12 +11,17 @@ package dev.agsoft.quarkcosmos.physics
  * Shapes object per simulation, never shared between threads.
  */
 class Shapes {
+    companion object {
+        /** Contact radius without time dependence (shapes.radius). */
+        fun defaultRadius(o: Obstacle): Double = o.thickness?.let { it / 2 } ?: o.r ?: if (o.length != null || o.points != null) SEGMENT_HALF_THICKNESS else DEFAULT_DISC_RADIUS
+    }
+
     var cx = 0.0
         private set
     var cy = 0.0
         private set
 
-    fun radius(o: Obstacle): Double = o.r ?: if (o.length != null || o.points != null) SEGMENT_HALF_THICKNESS else DEFAULT_DISC_RADIUS
+    fun radius(o: Obstacle): Double = defaultRadius(o)
 
     /** Distance from (x, y) to the farthest point of the skeleton (shapes.extent). */
     fun extent(o: Obstacle): Double {
@@ -72,9 +77,10 @@ class Shapes {
         return Math.hypot(px - cx, py - cy)
     }
 
-    /** True if (px, py) is closer than radius + margin to the obstacle placed at (ox, oy). */
-    fun touching(o: Obstacle, ox: Double, oy: Double, px: Double, py: Double, margin: Double): Boolean {
-        val reach = radius(o) + margin
+    /** True if (px, py) is closer than radius + margin to the obstacle placed at (ox, oy)
+     *  ([radius]: the effective one, e.g. a breathing barrier's thickness / 2). */
+    fun touching(o: Obstacle, ox: Double, oy: Double, px: Double, py: Double, margin: Double, radius: Double = radius(o)): Boolean {
+        val reach = radius + margin
         val dx = px - ox
         val dy = py - oy
         val bound = reach + extent(o)

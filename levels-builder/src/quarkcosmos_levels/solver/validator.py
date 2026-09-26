@@ -11,7 +11,7 @@ tracing).
 import itertools
 from dataclasses import dataclass, field
 
-from ..core.simulate import TAP_MIN_TIME, simulate, taps_ordered
+from ..core.simulate import TAP_MIN_TIME, simulate_cone, taps_ordered
 from .stars import star_profile
 
 
@@ -81,7 +81,7 @@ def solve(level: dict, max_solutions=200):
     total_photons = len(level.get("photons", []))
 
     for params in param_combos(keys, grids):
-        result = simulate(level, params)
+        result = simulate_cone(level, params)
         if result.success:
             solutions.append(Solution(
                 params=params,

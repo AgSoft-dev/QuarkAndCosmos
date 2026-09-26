@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "id": "quantique-spin-1",
   "scale": "quantique",
   "concept": "spin",
@@ -15,13 +15,13 @@
   },
   "obstacles": [
     {
-      "id": "pole",
-      "type": "pole",
+      "id": "magnet",
+      "type": "magnet",
       "x": 0.4,
       "y": 0.42,
       "r": 0.06,
-      "pole": "+",
-      "kick_deg": -60
+      "up_deg": -90,
+      "kick_deg": 60
     }
   ],
   "photons": [
@@ -39,8 +39,8 @@
     },
     {
       "id": "p2",
-      "x": 0.488,
-      "y": 0.623,
+      "x": 0.501,
+      "y": 0.639,
       "r": 0.03
     },
     {

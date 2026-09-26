@@ -6,10 +6,10 @@
   "lines": {
     "tunnel": "“You never had the energy to climb over that wall, yet here you are on the other side. Tiny particles do that now and then, more often when the wall is thin. My tunnelling microscope relies on it to see single atoms.”",
     "superposition": "“Until I looked, you were travelling both paths at once. Measuring made one of them real. Quantum computers play the same game: their qubits hold 0 and 1 together until they are read.”",
-    "intrication": "“Measure one of two entangled particles and you know the other at once, however far apart, yet no message travels between them. Aspect, Clauser and Zeilinger won the 2022 Nobel Prize for testing it.”",
+    "intrication": "“The crystal here and the gate over there behaved as one. Measure one of two entangled particles and you know the other at once, however far away, yet no message travels between them. Testing this earned Aspect, Clauser and Zeilinger the 2022 Nobel Prize.”",
     "incertitude": "“The more tightly you pinned down where you'd go, the fuzzier your speed became. For an electron that's a law of nature, not a clumsy instrument. It's even why an electron can't sit perfectly still inside an atom.”",
-    "quantification": "“Only a few energies were allowed, nothing in between. Atoms work the same way: each jump between two levels gives out light of one exact colour. That's why a neon sign glows red-orange instead of every colour at once.”",
+    "quantification": "“Only a few energies were allowed: E1, E2, E3, E4, nothing in between. Atoms work the same way, and each jump between two levels gives out light of one exact colour. That's why a neon sign glows red-orange instead of every colour at once.”",
     "spin": "“Measured along one direction, your spin has only two answers: up or down, never in between. Stern and Gerlach saw that split with silver atoms in 1922. Today MRI scanners flip the spins of protons in the body to see inside it.”",
-    "dualite": "“As a particle you bounced; as a wave you slipped through and spread out. Electrons do it too: in 1927 Davisson and Germer saw them diffract off a nickel crystal, just like light waves.”"
+    "dualite": "“As a particle you bounced off; as a wave you slipped through a slit narrower than you and spread out. Electrons do it too: in 1927 Davisson and Germer saw them diffract off a nickel crystal, just like light.”"
   }
 }

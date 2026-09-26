@@ -47,7 +47,7 @@ class GameText(
     val threshold: String = "TUNNEL THRESHOLD",
     val passes: String = "PASSES",
     val blocked: String = "BLOCKED",
-    val aimHelp: String = "Pull left for energy, slide up or down to aim, then let go. The tunnel threshold starts oscillating at release.",
+    val aimHelp: String = "Pull left for energy, slide up or down to aim, then let go. The thinner the barrier, the less energy it takes to tunnel through.",
     val hint: String = "Hint: the violet dotted line shows the start of the reference path.",
     val resultHeader: String = "INSTRUMENT READING",
     val outcomeWin: String = "Target reached",

@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "id": "quantique-dualite-3",
   "scale": "quantique",
   "concept": "dualite",
@@ -11,7 +11,7 @@
   "target": {
     "x": 0.86,
     "y": 0.45,
-    "r": 0.05,
+    "r": 0.055,
     "motion": {
       "axis": "y",
       "amplitude": 0.08,
@@ -39,28 +39,13 @@
     },
     {
       "id": "s3",
-      "type": "surface",
+      "type": "slit",
       "x": 0.65,
-      "y": 0.45,
-      "length": 0.24,
+      "y": 0.5,
+      "length": 1.1,
       "angle_deg": 90.0,
-      "interference_offset_deg": 180
-    },
-    {
-      "id": "wallTop",
-      "type": "wall",
-      "x": 0.65,
-      "y": 0.14,
-      "length": 0.38,
-      "angle_deg": 90.0
-    },
-    {
-      "id": "wallBot",
-      "type": "wall",
-      "x": 0.65,
-      "y": 0.81,
-      "length": 0.48,
-      "angle_deg": 90.0
+      "aperture": 0.06,
+      "aperture_at": -0.05
     },
     {
       "id": "shelf",
@@ -82,35 +67,41 @@
   "photons": [
     {
       "id": "p1",
-      "x": 0.323,
-      "y": 0.56,
-      "r": 0.03
+      "x": 0.331,
+      "y": 0.561,
+      "r": 0.03,
+      "motion": {
+        "axis": "x",
+        "amplitude": 0.08,
+        "period": 0.5,
+        "phase": 4.9009
+      }
     },
     {
       "id": "p2",
-      "x": 0.244,
-      "y": 0.428,
-      "r": 0.03
-    },
-    {
-      "id": "p3",
-      "x": 0.522,
-      "y": 0.388,
+      "x": 0.495,
+      "y": 0.443,
       "r": 0.03,
       "motion": {
         "axis": "y",
-        "amplitude": 0.08,
+        "amplitude": 0.04,
         "period": 0.5,
-        "phase": 5.5292
+        "phase": 0.754
       }
+    },
+    {
+      "id": "p3",
+      "x": 0.732,
+      "y": 0.409,
+      "r": 0.03
     }
   ],
   "max_wall_bounces": 1,
   "param_space": {
     "angle_deg": {
       "type": "range",
-      "min": -15,
-      "max": 15,
+      "min": -8,
+      "max": 1,
       "step": 1
     },
     "power": {
@@ -121,16 +112,16 @@
     },
     "tap_time": {
       "type": "range",
-      "min": 0.1,
+      "min": 0.5,
       "max": 2.2,
       "step": 0.05
     }
   },
   "hint": {
     "params": {
-      "angle_deg": -3,
+      "angle_deg": -4,
       "power": 0.8,
-      "tap_time": 1.15
+      "tap_time": 0.8
     }
   }
 }

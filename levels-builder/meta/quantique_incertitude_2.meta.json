@@ -1,12 +1,12 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "id": "quantique-incertitude-2",
   "must_contact": [],
   "solvable": true,
   "reference_solution": {
     "params": {
-      "angle_deg": -21.5,
-      "precision": 0.85
+      "angle_deg": -15.5,
+      "precision": 0.65
     },
     "photons_collected": 3,
     "photon_ids": [
@@ -16,17 +16,17 @@
     ]
   },
   "max_photons_reachable": 3,
-  "tolerance": 0.1728,
-  "three_star_tolerance": 0.0272,
+  "tolerance": 0.0851,
+  "three_star_tolerance": 0.0713,
   "bypass_solutions": 0,
   "star_profile": {
-    "rays": 1065,
-    "valid_rays": 184,
-    "distinct_paths": 9,
+    "rays": 3655,
+    "valid_rays": 297,
+    "distinct_paths": 30,
     "shares": {
-      "1": 0.8315,
-      "2": 0.5,
-      "3": 0.1576
+      "1": 0.9933,
+      "2": 0.9091,
+      "3": 0.798
     },
     "target_shares": {
       "1": 0.8226,

@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "id": "quantique-tunnel-3",
   "scale": "quantique",
   "concept": "tunnel",
@@ -21,9 +21,9 @@
       "y": 0.8,
       "length": 0.18,
       "angle_deg": 90.0,
-      "energy_threshold": 0.6,
-      "threshold_motion": {
-        "amplitude": 0.38,
+      "thickness": 0.03,
+      "thickness_motion": {
+        "amplitude": 0.011,
         "period": 0.9,
         "phase": 1.5
       }
@@ -43,9 +43,9 @@
       "y": 0.45,
       "length": 0.18,
       "angle_deg": 0.0,
-      "energy_threshold": 0.6,
-      "threshold_motion": {
-        "amplitude": 0.38,
+      "thickness": 0.03,
+      "thickness_motion": {
+        "amplitude": 0.011,
         "period": 0.9,
         "phase": 3.0
       }
@@ -86,32 +86,32 @@
   "photons": [
     {
       "id": "p1",
-      "x": 0.188,
-      "y": 0.795,
-      "r": 0.03,
-      "motion": {
-        "axis": "y",
-        "amplitude": 0.04,
-        "period": 0.5,
-        "phase": 3.5186
-      }
-    },
-    {
-      "id": "p2",
-      "x": 0.236,
-      "y": 0.793,
+      "x": 0.438,
+      "y": 0.782,
       "r": 0.03,
       "motion": {
         "axis": "y",
         "amplitude": 0.08,
         "period": 0.5,
-        "phase": 2.0106
+        "phase": 6.0319
+      }
+    },
+    {
+      "id": "p2",
+      "x": 0.515,
+      "y": 0.778,
+      "r": 0.03,
+      "motion": {
+        "axis": "y",
+        "amplitude": 0.08,
+        "period": 0.5,
+        "phase": 4.5239
       }
     },
     {
       "id": "p3",
       "x": 0.612,
-      "y": 0.614,
+      "y": 0.609,
       "r": 0.03
     }
   ],
@@ -133,7 +133,7 @@
   "hint": {
     "params": {
       "angle_deg": -3,
-      "power": 0.4
+      "power": 0.65
     }
   }
 }

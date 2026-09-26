@@ -1,9 +1,9 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "id": "quantique-spin-1",
   "must_contact": [
     [
-      "pole",
+      "magnet",
       "deflect"
     ]
   ],

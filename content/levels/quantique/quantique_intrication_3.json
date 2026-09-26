@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "id": "quantique-intrication-3",
   "scale": "quantique",
   "concept": "intrication",
@@ -15,12 +15,20 @@
   },
   "obstacles": [
     {
+      "id": "crystal",
+      "type": "crystal",
+      "x": 0.14,
+      "y": 0.62,
+      "r": 0.03
+    },
+    {
       "id": "A",
       "type": "gate_anti",
       "x": 0.3,
       "y": 0.8,
       "length": 0.16,
-      "angle_deg": 90.0
+      "angle_deg": 90.0,
+      "pair": "crystal"
     },
     {
       "id": "M",
@@ -28,7 +36,8 @@
       "x": 0.55,
       "y": 0.8,
       "length": 0.198,
-      "angle_deg": -45.0
+      "angle_deg": -45.0,
+      "pair": "crystal"
     },
     {
       "id": "B",
@@ -36,7 +45,8 @@
       "x": 0.55,
       "y": 0.45,
       "length": 0.16,
-      "angle_deg": 0.0
+      "angle_deg": 0.0,
+      "pair": "crystal"
     },
     {
       "id": "ceilL",

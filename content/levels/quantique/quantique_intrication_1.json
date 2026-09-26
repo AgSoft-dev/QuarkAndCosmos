@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "id": "quantique-intrication-1",
   "scale": "quantique",
   "concept": "intrication",
@@ -15,57 +15,76 @@
   },
   "obstacles": [
     {
+      "id": "crystal",
+      "type": "crystal",
+      "x": 0.16,
+      "y": 0.3,
+      "r": 0.03
+    },
+    {
       "id": "gate",
       "type": "gate",
       "x": 0.5,
       "y": 0.5,
-      "r": 0.05
+      "length": 0.16,
+      "angle_deg": 90.0,
+      "pair": "crystal"
+    },
+    {
+      "id": "wTop",
+      "type": "wall",
+      "x": 0.5,
+      "y": 0.185,
+      "length": 0.47,
+      "angle_deg": 90.0
+    },
+    {
+      "id": "wBot",
+      "type": "wall",
+      "x": 0.5,
+      "y": 0.815,
+      "length": 0.47,
+      "angle_deg": 90.0
     }
   ],
   "photons": [
     {
       "id": "p1",
-      "x": 0.233,
-      "y": 0.5,
+      "x": 0.212,
+      "y": 0.508,
       "r": 0.03,
       "motion": {
         "axis": "y",
         "amplitude": 0.08,
         "period": 0.5,
-        "phase": 3.8956
+        "phase": 4.2726
       }
     },
     {
       "id": "p2",
-      "x": 0.317,
-      "y": 0.5,
-      "r": 0.03,
-      "motion": {
-        "axis": "y",
-        "amplitude": 0.08,
-        "period": 0.5,
-        "phase": 2.3876
-      }
-    },
-    {
-      "id": "p3",
-      "x": 0.685,
-      "y": 0.5,
+      "x": 0.652,
+      "y": 0.539,
       "r": 0.03,
       "motion": {
         "axis": "y",
         "amplitude": 0.04,
         "period": 0.5,
-        "phase": 4.9009
+        "phase": 2.6389
       }
+    },
+    {
+      "id": "p3",
+      "x": 0.735,
+      "y": 0.544,
+      "r": 0.03
     }
   ],
-  "max_wall_bounces": 1,
+  "max_wall_bounces": 0,
   "param_space": {
     "angle_deg": {
       "type": "range",
-      "min": -3,
-      "max": 3,
+      "min": -12,
+      "max": 12,
       "step": 1
     },
     "power": {
@@ -84,8 +103,8 @@
   },
   "hint": {
     "params": {
-      "angle_deg": -2,
-      "power": 0.7,
+      "angle_deg": 1,
+      "power": 0.5,
       "tap_time": 0.1
     }
   }

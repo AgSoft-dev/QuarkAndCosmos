@@ -51,9 +51,9 @@ These are errors, not simplifications. The `physics-reviewer` agent rejects them
 
 ## The 7 Quantum concepts
 
-Order and ids from `gameplay-mechanics` (single source). Concept ids stay French data keys. Status of each mechanic: **approved** by the user on 2026-09-26 ([ADR-0008](../../../docs/decisions/ADR-0008-quantum-concept-fixes.md)); superposition and `TAP_MIN_TIME` are already implemented, the other fixes are implemented in S5 (`todo.md`). Until then the shipped levels use the "current" mechanics described in `gameplay-mechanics`.
+Order and ids from `gameplay-mechanics` (single source). Concept ids stay French data keys. Status of each mechanic: **approved** by the user on 2026-09-26 ([ADR-0008](../../../docs/decisions/ADR-0008-quantum-concept-fixes.md)); all of them are implemented in the level builder since S5 (`gameplay-mechanics`, `docs/physics-spec.md`).
 
-The shipped lines in `content/codex/{en,fr}/quantique.json` were rewritten from the drafts below on 2026-09-26 (user request), adjusted so they stay true for the current levels as well as the S5 mechanics (no mention of rung counts, crystals or slit widths the current levels don't show). The drafts remain the target once S5 ships; the §2.1 teacher review is still to do. Each draft is ≤ 280 characters in both languages. Hypothesis cards are for the before-level step of the loop (not implemented).
+The shipped lines in `content/codex/{en,fr}/quantique.json` follow the drafts below (rewritten 2026-09-26; entanglement, quantisation and duality switched to the full drafts once S5 implemented their mechanics). The §2.1 teacher review is still to do. Each draft is ≤ 280 characters in both languages. Hypothesis cards are for the before-level step of the loop (not implemented).
 
 ### 1 — `tunnel` — Tunnel effect
 
@@ -115,6 +115,7 @@ The shipped lines in `content/codex/{en,fr}/quantique.json` were rewritten from 
 - **Rule the player predicts:** this lock opens only for E2; E1 or E3 bounce off.
 - **Approved mechanic (rung-lock):** the launcher has **energy rungs E1…E4** (no continuous power). Locks (barriers/gates) accept **one exact rung**, not a threshold: too little and too much both bounce. Photons are **colour-matched** to rungs: a Photon is collected only by a Quarky on its rung (colour = energy, doubled by the number of rays, see `art-direction`).
 - **Quantisation rungs (user decision 2026-09-26): 4 rungs E1…E4 are kept.** The Photon colour-blind double gets a fourth step: **4 / 6 / 8 / 10 rays** for E1 / E2 / E3 / E4, and a fourth energy colour chosen with `art-direction` in S5 and run through the palette validator (candidate `#fef08a`: normal-vision ΔE ≥ 15 against the three existing colours; the worst colour-blind pair stays the existing violet/cyan one, already doubled by the rays). Because 8 vs 10 rays is hard to count at Photon size, E4 also carries a thin outer ring, so no rung relies on colour or a close ray count alone.
+- **In-flight action:** the tap makes Quarky jump **down** one rung (event `emit`), like an atom giving out light of one exact colour — the only way to change rung during the flight.
 - **In-level feedback:** the launcher coils light up rung by rung; a Photon changes colour when it matches the current rung; each lock shows the rung it accepts.
 - **Codex anchor:** neon signs, lasers, spectral lines (each element's barcode of colours).
 - **In real physics…** it is the energy of a particle *bound* in an atom that is quantised; a free particle can move at any speed. The launcher's rungs stand for an atom's energy levels, and a jump between two levels gives out a photon of energy E = hν, hence one exact colour.
@@ -183,10 +184,11 @@ Apply to every Codex line, player-facing string, handler docstring and concept s
 
 ## Status
 
-Created 2026-09-26 (S4). The **fixed Quantum mechanics are approved** by the user ([ADR-0008](../../../docs/decisions/ADR-0008-quantum-concept-fixes.md)); implementation is S5. The Core/Enrichment labels are a proposal pending the §2.1 `[GATE]`. The shipped Codex lines and the Tunnel in-game strings were corrected against this skill on 2026-09-26; tunnel and uncertainty models decided (see those sections).
+Created 2026-09-26 (S4). The **fixed Quantum mechanics are approved** by the user ([ADR-0008](../../../docs/decisions/ADR-0008-quantum-concept-fixes.md)) and implemented (S5). The Core/Enrichment labels are a proposal pending the §2.1 `[GATE]`. The shipped Codex lines and the Tunnel in-game strings were corrected against this skill on 2026-09-26; tunnel and uncertainty models decided (see those sections).
 
 ## Changelog
 
+- 2026-09-26 — S5: mechanics implemented; quantisation's in-flight action = jump down one rung; shipped Codex lines for entanglement, quantisation and duality now the full drafts.
 - 2026-09-26 — Quantisation keeps 4 rungs (user decision): Photon double becomes 4/6/8/10 rays + an outer ring on E4.
 - 2026-09-26 — Tunnel model (height above max energy, threshold E_t(d) = V − (k/d)²) and uncertainty model (seeded draw inside a cone of probability, validated on the whole cone) decided by the user; shipped Codex lines and Tunnel strings corrected.
 - 2026-09-26 — Created (S4): target and principles, forbidden simplifications, Core/Enrichment proposal, per-concept tables with the approved §2.2 fixes (ADR-0008), EN/FR Codex drafts and hypothesis cards, Codex writing rules, §2.3 loop as guidance, review checklist.

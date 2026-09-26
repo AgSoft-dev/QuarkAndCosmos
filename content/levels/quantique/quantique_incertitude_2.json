@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "id": "quantique-incertitude-2",
   "scale": "quantique",
   "concept": "incertitude",
@@ -10,76 +10,66 @@
   },
   "target": {
     "x": 0.85,
-    "y": 0.39,
-    "r": 0.05,
+    "y": 0.42,
+    "r": 0.08,
     "motion": {
       "axis": "y",
-      "amplitude": 0.04,
+      "amplitude": 0.07,
       "period": 1.1
     }
+  },
+  "cone": {
+    "speed": 0.7,
+    "angle": [
+      0.5,
+      6.0
+    ],
+    "speed_spread": 0.5
   },
   "obstacles": [
     {
       "id": "slitTop",
       "type": "wall",
       "x": 0.45,
-      "y": 0.2075,
-      "length": 0.515,
+      "y": 0.21,
+      "length": 0.52,
       "angle_deg": 90.0
     },
     {
       "id": "slitBot",
       "type": "wall",
       "x": 0.45,
-      "y": 0.7925,
-      "length": 0.515,
+      "y": 0.8,
+      "length": 0.5,
       "angle_deg": 90.0
     }
   ],
   "photons": [
     {
       "id": "p1",
-      "x": 0.26,
-      "y": 0.551,
-      "r": 0.03,
-      "motion": {
-        "axis": "y",
-        "amplitude": 0.08,
-        "period": 0.25,
-        "phase": 2.0106
-      }
+      "x": 0.558,
+      "y": 0.498,
+      "r": 0.03
     },
     {
       "id": "p2",
-      "x": 0.332,
-      "y": 0.529,
-      "r": 0.03,
-      "motion": {
-        "axis": "y",
-        "amplitude": 0.08,
-        "period": 0.5,
-        "phase": 0.377
-      }
+      "x": 0.64,
+      "y": 0.48,
+      "r": 0.03
     },
     {
       "id": "p3",
-      "x": 0.59,
-      "y": 0.45,
-      "r": 0.03,
-      "motion": {
-        "axis": "y",
-        "amplitude": 0.08,
-        "period": 0.5,
-        "phase": 5.6549
-      }
+      "x": 0.722,
+      "y": 0.462,
+      "r": 0.03
     }
   ],
   "max_wall_bounces": 0,
   "param_space": {
     "angle_deg": {
       "type": "range",
-      "min": -30,
-      "max": 5,
+      "min": -22,
+      "max": -8,
       "step": 0.5
     },
     "precision": {
@@ -91,8 +81,8 @@
   },
   "hint": {
     "params": {
-      "angle_deg": -21.5,
-      "precision": 0.85
+      "angle_deg": -15.5,
+      "precision": 0.65
     }
   }
 }

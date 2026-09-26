@@ -44,21 +44,27 @@ DEFAULT_HANDLER = intrication_gate
 HANDLERS = {"gate": intrication_gate, "gate_anti": intrication_gate_anti}
 
 
+def _crystal(x=0.16, y=0.3):
+    """The NEAR crystal of the entangled pair (never touched: the tap measures
+    it). Its far partners are the gates whose `pair` is "crystal"."""
+    return {"id": "crystal", "type": "crystal", "x": x, "y": y, "r": 0.03}
+
+
 def _level_1():
-    # An in-flight action (see gameplay-mechanics) replaces the pre-launch
-    # lever: the player taps ONCE during the flight (tap_time, searched by the
-    # solver like the angle or the power) — the witness AND the gate flip at
-    # the same instant. Too early or too late = gate closed when passing =
-    # bounce.
+    # Discover (beta level): tapping in flight measures the NEAR crystal; the
+    # FAR gate, entangled with it, opens at the same instant (ADR-0008). Tap
+    # before reaching the gate — once is all it takes, but only once.
     return {
         "launcher": {"x": 0.1, "y": 0.5},
         "target": {"x": 0.85, "y": 0.5, "r": 0.05},
         "obstacles": [
-            {"id": "gate", "type": "gate", "x": 0.5, "y": 0.5, "r": 0.05},
-        ],
-        "must_contact": [["gate", "pass"]],
+            _crystal(),
+            seg("gate", "gate", 0.5, 0.42, 0.5, 0.58, pair="crystal"),
+        ] + door_wall("w", 0.5, 0.42, 0.58),
+        "must_contact": [["crystal", "measure"], ["gate", "pass"]],
+        "max_wall_bounces": 0,
         "param_space": {
-            "angle_deg": {"type": "range", "min": -3, "max": 3, "step": 1},
+            "angle_deg": {"type": "range", "min": -12, "max": 12, "step": 1},
             "power": {"type": "choice", "values": [0.5, 0.7]},
             "tap_time": {"type": "range", "min": TAP_MIN_TIME, "max": 1.0, "step": 0.05},
         },
@@ -73,10 +79,11 @@ def _level_2():
         "launcher": {"x": 0.1, "y": 0.5},
         "target": {"x": 0.88, "y": 0.5, "r": 0.05},
         "obstacles": [
-            seg("A", "gate_anti", 0.4, 0.42, 0.4, 0.58),
-            seg("B", "gate", 0.65, 0.42, 0.65, 0.58),
+            _crystal(),
+            seg("A", "gate_anti", 0.4, 0.42, 0.4, 0.58, pair="crystal"),
+            seg("B", "gate", 0.65, 0.42, 0.65, 0.58, pair="crystal"),
         ] + door_wall("wA", 0.4, 0.42, 0.58) + door_wall("wB", 0.65, 0.42, 0.58),
-        "must_contact": [["A", "pass"], ["B", "pass"]],
+        "must_contact": [["A", "pass"], ["crystal", "measure"], ["B", "pass"]],
         "max_wall_bounces": 0,
         "param_space": {
             "angle_deg": {"type": "range", "min": -12, "max": 12, "step": 1},
@@ -96,13 +103,14 @@ def _level_3():
         "launcher": {"x": 0.1, "y": 0.8},
         "target": {"x": 0.55, "y": 0.18, "r": 0.05},
         "obstacles": [
-            seg("A", "gate_anti", 0.3, 0.72, 0.3, 0.88),
-            seg("M", "gate", 0.48, 0.87, 0.62, 0.73),
-            seg("B", "gate", 0.47, 0.45, 0.63, 0.45),
+            _crystal(0.14, 0.62),
+            seg("A", "gate_anti", 0.3, 0.72, 0.3, 0.88, pair="crystal"),
+            seg("M", "gate", 0.48, 0.87, 0.62, 0.73, pair="crystal"),
+            seg("B", "gate", 0.47, 0.45, 0.63, 0.45, pair="crystal"),
             seg("ceilL", "wall", 0.3, 0.45, 0.47, 0.45),
             seg("ceilR", "wall", 0.63, 0.45, 1.05, 0.45),
         ] + door_wall("wA", 0.3, 0.72, 0.88),
-        "must_contact": [["A", "pass"], ["M", "bounce"], ["B", "pass"]],
+        "must_contact": [["A", "pass"], ["M", "bounce"], ["crystal", "measure"], ["B", "pass"]],
         "max_wall_bounces": 0,
         "param_space": {
             "angle_deg": {"type": "range", "min": -12, "max": 12, "step": 1},

@@ -17,11 +17,11 @@ def _level(obstacles, concept="spin", target=(5.0, 5.0)):
     }
 
 
-def test_pole_deflects_once_per_contact():
+def test_magnet_deflects_once_per_contact():
     # Before the fix, the deflection was re-applied at every step spent
     # inside the pole's radius (total deflection = N * kick).
-    pole = {"id": "pole", "type": "pole", "x": 0.4, "y": 0.5, "r": 0.06, "pole": "+", "kick_deg": -30}
-    res = simulate(_level([pole]), {"angle_deg": 0, "power": 0.5, "spin_up": True}, record_trail=True)
+    magnet = {"id": "magnet", "type": "magnet", "x": 0.4, "y": 0.5, "r": 0.06, "up_deg": -90, "kick_deg": 30}
+    res = simulate(_level([magnet]), {"angle_deg": 0, "power": 0.5, "spin_up": True}, record_trail=True)
     trail = res.trail
     after = vec.sub(trail[60], trail[59])
     assert vec.angle_of(after) == pytest.approx(-30, abs=1e-6)

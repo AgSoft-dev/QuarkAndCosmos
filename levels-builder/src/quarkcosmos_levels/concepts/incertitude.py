@@ -19,53 +19,60 @@ HANDLERS = {}
 # Continuous dial (slider): with notches, speed and arrival time would be
 # discrete too and the moving target would become a lottery.
 PRECISIONS = {"type": "range", "min": 0.3, "max": 1.0, "step": 0.05}
+# Cone of probability (ADR-0008 follow-up, core/simulate.cone_spreads): the
+# launcher always fires at `speed`; the precision dial narrows the direction
+# cone (half-angle from 6° down to 0.5°) and in exchange widens the speed
+# spread (up to ±0.5). The shot is a seeded draw inside both; a level is
+# proven on the whole cone (simulate_cone).
+CONE = {"speed": 0.7, "angle": [0.5, 6.0], "speed_spread": 0.5}
 
 
 def _level_1():
-    # Oscillating element (see gameplay-mechanics): the target drifts
-    # slightly — it combines with the existing precision/speed trade-off
-    # (aiming right is no longer enough, you must also arrive at the right
-    # moment).
+    # Discover (beta level): a slit, then a portal that drifts. Too
+    # imprecise, the cone does not fit through the slit; too precise, the
+    # speed is so uncertain that the arrival instant — hence where the portal
+    # is — becomes unpredictable. Only a middle setting (0.6–0.9) works for
+    # every shot of the cone: that trade-off IS the uncertainty principle.
     return {
         "launcher": {"x": 0.1, "y": 0.6},
-        "target": {"x": 0.85, "y": 0.5, "r": 0.03, "motion": {"axis": "y", "amplitude": 0.02, "period": 0.8}},
-        "obstacles": [],
+        "target": {"x": 0.85, "y": 0.5, "r": 0.08, "motion": {"axis": "y", "amplitude": 0.06, "period": 1.3}},
+        "cone": CONE,
+        "obstacles": door_wall("slit", 0.45, 0.495, 0.585),
+        "max_wall_bounces": 0,
         "param_space": {
-            "angle_deg": {"type": "range", "min": -15, "max": 5, "step": 0.5},
-            "precision": {"type": "choice", "values": [0.3, 0.5, 0.7, 0.8, 0.9, 1.0]},
+            "angle_deg": {"type": "range", "min": -10, "max": 5, "step": 0.5},
+            "precision": PRECISIONS,
         },
     }
 
 
 def _level_2():
-    # Dilemma: a narrow slit needs precise aim (high dial)... which slows
-    # Quarky down, while the target behind the slit drifts. An imprecise dial
-    # is fast but only aims in big steps: find the trade-off that clears the
-    # slit AND arrives at the right moment.
+    # Sequence: a narrower slit and a faster portal — the working band of the
+    # precision dial shrinks.
     return {
         "launcher": {"x": 0.1, "y": 0.6},
-        "target": {"x": 0.85, "y": 0.39, "r": 0.05,
-                   "motion": {"axis": "y", "amplitude": 0.04, "period": 1.1}},
-        "obstacles": door_wall("slit", 0.45, 0.465, 0.535),
+        "target": {"x": 0.85, "y": 0.42, "r": 0.08, "motion": {"axis": "y", "amplitude": 0.07, "period": 1.1}},
+        "cone": CONE,
+        "obstacles": door_wall("slit", 0.45, 0.47, 0.55),
         "max_wall_bounces": 0,
         "param_space": {
-            "angle_deg": {"type": "range", "min": -30, "max": 5, "step": 0.5},
+            "angle_deg": {"type": "range", "min": -22, "max": -8, "step": 0.5},
             "precision": PRECISIONS,
         },
     }
 
 
 def _level_3():
-    # Two aligned slits (tighter opening) and a faster-drifting target: the
-    # precision/speed trade-off gets tighter.
+    # Chain: two aligned slits and a drifting portal — the cone must thread
+    # both slits while the speed stays predictable enough.
     return {
         "launcher": {"x": 0.1, "y": 0.7},
-        "target": {"x": 0.88, "y": 0.33, "r": 0.04,
-                   "motion": {"axis": "y", "amplitude": 0.07, "period": 0.8}},
-        "obstacles": door_wall("slit1", 0.35, 0.535, 0.625) + door_wall("slit2", 0.6, 0.42, 0.51),
+        "target": {"x": 0.88, "y": 0.36, "r": 0.08, "motion": {"axis": "y", "amplitude": 0.05, "period": 1.3}},
+        "cone": CONE,
+        "obstacles": door_wall("slit1", 0.35, 0.53, 0.63) + door_wall("slit2", 0.6, 0.42, 0.52),
         "max_wall_bounces": 0,
         "param_space": {
-            "angle_deg": {"type": "range", "min": -35, "max": 5, "step": 0.5},
+            "angle_deg": {"type": "range", "min": -32, "max": -18, "step": 0.5},
             "precision": PRECISIONS,
         },
     }

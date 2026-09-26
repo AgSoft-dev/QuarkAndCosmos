@@ -1,0 +1,49 @@
+{
+  "world": "quantique",
+  "scope": "beta",
+  "schema_version": 4,
+  "levels": [
+    {
+      "id": "quantique-tunnel-1",
+      "concept": "tunnel",
+      "file": "quantique_tunnel_1.json",
+      "sha256": "8721732956767f6919cd6d8271ea3f1a10ef63bbc90d4de678eacafa1ab97379"
+    },
+    {
+      "id": "quantique-superposition-1",
+      "concept": "superposition",
+      "file": "quantique_superposition_1.json",
+      "sha256": "6fb0970b7178ae2ed31c2f6c66c69c2360efb7da91e1796ce06826e35e602e03"
+    },
+    {
+      "id": "quantique-intrication-1",
+      "concept": "intrication",
+      "file": "quantique_intrication_1.json",
+      "sha256": "26efe6892d508cc1eb5490d64b101e0918d7186c8a89c16489d285e4700b6bac"
+    },
+    {
+      "id": "quantique-incertitude-1",
+      "concept": "incertitude",
+      "file": "quantique_incertitude_1.json",
+      "sha256": "60fd4e38f14f0bda0d936b57b04aff5d3573b7e24bfc2da2f6e803fa9c0c5b0f"
+    },
+    {
+      "id": "quantique-quantification-1",
+      "concept": "quantification",
+      "file": "quantique_quantification_1.json",
+      "sha256": "03b6813c2a83ea3dc86aaff5c0b29d8b507ab6df2a0714cd2e3d05c0bce5440c"
+    },
+    {
+      "id": "quantique-spin-1",
+      "concept": "spin",
+      "file": "quantique_spin_1.json",
+      "sha256": "40c69aec389b3cc0f3c148ce194007f1ba966b5729a331ac7b6231976403c99e"
+    },
+    {
+      "id": "quantique-dualite-1",
+      "concept": "dualite",
+      "file": "quantique_dualite_1.json",
+      "sha256": "57d500b6ab50c9346eeb9bf6fd7d2a044ecaae37530e8788c3970296f336df50"
+    }
+  ]
+}
