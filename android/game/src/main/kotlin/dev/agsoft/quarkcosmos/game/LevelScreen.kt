@@ -43,10 +43,13 @@ import kotlin.math.sqrt
 /**
  * One playable level (POC: Tunnel 1). Portrait, art direction v2 "B + C background".
  *
- * - Aim: drag back from anywhere in the box (slingshot), release to launch.
- *   Angle and energy snap to the level's `param_space` grid — the one on which
- *   the validator proved solvability and measured the stars. Coming back near
- *   the start point cancels.
+ * - Aim: linear slingshot, from anywhere in the box. The two axes of the drag
+ *   are independent: pulling left sets the energy (length of the pull), sliding
+ *   up/down turns the aim at a fixed rate from its current value (down aims up,
+ *   like a slingshot). Release launches once the pull is past the dead zone;
+ *   a release without a pull only keeps the new angle. Angle and energy snap to
+ *   the level's `param_space` grid — the one on which the validator proved
+ *   solvability and measured the stars.
  * - Flight: the physics (`:core-physics`) advances in whole DT steps, the
  *   render interpolates between the last two states. The apparatus "starts"
  *   with the shot: every oscillation starts from t = 0 at release (spec §3).
@@ -104,6 +107,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
     private var dragging = false
     private var armed = false
     private val dragStart = Vector2()
+    private var dragAngle0 = 0.0
     private var pull = 0f
     private var sim: Simulation? = null
     private var acc = 0f
@@ -185,21 +189,20 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
             dragging = true
             armed = false
             dragStart.set(x, y)
+            dragAngle0 = aimAngle
         }
     }
 
     private fun onDrag(x: Float, y: Float) {
         if (!dragging) return
+        // pull to the left = energy; slide up/down = aim (physics angle, y pointing down)
         val dx = dragStart.x - x
         val dy = dragStart.y - y
-        pull = sqrt(dx * dx + dy * dy)
+        pull = max(dx, 0f)
         armed = pull > DEAD_ZONE
-        if (!armed) return
-        // shot direction = opposite of the gesture; physics angle (y pointing down)
-        val deg = Math.toDegrees(atan2(-dy, dx).toDouble()).coerceIn(angleMin, angleMax)
-        val pw = powerMin + (((pull - DEAD_ZONE) / PULL_RANGE).coerceIn(0f, 1f)) * (powerMax - powerMin)
+        val deg = (dragAngle0 - dy / DEG_PER_UNIT).coerceIn(angleMin, angleMax)
         val a = ParamGrid.snap(angleSpec, deg)
-        val p = ParamGrid.snap(powerSpec, pw)
+        val p = if (armed) ParamGrid.snap(powerSpec, powerMin + ((pull - DEAD_ZONE) / PULL_RANGE).coerceIn(0f, 1f) * (powerMax - powerMin)) else aimPower
         if (a != aimAngle || p != aimPower) host.haptic(Haptic.TICK)
         aimAngle = a
         aimPower = p
@@ -1049,6 +1052,8 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         const val LAUNCHER_R = 24f
         const val DEAD_ZONE = 14f
         const val PULL_RANGE = 150f
+        /** Vertical drag (virtual units) per degree of aim. */
+        const val DEG_PER_UNIT = 6f
         const val OUTRO = .8f
         const val TRAIL = 512
         const val TRAIL_DRAWN = 45

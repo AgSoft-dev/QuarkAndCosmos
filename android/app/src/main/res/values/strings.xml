@@ -64,7 +64,7 @@
     <string name="game_threshold">BARRIER THRESHOLD</string>
     <string name="game_passes">PASSES</string>
     <string name="game_blocked">BLOCKED</string>
-    <string name="game_aim_help">Pull Quarky back, then let go. The barrier’s threshold starts oscillating at release.</string>
+    <string name="game_aim_help">Pull left for energy, slide up or down to aim, then let go. The barrier’s threshold starts oscillating at release.</string>
     <string name="game_hint">Hint: the violet dotted line shows the start of the reference path.</string>
     <string name="game_result">INSTRUMENT READING</string>
     <string name="game_outcome_win">Target reached</string>

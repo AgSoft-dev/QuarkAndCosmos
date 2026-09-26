@@ -58,7 +58,7 @@
     <string name="game_threshold">SEUIL DE LA BARRIÈRE</string>
     <string name="game_passes">PASSE</string>
     <string name="game_blocked">BLOQUE</string>
-    <string name="game_aim_help">Tire Quarky vers l’arrière, puis relâche. Le seuil de la barrière oscille dès le lâcher.</string>
+    <string name="game_aim_help">Tire vers la gauche pour l’énergie, glisse vers le haut ou le bas pour viser, puis relâche. Le seuil de la barrière oscille dès le lâcher.</string>
     <string name="game_hint">Indice : le pointillé mauve montre le départ de la trajectoire de référence.</string>
     <string name="game_result">LECTURE DE L’INSTRUMENT</string>
     <string name="game_outcome_win">Cible atteinte</string>

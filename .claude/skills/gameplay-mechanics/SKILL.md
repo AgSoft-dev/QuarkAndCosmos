@@ -29,6 +29,8 @@ Decoherence was removed from the beta scope (design feedback: redundant with sup
 
 Slingshot drag-and-release: the player pulls Quarky back then lets go; physics (gravity where the scale has it, plus any fields) does the rest until the target or a failure. See the mockup [`design/mockups/index.html`](../../../design/mockups/index.html).
 
+**Touch mapping (Android, user decision 2026-09-26): linear slingshot.** The drag starts anywhere in the play area and its two axes are independent: the horizontal pull away from the shot sets the energy (by length), the vertical slide turns the aim at a fixed rate (≈ 6 px per degree, down aims up) from its current value. Release launches; a release without a pull only keeps the new angle. Replaces the angle-from-drag-direction mapping, too twitchy on short pulls and pinned at the edges of narrow angle ranges.
+
 ## Object control — the "lab experiment" paradigm
 
 Consistent with the premise of the `storytelling` skill (Quarky born from a lab experiment): before launching, the player can set some objects of the scene like lab instruments, not just place them.
@@ -103,5 +105,6 @@ Direction validated for the mechanics above (launch loop, lab-style object setti
 
 ## Changelog
 
+- 2026-09-26 — Touch mapping: linear slingshot (energy = horizontal pull, aim = vertical slide).
 - 2026-09-26 — Translated to English; the beta concept list moved here from `CLAUDE.md` (single source); paths updated to the `levels-builder/` layout (S1).
 - 2026-09-25 — Two-ghost superposition; difficulty by layout (21 levels); ray-traced star distribution; `TAP_MIN_TIME`.
