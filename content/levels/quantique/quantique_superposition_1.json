@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "id": "quantique-superposition-1",
   "scale": "quantique",
   "concept": "superposition",
@@ -42,32 +42,38 @@
   "photons": [
     {
       "id": "p1",
-      "x": 0.596,
-      "y": 0.522,
+      "x": 0.4,
+      "y": 0.805,
       "r": 0.03,
       "motion": {
-        "axis": "y",
-        "amplitude": 0.06,
-        "period": 0.15,
-        "phase": 5.8643
+        "axis": "x",
+        "amplitude": 0.04,
+        "period": 0.25,
+        "phase": 1.508
       }
     },
     {
       "id": "p2",
-      "x": 0.656,
-      "y": 0.517,
-      "r": 0.03
+      "x": 0.4,
+      "y": 0.715,
+      "r": 0.03,
+      "motion": {
+        "axis": "x",
+        "amplitude": 0.08,
+        "period": 0.5,
+        "phase": 1.6336
+      }
     },
     {
       "id": "p3",
-      "x": 0.731,
-      "y": 0.51,
+      "x": 0.4,
+      "y": 0.64,
       "r": 0.03,
       "motion": {
-        "axis": "y",
+        "axis": "x",
         "amplitude": 0.04,
-        "period": 0.25,
-        "phase": 4.2726
+        "period": 0.5,
+        "phase": 6.0319
       }
     }
   ],
@@ -94,9 +100,9 @@
   },
   "hint": {
     "params": {
-      "angle_deg": -88,
-      "power": 0.6,
-      "tap_time": 0.6
+      "angle_deg": -92,
+      "power": 0.5,
+      "tap_time": 0.7
     }
   }
 }

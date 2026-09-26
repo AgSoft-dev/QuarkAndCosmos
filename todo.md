@@ -24,9 +24,9 @@ Problems found in the current engine and levels (checked by running `cli.py vali
   - [x] Follow-up: in 5/7 levels every winning shot also collected all 3 Photons. *Done: `engine/stars.py` places Photons by ray tracing so the share of valid shots earning ≥ k stars follows a truncated gaussian `exp(−k²/2σ²)`, with σ shrinking with difficulty. `python3 cli.py report` writes CSV/JSON/HTML (progression curves + level mini-maps) for review.*
   - [ ] Difficulty ceilings (see the report's ⚠ flags): superposition (from diff. 2), intrication (diff. 2), incertitude (3 distinct paths only), dualité, quantification and spin (diff. 3) can't narrow the 3-star window to target, because their valid paths are too alike. Fix in level geometry (difficulty-2/3 templates with more path diversity), not in placement.
   - [x] The generator used to vary only Photon placement with difficulty. *Done: 3 distinct layouts per concept (1 discover → 2 sequence → 3 chain), 21 levels, 0 bypasses (`must_contact`), and the 3rd star favours richer alternative routes. See the table in `gameplay-mechanics`.*
-  - [ ] **[GATE] Beta scope:** `CLAUDE.md` says ~1 level per concept (7). Ship 7 (difficulty 1 only), 14, or all 21 in the closed test?
+  - [x] **[GATE] Beta scope:** `CLAUDE.md` says ~1 level per concept (7). Ship 7 (difficulty 1 only), 14, or all 21 in the closed test? *Decided (user, 2026-09-26): the 7 beta levels, one per concept, each with 3 Photons (S5).*
   - [x] Superposition barely gets harder (25% → 26% → 21% winning shots): a splitter snaps every shot onto the same arm, so there's little to scale. It needs the two-ghost redesign (§2.2). *Done (user decision): two-ghost superposition. Now 17% → 10% → 6% winning shots, 0 bypasses.*
-  - [ ] Remaining 3★ ceilings at difficulty 3: quantification (a single notch works, so few distinct paths) and spin (fixed deflections). See the report.
+  - [ ] Remaining 3★ ceilings: spin 3 (fixed deflections), duality 3, and uncertainty 1–3 (the whole-cone proof leaves few, close paths: 3★ ≈ 80–99% on the centre line; in the game the random draw spreads the stars). Quantisation 3 is fixed by the rung-lock (3★ 4%). See the report.
   - [ ] Oscillations are phase-locked to the launch (the apparatus "starts" with the shot). Confirm this in the game design, or add a launch-timing parameter to the solver.
   - [ ] Full release: stars unlock the next levels/worlds (threshold ≈ 2★ average on the previous world, never 3★ everywhere); calibrate on closed-test data.
 - [x] **Degenerate in-flight taps:** the best solution for `dualite` and `intrication` was `tap_time = 0.0`. Tapping at launch makes the tap equivalent to a pre-launch setting, which defeats the rule "every concept depends on time during flight". *Done: `TAP_MIN_TIME = 0.1 s`; earlier taps are excluded from the search, and a test enforces it. Game side (decided): a tap before 0.1 s is ignored and the tap stays available.*
@@ -34,9 +34,9 @@ Problems found in the current engine and levels (checked by running `cli.py vali
 - [x] **Brittle / over-tight levels:** `tunnel` had 2 solutions in the whole grid, `quantification` had 9 and `dualite` had 7. `spin` restricted the angle to `[-12, -11]` (the solution was effectively hard-coded). *Done: `tolerance` and `three_star_tolerance` are in the report and the JSON, and a test requires ≥ 5%. Tunnel went from 4% to 21% with continuous power sampling, spin's angle range is now `[-20, 0]`, and all 7 levels are between 14% and 62%.*
 - [x] **Physics mis-vulgarisation (tunnel):** the code and the Codex line ("Assez d'énergie, et même un mur n'est plus vraiment un mur" — "with enough energy, even a wall isn't really a wall") describe *classically going over* a barrier. Quantum tunnelling is the opposite: the particle gets through **without** enough energy, with a probability that drops fast as the barrier gets thicker. See §2.
 - [x] **Superposition modelled as a deterministic splitter** chosen by impact point. That reads as "a deflector", not as "two paths at once". See §2 for a mechanic that shows both branches. *Done: a flat beam splitter makes a transmitted and a reflected ghost; a tap measures (nearest copy to a detector wins, its Photons only); target needs a measured Quarky; a copy crashing before the measure = decoherence fail. Spec: `docs/physics-spec.md` §7 bis.*
-- [ ] **`quantification` isn't distinct:** discrete power "notches" (`choice` values) are already used by every other level, so the concept has no mechanic of its own.
+- [x] **`quantification` isn't distinct:** discrete power "notches" (`choice` values) are already used by every other level, so the concept has no mechanic of its own. *Done S5: rung-lock (locks accept one exact rung), jump-down tap, colour-matched Photons.*
 - [x] **Handlers re-applied on every step of contact:** a spin pole deflected N × `kick_deg` (N depending on speed), and a barrier re-checked its oscillating threshold on every step. Handlers now fire once per contact. The old `spin` level was only solvable because of this bug, so its target was moved and its angle range widened.
-- [x] **Stale references:** `concepts.py` / `generator.py` still say "8 concepts", `concepts.py` documents a `trap` event left over from the removed Décohérence concept, and `gameplay-mechanics` says "ex. 8 concepts pour le Quantique".
+- [x] **Stale references:** `concepts.py` / `generator.py` still say "8 concepts", `concepts.py` documents a `trap` event left over from the removed Décohérence concept, and `gameplay-mechanics` says "ex. 8 concepts pour le Quantique". *Re-checked in S2: none left in code, docs or skills.*
 - [x] **No tests, no `pyproject.toml`, no level schema version, no README.** *Done: `tests/` (38 tests, including a check that the committed JSON is identical to the generator output), `pyproject.toml`, `schema_version: 1`, and `stage3-physics-engine/README.md`.*
   - [x] Follow-up (§4.1): the JSON export still ships `param_space` and the full reference solution in the game payload; split it into `level.json` / `level.meta.json`. *Done: `schema_version: 2`. `levels/<nom>.json` (shipped: geometry, Photons, `max_wall_bounces`, `param_space` for the dials, `hint.params`) + `levels/meta/<nom>.meta.json` (dev: `must_contact`, solvability, tolerances, bypasses, full reference solution, star profile). `cli.py validate` re-reads `must_contact` from the sibling meta. Tests check both files against the generator, no dev field in the shipped file, no stale file.*
 - [x] **No agents exist** (`.claude/agents/` is missing), no `.claude/settings.json`, and no CI. *CI done (`.github/workflows/level-engine.yml` runs the tests). Done: `.claude/agents/` has `physics-reviewer` (read-only), `level-designer`, `level-qa` and `art-director`, each naming its skills and the stage it may act on (`android-dev` waits for Stage 5). `.claude/settings.json` allows `python3 cli.py *`, `python3 -m pytest*`, `pip install -e*`, with a SessionStart hook that installs pytest in cloud sessions only (never blocks the session).*
@@ -89,7 +89,7 @@ Each object gets a design sheet with: idle / hover / dragged / active / disabled
 - [ ] **Gravity well / planet** `[FULL]`: a sphere with a visible funnel grid distortion. Orbital path preview in dashed violet.
 - [ ] **Black hole** `[FULL]`: pure black disc, lensing shader on the background, accretion ring.
 - [ ] **Portal target**: keep the existing concept (rotating concentric rings, a core that pulls you in) and add a **warp transition** that becomes the scale-change cinematic.
-- [ ] **Photon collectible**: keep the sparkle. Add a **colour = energy** encoding (see §2 Quantification: E = hν).
+- [x] **Photon collectible**: keep the sparkle. Add a **colour = energy** encoding (see §2 Quantification: E = hν). *Done: in `art-direction` (colour + 4/6/8 rays, 10 rays + ring for the E4 rung) and rendered by the POC.*
 
 ### 1.4 Per-scale environment & level aesthetics ⇄
 | Scale | Instrument frame | Background layers (parallax 3) | Ambient FX | Camera | Grade |
@@ -100,8 +100,8 @@ Each object gets a design sheet with: idle / hover / dragged / active / disabled
 | Orbital | Telescope eyepiece | Starfield → planet limb → nebula | Solar wind streaks | Free zoom | Violet |
 | Cosmic | Deep-field / spacetime grid | Galaxies → warped grid → CMB-like noise | The grid bends with gravity (gameplay-reactive) | Zoom + distortion | Indigo |
 
-- [ ] Rule: **the background must never compete with the trajectory**. Keep background luminance ≤ 20% of the matter layer, with no high-frequency detail behind the play area.
-- [ ] Rule: **the environment reacts to the result.** On success the background briefly "resolves" (fringes lock into a clean pattern). On failure it decoheres (noise). This is cheap, feels good and teaches something.
+- [x] Rule: **the background must never compete with the trajectory**. Keep background luminance ≤ 20% of the matter layer, with no high-frequency detail behind the play area. *Done: rule in `art-direction` (DA v2), applied in the POC.*
+- [x] Rule: **the environment reacts to the result.** On success the background briefly "resolves" (fringes lock into a clean pattern). On failure it decoheres (noise). This is cheap, feels good and teaches something. *Done: rule in `art-direction`; implemented in the POC level screen (fringe lock / decoherence).*
 - [ ] Scale-transition cinematic (5–8 s, skippable): zoom out through the portal. Quantum cavity → atom → the apparatus on the bench → the lab window → Earth → the cosmic web. This is the game's signature moment and should be shown in the store trailer.
 - [x] HUD skin as the **instrument bezel**: a thin line frame, readout typography (one monospaced display font + one humanist UI font, both OFL-licensed), and star counter / reset / object tray kept in their current positions. *Done in `art-direction` (JetBrains Mono + Fira Sans).*
 - [x] Update the `art-direction` skill with v2 once validated (keep a short "v1 → v2 decisions" changelog).
@@ -161,7 +161,7 @@ Each object gets a design sheet with: idle / hover / dragged / active / disabled
 - [ ] **During the level:** the invisible-physics layer *is* the teaching (force lines, cones, fringes). No text.
 - [ ] **After the level:** "Le saviez-vous ?" ("Did you know?") line from the scientist (≤ 280 characters) → it unlocks a Codex page (illustration + one-liner + a formula at high-school level + a real-world anchor + "Dans la vraie physique…").
 - [ ] Optional quiz (1 question, 3 answers) per world; it unlocks a cosmetic. It must never gate progression.
-- [ ] i18n from day 1: FR (source) + EN. Codex strings live in `content/codex/*.yaml`, not in Python.
+- [x] i18n from day 1: FR (source) + EN. Codex strings live in `content/codex/*.yaml`, not in Python. *Done S1 ([ADR-0007](docs/decisions/ADR-0007-repo-english-app-bilingual.md)): EN (default) + FR everywhere; Codex lines are JSON (`content/codex/{en,fr}/quantique.json`), not YAML, and not in Python.*
 
 ---
 
@@ -176,12 +176,12 @@ Each object gets a design sheet with: idle / hover / dragged / active / disabled
 - [ ] **Reward**: stars → Codex → next level. Near-miss feedback ("so close!") when Quarky passes within 1.5× the target radius.
 
 ### 3.2 Stars & collectibles
-- [ ] **3 Photons in every level, always** (fixes the audit finding). Placement rules for the generator:
+- [x] **3 Photons in every level, always** (fixes the audit finding). Placement rules for the generator: *Done: all 21 levels have 3 Photons collectable in one flight (tested). Placement uses the ray-traced star distribution (§0) rather than the three fixed tiers below.*
   1. Photon 1 is **on the obvious path** (teaches collecting).
   2. Photon 2 requires **using the concept well** (e.g. only reachable by the wave-mode path).
   3. Photon 3 requires **mastery/timing** (a late tap, an edge of the tolerance window).
   All three must be collectable in *one* flight, and the validator must prove it.
-- [ ] Photons are placed **on physically meaningful points of a solution trajectory** (apex, post-reflection segment, the far side of the barrier), sampled from the solver's trails, not placed at random.
+- [x] Photons are placed **on physically meaningful points of a solution trajectory** (apex, post-reflection segment, the far side of the barrier), sampled from the solver's trails, not placed at random. *Done: `solver/stars.py` samples candidates on the reference trails.*
 - [ ] Optional per-world secret: one **"Quark d'or"** hidden collectible per world, off the main path, that unlocks a Codex bonus page. `[FULL]`
 - [ ] Star gates between worlds (e.g. 70% of stars to unlock the next world) `[FULL]`. The beta has no gates.
 
@@ -191,13 +191,13 @@ Each object gets a design sheet with: idle / hover / dragged / active / disabled
 - [ ] Hit-stop of 40–60 ms on key events (tunnel crossing, collapse, portal).
 - [ ] Camera: micro-shake on impacts only (≤ 2 px), with an accessibility toggle.
 - [ ] Audio stings per event, tuned in pitch per scale (Stage 4, but reserve the hooks now).
-- [ ] Touch: drag target ≥ 48 dp, drag starts from anywhere near Quarky (a 2× radius), cancel by dragging back to the origin.
+- [ ] Touch: drag target ≥ 48 dp, drag starts from anywhere near Quarky (a 2× radius), cancel by dragging back to the origin. *POC differs (user decision 2026-09-26): linear slingshot from anywhere in the box, cancel = release without a pull. Room near the screen edges handled: edge-aware pull range, aim rate fitted to the angle range, drag rail.*
 
 ### 3.4 Progression across scales
 - [ ] Beta: 7 levels, linear, a Codex page per level. Onboarding in level 1 uses **no text**: a ghost hand shows the drag once. *POC (user request 2026-09-26): a looping ghost-finger tour on Tunnel 1 with faded arrows and three short labels (energy / aim / let go), shown until the level is first completed.*
 - [ ] Full: per world, `N concepts × (1 intro + 2–3 ramp) + 3–5 mix levels + 1 showcase level` (the showcase is a setpiece at the end of the world, before the scale-change cinematic).
 - [ ] Difficulty levers the generator can tune: preview length, tolerance window width, oscillation amplitude/period, obstacle count, Photon placement tier.
-- [ ] Hints: after 5 fails, offer the reference solution's *first segment* (read from the shipped `hint.params`). No ads-for-hints in the beta.
+- [x] Hints: after 5 fails, offer the reference solution's *first segment* (read from the shipped `hint.params`). No ads-for-hints in the beta. *Done in the POC (Tunnel 1).*
 - [ ] Metrics to log in the closed test: attempts per level, time to first success, star distribution, where players quit, Codex open rate.
 
 ---
@@ -205,30 +205,31 @@ Each object gets a design sheet with: idle / hover / dragged / active / disabled
 ## Phase 4 — Engine roadmap
 
 ### 4.1 Python level builder — hardening (Stage 3 continued) `[BETA]` →
-- [ ] Package it: `pyproject.toml`, `src/quarkcosmos_levels/` layout, `ruff` + `mypy --strict` + `pytest`. Keep zero runtime dependencies (use `numpy` only if the solver needs it).
+- [ ] Package it: `pyproject.toml`, `src/quarkcosmos_levels/` layout, `ruff` + `mypy --strict` + `pytest`. Keep zero runtime dependencies (use `numpy` only if the solver needs it). *Done S1 except `mypy --strict`.*
 - [ ] **Level JSON schema** (`schema/level.schema.json`, JSON Schema 2020-12) with `schema_version`, validated on export and in CI. Split the output in two:
   - `level.json` (shipped in the app): geometry, objects, photons, the *public* param ranges for UI dials, `hint_first_segment`.
   - `level.meta.json` (dev only): full solution set, tolerance metrics, generator seed.
+  *The split is done (schema v2/v3, `docs/level-schema.md`); the JSON Schema file and its CI validation are still to do.*
 - [ ] Physics core fixes:
-  - [ ] Reflect only when approaching (`dot(v, n) < 0`); push the particle out of the penetration.
-  - [ ] Swept circle-vs-circle collision (continuous) or sub-stepping so that a fast Quarky never goes through thin objects.
-  - [ ] Fixed timestep + a documented integration method (semi-implicit Euler) so the port can match it bit-for-bit (see §4.3).
-  - [ ] Obstacles as **shapes** (circle, capsule, segment, polygon), not chains of circles (segments now exist in the engine; the old superposition "chute" circles are gone).
-  - [ ] A plugin registry per concept: `concepts/<name>.py` exports `handler`, `builder`, `codex_key`, `param_space`. No hard-coded dicts in 3 places.
-  - [ ] Remove the `trap` / Décohérence leftovers and fix the "8 concepts" comments.
+  - [x] Reflect only when approaching (`dot(v, n) < 0`); push the particle out of the penetration. *Done S2: the penetration is mirrored out of the contact surface (exact on flat faces), box walls included.*
+  - [x] Swept circle-vs-circle collision (continuous) or sub-stepping so that a fast Quarky never goes through thin objects. *Done S2, by construction: `check_limits` requires `(v_max + v_obj)·DT < r + EPS` for every obstacle, Photon and target (enforced at generation, tested on every shipped level), so a contact can never be stepped over.*
+  - [x] Fixed timestep + a documented integration method (semi-implicit Euler) so the port can match it bit-for-bit (see §4.3). *Done S2 (physics-spec §4).*
+  - [x] Obstacles as **shapes** (circle, capsule, segment, polygon), not chains of circles (segments now exist in the engine; the old superposition "chute" circles are gone). *Done S2: circle, capsule/segment, polygon outline (`points`), in Python and Kotlin.*
+  - [x] A plugin registry per concept: `concepts/<name>.py` exports `handler`, `builder`, `codex_key`, `param_space`. No hard-coded dicts in 3 places. *Done S2 (`concepts/__init__.py`).*
+  - [x] Remove the `trap` / Décohérence leftovers and fix the "8 concepts" comments. *Checked S2: nothing left.*
 - [ ] Validator upgrades:
-  - [ ] `t_min` for taps (reject a tap before N% of the flight).
-  - [ ] **Tolerance score** = the fraction of the grid that succeeds, around the best solution (the width of the success window per parameter). Target bands per difficulty (e.g. intro ≥ 8%, mastery 1–3%).
-  - [ ] **Concept-usage check**: a solution only counts if the concept's mechanic fired (event log: `tunnel_crossed`, `collapsed`, `mode_switched`…). This replaces the fragile `MAX_WALL_BOUNCES = 1` heuristic.
-  - [ ] **Trivial-solution check**: the level must *not* be solvable with the concept's mechanic disabled.
-  - [ ] 3-star proof: at least one solution collects all 3 Photons **and** the 3-Photon window is narrower than the 1-Photon window.
+  - [x] `t_min` for taps (reject a tap before N% of the flight). *Done: `TAP_MIN_TIME = 0.1 s` (absolute, not a % of the flight), tested.*
+  - [ ] **Tolerance score** = the fraction of the grid that succeeds, around the best solution (the width of the success window per parameter). Target bands per difficulty (e.g. intro ≥ 8%, mastery 1–3%). *Score done (meta `tolerance`, ≥ 5% tested, hardest < intro tested); per-difficulty bands not enforced yet.*
+  - [x] **Concept-usage check**: a solution only counts if the concept's mechanic fired (event log: `tunnel_crossed`, `collapsed`, `mode_switched`…). This replaces the fragile `MAX_WALL_BOUNCES = 1` heuristic. *Done: `must_contact` event sequences per level; `max_wall_bounces` stays as a per-level cap.*
+  - [x] **Trivial-solution check**: the level must *not* be solvable with the concept's mechanic disabled. *Done: `bypass_solutions` (wins that skip `must_contact`) must be 0, tested.*
+  - [x] 3-star proof: at least one solution collects all 3 Photons **and** the 3-Photon window is narrower than the 1-Photon window. *Done: tested per level; the ray-traced star profile makes the 3★ share smaller than the 1★ share.*
   - [ ] Adaptive search (coarse grid → refine near successes) to keep generation under ~2 s per level.
-- [ ] Generator: seeded procedural variations per template, auto Photon placement from the solution trails (§3.2), a difficulty knob mapped to the levers in §3.4.
+- [ ] Generator: seeded procedural variations per template, auto Photon placement from the solution trails (§3.2), a difficulty knob mapped to the levers in §3.4. *Auto Photon placement done; seeded variations and the difficulty knob still to do.*
 - [ ] Tooling:
   - [ ] `qc-levels render <level> --png` (matplotlib, dev dependency) draws the trails of the success/fail heatmap.
   - [ ] An HTML **level viewer** that loads `level.json`, replays the reference solution with the *same* physics (via the golden trajectories, §4.3) and exposes dials, which replaces the hard-coded mockup levels.
-  - [ ] `qc-levels build-pack --world quantique` writes `content/levels/quantique/pack.json` + a manifest with a hash.
-- [ ] Tests: unit tests per handler, golden trajectory files (`tests/golden/*.json`: params → trail, sampled every 10 steps), a regression test that every shipped level is still solvable with tolerance ≥ threshold.
+  - [x] `qc-levels build-pack --world quantique` writes `content/levels/quantique/pack.json` + a manifest with a hash. *Done S5: the 7 beta levels (difficulty 1) with SHA-256, freshness tested.*
+- [x] Tests: unit tests per handler, golden trajectory files (`tests/golden/*.json`: params → trail, sampled every 10 steps), a regression test that every shipped level is still solvable with tolerance ≥ threshold. *Done S2 (`tests/test_physics_core.py`); goldens record every step, not every 10.*
 
 ### 4.2 Android app — engine selection `[GATE]` (Stage 5 — plan only until Stage 3 is validated)
 Options, ranked for *this* game (2D, vector/glow, deterministic custom physics, small APK, 60 FPS):
@@ -247,10 +248,10 @@ Options, ranked for *this* game (2D, vector/glow, deterministic custom physics, 
 ### 4.3 Single source of truth for physics
 - [x] Decision: **Python = authoring + validation; Kotlin = runtime**, with the same deterministic algorithm, kept in sync by **golden trajectory tests** run in both CI jobs (Python generates `tests/golden/*.json`, a Kotlin JUnit test replays it and asserts positions within 1e-6). *Done for the tunnel levels: `python3 cli.py golden` → `stage3-physics-engine/tests/golden/`, freshness checked by `tests/test_golden.py`, replayed by `android/core-physics` `GoldenTest`. Extend `GOLDEN_LEVELS` with each ported concept.*
 - [x] Specify the physics in `docs/physics-spec.md`: timestep, integration, collision order, event semantics, tap timing. Both implementations cite it. *Done: the Python engine is the reference; the spec describes its current behaviour, [GATE] fixes will update it.*
-- [ ] Alternative considered: running the Python engine on-device via Chaquopy. Rejected: APK size (+15 MB) and startup cost.
+- [x] Alternative considered: running the Python engine on-device via Chaquopy. Rejected: APK size (+15 MB) and startup cost.
 
 ### 4.4 Android implementation plan (Stage 5) →
-- [ ] Module layout (Gradle):
+- [ ] Module layout (Gradle): *POC has `:core-physics`, `:game`, `:app`; `:core-content` and `:feature-codex` not yet.*
   - `:core-physics` (pure Kotlin, no Android dependency: simulate, handlers, level model; unit-tested with the golden files).
   - `:core-content` (level/Codex loading, schema version check).
   - `:game` (libGDX: scenes, rendering, input, FX).
@@ -260,18 +261,18 @@ Options, ranked for *this* game (2D, vector/glow, deterministic custom physics, 
 - [ ] Rendering pipeline: batch sprites and shapes → a matter-layer FBO → a downsampled bloom (2 passes) → a composite + LUT grade. Invisible-physics lines drawn after bloom (so they stay crisp).
 - [ ] Performance budget: **16.6 ms/frame**, physics ≤ 1 ms, draw calls ≤ 50, overdraw ≤ 2.5×, no allocation in the game loop (object pools for particles/trail points), textures in one atlas ≤ 2048².
 - [ ] Trajectory preview computed from the *same* `core-physics` (a truncated simulation), cached while the drag doesn't change.
-- [ ] Save: progress + stars + Codex in `DataStore` (Proto). Cloud save `[FULL]`.
+- [ ] Save: progress + stars + Codex in `DataStore` (Proto). Cloud save `[FULL]`. *POC saves best stars with DataStore Preferences.*
 - [ ] APK size budget: **< 20 MB** (beta target < 12 MB). Measures: R8 full mode, resource shrinking, an AAB with per-ABI splits, vector/procedural FX instead of PNG sequences, OGG/Opus audio at 96 kbps, SDF fonts.
 - [ ] Accessibility: a colour-blind-safe palette variant, reduced motion (disable shake/bloom pulse), text scaling in the Codex, TalkBack labels on menus.
 - [ ] Analytics for the closed test: privacy-respecting event log (Firebase or a self-hosted alternative, **[GATE]**), with opt-in consent for minors (a high-school audience means GDPR-K / COPPA rules apply).
-- [ ] Distribution: Play Console internal test track → closed test. Target API = the current Play requirement, `minSdk` 24.
+- [ ] Distribution: Play Console internal test track → closed test. Target API = the current Play requirement, `minSdk` 26 (decided with the engine, §4.2).
 - [ ] CI: GitHub Actions builds the debug APK, runs JVM tests + golden tests + lint on every PR, and uploads the APK as an artifact. *Partly done: `.github/workflows/android.yml` runs `:core-physics:test` + `:app:assembleDebug` and uploads the APK; lint still to add.*
 
 ---
 
 ### 4.5 Android POC (done 2026-09-26) — follow-ups
 *What exists: `android/` (open it in Android Studio), welcome → scales → Quantum map → Tunnel 1 playable, best stars saved. See `android/README.md`.*
-- [ ] **User check in Android Studio** (emulator API 26+): sync, run, play Tunnel 1, stars kept after restart. Report sync/build errors. Also check the French build (system or per-app language) and the English/French layouts on a small screen.
+- [x] **User check in Android Studio** (emulator API 26+): sync, run, play Tunnel 1, stars kept after restart. Report sync/build errors. Also check the French build (system or per-app language) and the English/French layouts on a small screen. *User: "the app runs well" (2026-09-26); the French build and small-screen check were not reported separately.*
 - [ ] Port the 6 other beta concepts to `:core-physics` (handlers + `GOLDEN_LEVELS`), with their in-flight controls (tap button, spin toggle, precision dial, rung launcher). Superposition needs the multi-body step (two ghosts).
 - [ ] Real bloom pass (¼-res FBO, 2 blurs) instead of additive halos, then the low-end phone spike (§4.2).
 - [ ] Reduce draw calls in `LevelScreen` (batch halos and shapes by blend mode) to stay under the 50-draw-call budget.
@@ -311,7 +312,7 @@ Options, ranked for *this* game (2D, vector/glow, deterministic custom physics, 
 
 ### 5.3 Skills (refine) ⇄
 - [ ] `art-direction` → v2 after the §1 gate. Split it into `SKILL.md` (rules) + `references/palette.md`, `references/objects.md`, `references/scales.md` so it loads lighter.
-- [ ] `gameplay-mechanics`: remove the stale "8 concepts". Add the 3-Photon placement tiers, the `t_min` tap rule, the tolerance bands, and the core-loop timings from §3.
+- [ ] `gameplay-mechanics`: remove the stale "8 concepts". Add the 3-Photon placement tiers, the `t_min` tap rule, the tolerance bands, and the core-loop timings from §3. *"8 concepts" removed and `TAP_MIN_TIME` added; tolerance bands and core-loop timings still to add.*
 - [ ] `storytelling`: add the Codex template (§2.3), the scientist's voice guide with 5 good/bad examples, and a reading-level target.
 - [x] **New** `physics-pedagogy` skill: the §2 tables, the "Dans la vraie physique…" rule, the Core/Enrichment labels, and the forbidden simplifications (e.g. "tunnel = having enough energy"). *Done S4; Core/Enrichment labels are a proposal until §2.1.*
 - [ ] **New** `level-builder` skill: how to add a concept plugin, run validate/solve, read tolerance reports, regenerate golden files.
@@ -338,18 +339,18 @@ Options, ranked for *this* game (2D, vector/glow, deterministic custom physics, 
 ## Suggested execution order (cloud sessions)
 
 1. [x] **S1** Repo hygiene: restructure (§5.1), fix stale docs, CLAUDE.md status table, pyproject, CI skeleton. *(no design change)* *Done 2026-09-26, plus (user request) repo translated to English and the app made bilingual EN/FR.*
-2. [ ] **S2** ⇄ Physics-core fixes + tests + golden files (§4.1 physics core).
+2. [x] **S2** ⇄ Physics-core fixes + tests + golden files (§4.1 physics core). *Done 2026-09-26: approach-only reflection + mirrored penetration, anti-tunnelling limits, polygon shape, concept plugin registry, per-handler tests; levels/metas/goldens regenerated, Kotlin port updated.*
 3. [x] **S3** ⇄ Art direction v2 style frames, 3 options (§1.1–1.2) → **[GATE] user picks**. *B + C background, Quarky v2, portrait.*
 4. [x] **S4** ⇄ Physics pedagogy skill + Quantum concept fixes proposal (§2.2) → **[GATE] user approves**. *Done 2026-09-26: `physics-pedagogy` skill, fixes approved ([ADR-0008](docs/decisions/ADR-0008-quantum-concept-fixes.md)).*
-5. [ ] **S5** → Validator upgrades (t_min, tolerance, concept-usage, 3-Photon proof) + regenerate the 7 beta levels with 3 Photons each. Implement the approved §2.2 fixes ([ADR-0008](docs/decisions/ADR-0008-quantum-concept-fixes.md); target layouts in `gameplay-mechanics`, pedagogy in `physics-pedagogy`). For each fix: engine handler (`concepts/handlers.py`, `core/`), `docs/physics-spec.md` update, generator templates (3 difficulties), validator (`must_contact`, 0 bypass, tolerance band), regenerated levels + metas + goldens, `physics-reviewer` pass on the handler docstrings.
-   - [ ] Tunnel: barrier with `height` (above max launch energy: no classical passage) and `thickness` fields; crossing iff energy ≥ E_t(d) = V − (k/d)² (ADR-0008 follow-up); 2–3 barriers to choose from; breathing thickness (`thickness_motion`) replaces `threshold_motion`. **Tunnel 1, played by the Android POC, changes**: update its goldens and the `tunnel_barrier` port in `android/core-physics/…/Handlers.kt` in the same PR.
-   - [ ] Quantisation: rung-lock launcher E1…E4 (`power` choice = rungs), a `lock` obstacle accepting one exact rung, colour-matched Photons (Photon `rung` field in the schema). *Decided: 4 rungs kept; Photon double = 4/6/8/10 rays + an outer ring on E4, fourth colour picked and validated in S5 (ADR-0008 follow-up).*
-   - [ ] Duality: a slit narrower than Quarky's radius, crossed only in wave mode (diffraction fan: the exit direction spreads deterministically), particle bounces off the grating.
-   - [ ] Uncertainty: dial → two linked bars (position cone ↔ speed spread); the preview is a cone. *Decided: seeded deterministic draw inside a cone of probability (peaked on the centre, truncated); the validator proves a win on the whole cone (ADR-0008 follow-up).*
-   - [ ] Spin: Stern–Gerlach magnet obstacle (up deflected one way, down the other, deflection from the field side), widened `angle_deg` range, flip in flight kept.
-   - [ ] Entanglement: the tap targets the near crystal (an obstacle `role: near`) and the far gate reacts; schema field for the pair link; filament feedback event for the renderer.
+5. [x] **S5** → Validator upgrades (t_min, tolerance, concept-usage, 3-Photon proof) + regenerate the 7 beta levels with 3 Photons each. *Done 2026-09-26: all approved mechanics implemented (schema v4), 21 levels regenerated (solvable, 0 bypasses, 3 Photons each); the beta pack is difficulty 1 of each concept (`pack.json`).* Implement the approved §2.2 fixes ([ADR-0008](docs/decisions/ADR-0008-quantum-concept-fixes.md); target layouts in `gameplay-mechanics`, pedagogy in `physics-pedagogy`). For each fix: engine handler (`concepts/handlers.py`, `core/`), `docs/physics-spec.md` update, generator templates (3 difficulties), validator (`must_contact`, 0 bypass, tolerance band), regenerated levels + metas + goldens, `physics-reviewer` pass on the handler docstrings.
+   - [x] Tunnel: barrier with `height` (above max launch energy: no classical passage) and `thickness` fields; crossing iff energy ≥ E_t(d) = V − (k/d)² (ADR-0008 follow-up); 2–3 barriers to choose from; breathing thickness (`thickness_motion`) replaces `threshold_motion`. **Tunnel 1, played by the Android POC, changes**: update its goldens and the `tunnel_barrier` port in `android/core-physics/…/Handlers.kt` in the same PR.
+   - [x] Quantisation: rung-lock launcher E1…E4 (`power` choice = rungs), a `lock` obstacle accepting one exact rung, colour-matched Photons (Photon `rung` field in the schema). *Decided: 4 rungs kept; Photon double = 4/6/8/10 rays + an outer ring on E4, fourth colour picked and validated in S5 (ADR-0008 follow-up).*
+   - [x] Duality: a slit narrower than Quarky's radius, crossed only in wave mode (diffraction fan: the exit direction spreads deterministically), particle bounces off the grating.
+   - [x] Uncertainty: dial → two linked bars (position cone ↔ speed spread); the preview is a cone. *Decided: seeded deterministic draw inside a cone of probability (peaked on the centre, truncated); the validator proves a win on the whole cone (ADR-0008 follow-up).*
+   - [x] Spin: Stern–Gerlach magnet obstacle (up deflected one way, down the other, deflection from the field side), widened `angle_deg` range, flip in flight kept.
+   - [x] Entanglement: the tap targets the near crystal (an obstacle `role: near`) and the far gate reacts; schema field for the pair link; filament feedback event for the renderer.
    - [x] Codex: rewrite `content/codex/{en,fr}/quantique.json` against the `physics-pedagogy` skill. *Done 2026-09-26 (user request), plus the Tunnel in-game strings ("tunnel threshold") and handler docstrings. Revisit the lines against the drafts once the S5 mechanics ship.*
-   - [ ] Kotlin port (`android/core-physics`): port the new handlers against the regenerated goldens (`:core-physics:test` green); level schema version bump if new fields ship.
+   - [x] Kotlin port (`android/core-physics`): port the new handlers against the regenerated goldens (`:core-physics:test` green); level schema version bump if new fields ship. *Done for Tunnel (thickness barrier, goldens green, schema v4, drawn thickness + aimed-barrier HUD); the other 6 concepts' port is §4.5.*
 6. [ ] **S6** → Level viewer (HTML, reads `content/levels`), which replaces the hard-coded mockup levels; playtest the 7 levels. → **[GATE] Stage 3 validated**.
 7. [ ] **S7** Stage 4 audio (not detailed here, per the stage rule).
 8. [ ] **S8** → **[GATE] engine decision** → Android spike (§4.2) → `:core-physics` Kotlin port against the golden files. *Engine decided; POC done for Tunnel 1 (§4.5), ahead of S7 audio at the user's request. Spike on a low-end phone still open.*

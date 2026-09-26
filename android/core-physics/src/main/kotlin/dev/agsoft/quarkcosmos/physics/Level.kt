@@ -14,7 +14,7 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 /** Version of the shipped format this runtime reads (see docs/level-schema.md). */
-const val SUPPORTED_SCHEMA_VERSION = 3
+const val SUPPORTED_SCHEMA_VERSION = 4
 
 /** Sinusoidal oscillation of a position (`motion`) or a threshold (`threshold_motion`). */
 class Motion(val axis: Char, val amplitude: Double, val period: Double, val phase: Double) {
@@ -35,12 +35,18 @@ class Obstacle(
     val y: Double,
     /** Explicit radius, otherwise the Shapes.radius default. */
     val r: Double?,
-    /** Length of a segment; null for a disc. */
+    /** Length of a segment (capsule); null for a disc or a polygon. */
     val length: Double?,
+    /** Polygon outline: vertex offsets from (x, y), flattened [dx0, dy0, dx1, dy1, …]; null otherwise. */
+    val points: DoubleArray? = null,
     val angleDeg: Double,
     val energyThreshold: Double?,
     val motion: Motion?,
     val thresholdMotion: Motion?,
+    /** Tunnel barrier: visible thickness (its contact band), breathing, height. */
+    val thickness: Double? = null,
+    val thicknessMotion: Motion? = null,
+    val height: Double? = null,
 )
 
 /** Setting range of a launch parameter (`param_space`). */
@@ -109,10 +115,14 @@ class Level(
             y = o.num("y"),
             r = o.numOrNull("r"),
             length = o.numOrNull("length"),
+            points = o["points"]?.jsonArray?.flatMap { p -> p.jsonArray.map { it.jsonPrimitive.double } }?.toDoubleArray(),
             angleDeg = o.numOrNull("angle_deg") ?: 0.0,
             energyThreshold = o.numOrNull("energy_threshold"),
             motion = motion(o["motion"]),
             thresholdMotion = motion(o["threshold_motion"], axis = 'y'),
+            thickness = o.numOrNull("thickness"),
+            thicknessMotion = motion(o["thickness_motion"], axis = 'y'),
+            height = o.numOrNull("height"),
         )
 
         private fun motion(e: JsonElement?, axis: Char? = null): Motion? {

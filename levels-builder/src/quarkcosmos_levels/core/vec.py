@@ -46,8 +46,17 @@ def ang_diff(a, b):
     return d
 
 
+def dot(a, b):
+    return a[0] * b[0] + a[1] * b[1]
+
+
 def reflect(v, normal):
-    """Reflect a velocity vector about a unit normal."""
+    """Reflect a velocity about a normal pointing towards the particle, only
+    if the particle is approaching (v·n < 0). Moving away (or a zero normal)
+    leaves the velocity unchanged: a contact detected while already leaving
+    must never send the particle back into the obstacle."""
     n = normalize(normal)
     d = v[0] * n[0] + v[1] * n[1]
+    if d >= 0.0:
+        return v
     return (v[0] - 2 * d * n[0], v[1] - 2 * d * n[1])

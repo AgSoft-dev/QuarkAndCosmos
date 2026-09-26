@@ -4,7 +4,7 @@ The deterministic contract that **every** implementation of the game's physics (
 
 The Stage 2 mockup (`design/mockups/index.html`) has its own hand-written JS physics: it is **not** an implementation of this spec (see "Known drifts").
 
-This document describes the engine's **current** behaviour, simplifications included. The planned fixes (tunnel effect, notched quantisation, bounce only when approaching, continuous collision) are [GATE] decisions in `todo.md`: they will change this spec once validated.
+This document describes the engine's **current** behaviour, simplifications included. The physics-core fixes of S2 (bounce only when approaching, penetration mirrored out, anti-tunnelling limits, polygon shape, concept registry) are in. The approved concept fixes of [ADR-0008](decisions/ADR-0008-quantum-concept-fixes.md) (tunnel thickness, rung-lock quantisation, slit diffraction…) will change §5–§7 when S5 implements them.
 
 ## 1. Frame and units
 
@@ -26,7 +26,8 @@ This document describes the engine's **current** behaviour, simplifications incl
 | default disc radius | `0.03` | disc obstacle without `r` |
 | default target radius | `0.045` | |
 | default Photon radius | `0.02` | |
-| default energy threshold | `0.6` | `barrier` obstacle without `energy_threshold` |
+| `TUNNEL_HEIGHT` | `1.2` | tunnel barrier height V (above every launch energy) |
+| `TUNNEL_K` | `0.019` | tunnel constant: threshold `E_t(d) = V − (K/d)²` |
 
 The renderer may run at any frame rate: it accumulates real time and runs as many **whole** `DT` steps as needed (the remainder carries over to the next frame, never simulated as a fractional step).
 
@@ -34,28 +35,28 @@ The renderer may run at any frame rate: it accumulates real time and runs as man
 
 - Position: `launcher.(x, y)`.
 - Velocity: `from_angle(angle_deg, power)`; `power` is `1.0` when absent from the parameters.
-- `precision` case (incertitude concept):
-  - `snap = 2 + (1 − precision) · 28`;
-  - `eff_angle = round(angle_deg / snap) · snap`, with Python's **banker's rounding** (half → even; in Kotlin `Math.rint`, not `Math.round`);
-  - `power = max(0.15, 1.2 − precision)`;
-  - velocity `= from_angle(eff_angle, power)`.
+- **Rungs** (quantisation, level field `rungs` = energies E1…E4): velocity `= from_angle(angle_deg, rungs[rung])`, with the `rung` parameter an index. Quarky's current rung is part of the state.
+- **Cone of probability** (uncertainty, level field `cone = {speed, angle: [a1, a0], speed_spread}`), parameter `precision` = p:
+  - half-angle `A(p) = a1 + (1 − p) · (a0 − a1)` (narrow when precise), speed spread `S(p) = speed_spread · p` (wide when precise);
+  - the shot is a draw inside both: velocity `= from_angle(angle_deg + draw_angle · A(p), speed + draw_speed · S(p))`, with `draw_angle`, `draw_speed` ∈ [−1, 1] (0 = the centre line). The game draws them with a seeded generator (peaked on the centre, truncated), so a replay is reproducible;
+  - **validation on the whole cone** (`simulate_cone`): a setting counts as a solution only if all 9 draws of `CONE_PROOF` (centre, edges, both speed extremes) reach the target; Photons and trail are the centre line's (in the game the actual draw decides the stars).
 - `t = 0` at release. **Every oscillation is phase-locked to this instant**: the apparatus "starts" with the shot (decision still open in `todo.md`, but it is today's validated convention).
-- State: `tapped = false`, `wall_bounces = 0`, `in_contact = ∅`, `collected = ∅`, `contacts = []`.
+- State: `tapped = false`, `wall_bounces = 0`, `in_contact = ∅`, `collected = ∅`, `contacts = []`, `rung` (rungs levels only).
 
 ## 4. One simulation step — strict order
 
 For `step = 0 … MAX_STEPS − 1`, with `t = (step + 1) · DT`:
 
-1. **Move** (explicit Euler, constant velocity between two contacts): `pos += vel · DT`.
-2. **Tap(s)**: the instants `tap_time`, `tap_time_2`… are handled in order; every tap whose instant is reached (`t ≥ tap_time_k`) sets `tapped = true` and, if Quarky is in superposition, **measures** (§7 bis). A tap therefore takes effect at the first step whose end reaches the gesture's instant, **before** that step's collisions.
+1. **Move** — semi-implicit (symplectic) Euler: velocity first (`vel += acc · DT`), then position (`pos += vel · DT`). The Quantum box has no force field (`acc = 0`), so this is `pos += vel · DT`; the order is fixed now so a later scale with gravity or fields stays bit-for-bit portable.
+2. **Tap(s)**: the instants `tap_time`, `tap_time_2`… are handled in order; every tap whose instant is reached (`t ≥ tap_time_k`) sets `tapped = true` and, for each copy: appends `(crystal id, "measure")` for every `crystal` of the level (entanglement, §7); on a rungs level, if `rung > 0`, **jumps down one rung** (`rung −= 1`, speed set to `rungs[rung]`, direction kept) and appends `("quarky", "emit")`; then, if Quarky is in superposition, **measures** (§7 bis). A tap therefore takes effect at the first step whose end reaches the gesture's instant, **before** that step's collisions.
 
 Steps 3 to 6 apply to **each copy** of Quarky (only one outside superposition), in copy creation order.
-3. **Box walls**: for each axis, if `x ≤ 0` → `x = 0`, `vel.x = |vel.x|`; if `x ≥ 1` → `x = 1`, `vel.x = −|vel.x|` (same for `y`). A step touching one or two walls counts **one** bounce. If `wall_bounces > max_wall_bounces` → `lost:too_many_wall_bounces` failure, immediate end.
+3. **Box walls**: for each axis, if `x ≤ 0` → `x = −x`, `vel.x = |vel.x|`; if `x ≥ 1` → `x = 2 − x`, `vel.x = −|vel.x|` (same for `y`): the penetration is mirrored back inside, like on any flat face (§5). A step touching one or two walls counts **one** bounce. If `wall_bounces > max_wall_bounces` → `lost:too_many_wall_bounces` failure, immediate end.
 4. **Obstacles**, in the order of the `obstacles` array (the velocity leaving one handler is the input of the next):
    1. effective position `(ox, oy)` = `motion` oscillation at time `t` (§6);
    2. if the obstacle does not **touch** `pos` (§5): remove it from `in_contact`, go to the next one;
    3. if it is already in `in_contact`: go to the next one (**one handler per contact**, not per step);
-   4. otherwise add it to `in_contact`, compute the effective obstacle (position `(ox, oy)`; `energy_threshold` oscillated by `threshold_motion`, §6) and call its handler (§7) → `(vel, event)`;
+   4. otherwise add it to `in_contact`, compute the effective obstacle (position `(ox, oy)`; a barrier's `thickness` breathing with `thickness_motion`, §6) and call its handler (§7) → `(vel, event)`; if `event` is `bounce` or `wave`, **mirror the penetration out** (§5); a splitter's reflected copy is mirrored out the same way;
    5. if `type ≠ wall`: append `(id, event)` to `contacts`;
    6. if `type = wall`: `wall_bounces += 1`; if `> max_wall_bounces` → `lost:too_many_wall_bounces` failure, immediate end.
 5. **Photons**: for each uncollected Photon, position oscillated at `t`; collected if `dist(pos, photon) < r + COLLISION_EPS` (strict inequality).
@@ -67,35 +68,43 @@ After `MAX_STEPS` steps without success: `timeout` failure.
 
 ## 5. Shapes and contact (`shapes.py`)
 
-- **Disc**: `(x, y, r)`. Skeleton = its centre.
-- **Flat segment** (when `length` is present): centre `(x, y)`, length `length`, orientation `angle_deg` (default 0); end points `centre ± (cos a, sin a) · length/2`. Skeleton = that segment, thickness `2 · r` (default `SEGMENT_HALF_THICKNESS`).
-- `closest_point`: the centre for a disc; for a segment, the projection of `pos` on `[A, B]` clamped to `[0, 1]`.
-- **Contact**: `dist(pos, closest_point) < radius + COLLISION_EPS` (strict). The bounding-circle pre-rejection (`radius + EPS + length/2`) is only an optimisation, with no effect on the result.
-- **Normal**: `pos − closest_point` (not normalised; `reflect` normalises it, and a zero normal leaves the velocity unchanged).
-- **Reflection**: `v' = v − 2 (v·n̂) n̂`. It is applied **even if the particle is already moving away** (no `v·n < 0` test) and the position is **not** pushed out of the obstacle. Discrete collision (no continuous sweep): the `DT` step + `COLLISION_EPS` is what stops thin segments being crossed at game speeds (`power ≤ 1`, i.e. ≤ 0.01 per step).
+Every shape is a **skeleton + radius**:
+- **Circle** (default): `(x, y, r)`, default `r` = 0.03. Skeleton = its centre.
+- **Capsule / segment** (when `length` is present): centre `(x, y)`, length `length`, orientation `angle_deg` (default 0); end points `centre ± (cos a, sin a) · length/2`. Skeleton = that segment, thickness `2 · r` (default `SEGMENT_HALF_THICKNESS`).
+- **Polygon** (when `points` is present): a closed outline through the vertices `(x + dx_i, y + dy_i)` (`points` = offsets, not rotated), thickness `2 · r` (default `SEGMENT_HALF_THICKNESS`). Skeleton = the chain of edges; it is an outline, not a filled area.
+- `closest_point`: the centre for a circle; for a segment, the projection of `pos` on `[A, B]` clamped to `[0, 1]`; for a polygon, the closest point over the edges `i → i+1` (closed), the **first** edge winning a tie.
+- **Contact**: `dist(pos, closest_point) < radius + COLLISION_EPS` (strict). The bounding-circle pre-rejection (`radius + EPS + extent`, extent = `length/2` or the farthest vertex) is only an optimisation, with no effect on the result.
+- **Normal**: `n = pos − closest_point` (not normalised).
+- **Reflection only when approaching**: with `n̂ = n / |n|` (zero if `|n| < 1e-9`) and `d = v·n̂`: if `d ≥ 0` (moving away, or zero normal) the velocity is unchanged; otherwise `v' = v − 2 d n̂`.
+- **Penetration mirrored out** (`_mirror_out`), after a `bounce`/`wave` event (and for a splitter's reflected copy): with `reach = radius + COLLISION_EPS` and `d = |n|`, if `1e-9 ≤ d < reach`, `v_in·n < 0` and `v_out·n > 0`: `pos += n · (2 (reach − d) / d)`. On a flat face this is exactly where a continuous collision would put the particle.
+- **No tunnelling, by construction** (`check_limits`, enforced when a level is generated): for every obstacle (detectors excepted), Photon and the target, `(v_max + v_obj) · DT < radius + COLLISION_EPS`, with `v_max` the highest launch speed the `param_space` allows (§3) and `v_obj = 2π · |amplitude| / period` for an oscillating object. Quarky can then never step over a contact band, so no swept test is needed and the game can trust discrete steps.
 
 ## 6. Oscillations ("oscillating element")
 
 - `motion = {axis, amplitude, period, phase?}` on an obstacle, the target or a Photon: the `axis` coordinate (`"x"` or `"y"`) is `base + amplitude · sin(2π · t / period + phase)`, `phase` = 0 by default.
-- `threshold_motion = {amplitude, period, phase?}` on a threshold obstacle: `energy_threshold(t) = base + amplitude · sin(2π · t / period + phase)`.
+- `thickness_motion = {amplitude, period, phase?}` on a tunnel barrier ("breathing"): `thickness(t) = thickness + amplitude · sin(2π · t / period + phase)`. It sets both the contact band (`radius = thickness(t) / 2`) and the tunnel threshold.
 - Always evaluated at the current step's `t = (step + 1) · DT`, never at render time.
 
 ## 7. Handlers (`concepts/handlers.py`)
 
-Handler choice: first by obstacle `type`, otherwise the level concept's default handler, otherwise `wall_reflect`.
+Handler choice: first by obstacle `type` (`wall`/`mirror`, or a type owned by a concept plugin), otherwise the level concept's `DEFAULT_HANDLER`, otherwise `wall_reflect`. Each concept is a plugin module `concepts/<concept>.py` (`CONCEPT`, `CODEX_KEY`, `DEFAULT_HANDLER`, `HANDLERS`, `build`, `param_space`), registered in play order in `concepts/__init__.py`.
 
 | `type` | Handler | Effect | Event |
 |---|---|---|---|
-| `wall`, `mirror` | `wall_reflect` | reflection (§5) | `bounce` |
+| `wall`, `mirror` | `wall_reflect` | reflection when approaching (§5) | `bounce` |
 | `splitter` | `superposition_splitter` | flat splitter: the current copy keeps its velocity (transmitted), a new copy leaves with the reflected velocity (§5), see §7 bis | `transmit` (current copy) / `reflect` (new copy) |
-| `detector` | — | no contact (Quarky passes through it); only used for the measurement, §7 bis | — |
-| `barrier` | `tunnel_barrier` | if `‖v‖ ≥ energy_threshold(t)`: velocity unchanged; otherwise reflection | `pass` / `bounce` |
-| `gate` | `intrication_gate` | `tapped`: passes; otherwise reflection | `pass` / `bounce` |
+| `detector`, `crystal` | — | no contact (Quarky passes through them); a detector only matters for the superposition measurement (§7 bis), a crystal is measured by every tap (§4.2) | — |
+| `barrier` | `tunnel_barrier` | tunnel threshold `E_t = height − (TUNNEL_K / thickness(t))²` (`height` default `TUNNEL_HEIGHT`, above every launch energy, so never a classical climb; computed as `q = K / d; V − q·q`); if `‖v‖ ≥ E_t`: velocity unchanged; otherwise reflection | `pass` / `bounce` |
+| `lock` | `rung_lock` | passes only if Quarky's current rung equals the lock's `rung` (too little AND too much bounce); otherwise reflection | `pass` / `bounce` |
+| `gate` | `intrication_gate` | far gate entangled with a near `crystal` (`pair`): `tapped` (crystal measured): passes; otherwise reflection | `pass` / `bounce` |
 | `gate_anti` | `intrication_gate_anti` | `tapped`: reflection; otherwise passes | `bounce` / `pass` |
-| `pole` | `spin_pole` | `spin = spin_up` (parameter, default `true`), flipped if `tapped`; `attracts = (spin ∧ pole = "+") ∨ (¬spin ∧ pole = "−")`; `kick = kick_deg` (default 40) if it attracts, otherwise `−kick_deg`; new direction `angle_of(v) + kick`, norm kept | `deflect` |
+| `magnet` | `stern_gerlach` | Stern–Gerlach: `spin = spin_up` (default `true`), flipped if `tapped`; `u = from_angle(up_deg)` (the strong side, default −90 = up); towards `w = u` if spin up, `−u` if down; `kick = |kick_deg|` (default 40) signed like `v.x·w.y − v.y·w.x` (≥ 0 → +); new direction `angle_of(v) + kick`, norm kept | `deflect` |
 | `surface` | `dualite_surface` | not `tapped` (particle): reflection → `bounce`. `tapped` (wave): if `interference_offset_deg mod 360 = 180` → velocity unchanged (transmission); otherwise direction `angle_of(v_reflected) + offset` (default 15), norm kept | `bounce` / `wave` |
+| `slit` | `slit` | a grating (segment) with an aperture `aperture` wide, centred `aperture_at` along it from its centre. Not `tapped` (particle), or outside the aperture: reflection. `tapped` (wave) inside it: **diffraction** — with `along` the grating direction, `n` its normal on the exit side, `s` the offset from the aperture centre and `u = s / (aperture/2)`: exit direction `n·cos θ + along·sin θ`, `θ = u · fan_deg` (default 25°), norm kept | `bounce` / `diffract` |
 
-Default handlers per concept (obstacle of an unlisted type): `superposition` → splitter, `tunnel` → barrier, `intrication` → gate, `spin` → pole, `dualite` → surface, `incertitude` / `quantification` → `wall_reflect`.
+Default handlers per concept (obstacle of an unlisted type): `superposition` → splitter, `tunnel` → barrier, `intrication` → gate, `spin` → magnet, `dualite` → surface, `incertitude` / `quantification` → `wall_reflect`.
+
+Photons with a `rung` (quantisation) are colour-matched: step 5 only collects them while Quarky's current rung equals it.
 
 ### 7 bis. Superposition (ghost copies)
 
@@ -114,7 +123,7 @@ The game doesn't need `must_contact` or the `contacts` log to play: they only se
 
 ## 9. Data consumed by the game
 
-The game reads `content/levels/quantique/<name>.json` (`schema_version` = 3). Field reference: [`docs/level-schema.md`](level-schema.md). It refuses a `schema_version` it doesn't know. `levels-builder/meta/*.meta.json` is reserved for dev tools. Player-facing text is not in the level: the Codex lines are in `content/codex/<lang>/`.
+The game reads `content/levels/quantique/<name>.json` (`schema_version` = 4); `pack.json` next to them lists the 7 beta levels with their SHA-256. Field reference: [`docs/level-schema.md`](level-schema.md). It refuses a `schema_version` it doesn't know. `levels-builder/meta/*.meta.json` is reserved for dev tools. Player-facing text is not in the level: the Codex lines are in `content/codex/<lang>/`.
 
 ## 10. Checking an implementation
 

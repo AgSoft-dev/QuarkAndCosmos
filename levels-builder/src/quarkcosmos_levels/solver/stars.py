@@ -29,7 +29,7 @@ import json
 import math
 
 from ..core import shapes, vec
-from ..core.simulate import COLLISION_EPS, DT, TAP_MIN_TIME, _oscillate, simulate, taps_ordered
+from ..core.simulate import (COLLISION_EPS, DT, TAP_MIN_TIME, _oscillate, launch_speed_max, simulate_cone, taps_ordered)
 
 PHOTONS_PER_LEVEL = 3
 PHOTON_RADIUS = 0.03
@@ -65,6 +65,7 @@ ROUTE_ANCHORS = 4
 # whose captured share is closest to the tier's target, then evaluate every
 # triplet they form exactly.
 SHORTLIST = 18
+SHORTLIST_PER_STEP = 2
 # Step (in simulation steps) between two candidate positions on the path.
 CANDIDATE_STRIDE = 3
 
@@ -111,8 +112,11 @@ class _Path:
     instants), with a spatial index of the visited points."""
     CELL = 0.05
 
-    def __init__(self, trail, route=()):
+    def __init__(self, trail, route=(), rungs=()):
         self.trail = trail
+        # energy rung at each step (quantisation levels): colour-matched
+        # Photons are only collected on their own rung
+        self.rungs = list(rungs)
         # (obstacle, event) sequence: two paths on the same route use the
         # mechanic the same way (see SimResult.contacts)
         self.route = tuple(route)
@@ -120,7 +124,7 @@ class _Path:
         self.cells = {}
         for i, p in enumerate(trail):
             key = (int(p[0] // self.CELL), int(p[1] // self.CELL))
-            self.cells.setdefault(key, []).append(((i + 1) * DT, p))
+            self.cells.setdefault(key, []).append(((i + 1) * DT, p, self.rungs[i] if self.rungs else -1))
 
     @property
     def weight(self):
@@ -136,7 +140,9 @@ class _Path:
         cx, cy = int(photon["x"] // self.CELL), int(photon["y"] // self.CELL)
         for dx in range(-span, span + 1):
             for dy in range(-span, span + 1):
-                for t, q in self.cells.get((cx + dx, cy + dy), ()):
+                for t, q, rung in self.cells.get((cx + dx, cy + dy), ()):
+                    if "rung" in photon and photon["rung"] != rung:
+                        continue
                     pos = _oscillate(photon["x"], photon["y"], motion, t)
                     if vec.dist(q, pos) < radius:
                         return True
@@ -168,11 +174,11 @@ def _trace(bare):
         if not taps_ordered(params):
             continue
         total += 1
-        res = simulate(bare, params, record_trail=True)
+        res = simulate_cone(bare, params, record_trail=True)
         if res.success:
             signature = tuple((round(x, 4), round(y, 4)) for x, y in res.trail)
             if signature not in paths:
-                paths[signature] = _Path(res.trail, res.contacts)
+                paths[signature] = _Path(res.trail, res.contacts, res.rung_trail)
             paths[signature].rays.append(params)
     return total, list(paths.values())
 
@@ -269,20 +275,27 @@ def _clear_of_objects(level, pos, t):
     return vec.dist(pos, (lau["x"], lau["y"])) >= 0.05 + r
 
 
-def _candidates(level, trail):
+def _candidates(level, trail, rungs=()):
     """Free positions on the reference path, fixed or oscillating
     (oscillation perpendicular to the path, zero phase at the instant the
     reference passes: so the reference always collects this Photon)."""
     out = []
+    v_max = launch_speed_max(level)
     for i in range(0, len(trail), CANDIDATE_STRIDE):
         t = (i + 1) * DT
         if not _clear_of_objects(level, trail[i], t):
             continue
         base = {"x": round(trail[i][0], 3), "y": round(trail[i][1], 3), "r": PHOTON_RADIUS}
+        if rungs:
+            base["rung"] = rungs[i]  # colour-matched to the rung Quarky has there
         out.append((i, base))
         step = vec.sub(trail[min(i + 1, len(trail) - 1)], trail[max(i - 1, 0)])
         axis = "y" if abs(step[0]) >= abs(step[1]) else "x"
         for amplitude, period in PHOTON_MOTIONS:
+            # anti-tunnelling (core/simulate.check_limits): an oscillation so
+            # fast that Quarky could step over the Photon is never proposed
+            if (v_max + 2 * math.pi * amplitude / period) * DT >= PHOTON_RADIUS + COLLISION_EPS:
+                continue
             phase = round((-2 * math.pi * t / period) % (2 * math.pi), 4)
             out.append((i, dict(base, motion={"axis": axis, "amplitude": amplitude,
                                               "period": period, "phase": phase})))
@@ -307,10 +320,22 @@ def _best_trio(paths, candidates, targets):
                 m |= block
         masks.append(m)
     fractions = [bin(m).count("1") / n for m in masks]
-    shortlists = [
-        sorted(range(len(candidates)), key=lambda c: abs(fractions[c] - targets[k]))[:SHORTLIST]
-        for k in range(1, PHOTONS_PER_LEVEL + 1)
-    ]
+    def shortlist(k):
+        # closest to the tier's target share, at most PER_STEP candidates per
+        # trajectory step: when every path collects about the same (a narrow
+        # uncertainty cone), the list still spans the path and a well-spaced
+        # triplet exists
+        out, per_step = [], {}
+        for c in sorted(range(len(candidates)), key=lambda c: abs(fractions[c] - targets[k])):
+            step = candidates[c][0]
+            if per_step.get(step, 0) < SHORTLIST_PER_STEP:
+                per_step[step] = per_step.get(step, 0) + 1
+                out.append(c)
+                if len(out) == SHORTLIST:
+                    break
+        return out
+
+    shortlists = [shortlist(k) for k in range(1, PHOTONS_PER_LEVEL + 1)]
 
     best, best_cost = None, None
     for trio in itertools.product(*shortlists):
@@ -340,12 +365,12 @@ def place_photons(level: dict) -> dict:
     bare["photons"] = []
     _, paths = trace(bare)
     if not paths:
-        raise ValueError(f"Niveau non solvable, impossible de placer les Photons: {level.get('id')}")
+        raise ValueError(f"Level not solvable, cannot place the Photons: {level.get('id')}")
     targets = target_shares(level.get("difficulty", 1))
 
     best, best_cost = None, None
     for anchor in _anchors(paths, _ray_grid(bare), bare["param_space"]):
-        candidates = _candidates(bare, anchor.trail)
+        candidates = _candidates(bare, anchor.trail, anchor.rungs)
         trio, cost = _best_trio(paths, candidates, targets)
         if trio is not None and (best_cost is None or cost < best_cost):
             best, best_cost = [candidates[i] for i in trio], cost

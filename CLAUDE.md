@@ -14,9 +14,9 @@ Exception decided by the user (2026-09-26, [ADR-0006](docs/decisions/ADR-0006-an
 |---|---|---|
 | 1 — Art direction / UI-UX | **Validated** (art direction v2, 2026-09-25) | `design/art-direction-v2/`, skill `art-direction` |
 | 2 — HTML/JS mockup | **Validated**, frozen | `design/mockups/` |
-| 3 — Physics engine & level builder | **In progress**: 7 concepts × 3 difficulties generated and validated; open: implementing the approved Quantum concept fixes (§2.2, [ADR-0008](docs/decisions/ADR-0008-quantum-concept-fixes.md), S5), level viewer, beta-scope `[GATE]` (S5–S6) | `levels-builder/`, `content/levels/` |
+| 3 — Physics engine & level builder | **In progress**: 7 concepts × 3 difficulties generated and validated; physics-core fixes (S2) and the approved concept fixes (S5, [ADR-0008](docs/decisions/ADR-0008-quantum-concept-fixes.md)) done; beta pack = difficulty 1 of each concept (`pack.json`); open: level viewer + playtest (S6) | `levels-builder/`, `content/levels/` |
 | 4 — Audio | **Not started** | — |
-| 5 — Android | **POC done** ahead of stage 4: welcome, scales, Quantum map, Tunnel 1 playable, EN/FR; awaiting the user's emulator check | `android/`, skill `android-architecture` |
+| 5 — Android | **POC done** ahead of stage 4: welcome, scales, Quantum map, Tunnel 1 playable (slingshot tour), AgSoft splash, EN/FR; runs on the user's emulator | `android/`, skill `android-architecture` |
 
 Keep this table up to date in the PR that changes a stage's status.
 

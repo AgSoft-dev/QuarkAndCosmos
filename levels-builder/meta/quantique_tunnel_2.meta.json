@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "id": "quantique-tunnel-2",
   "must_contact": [
     [
@@ -25,17 +25,17 @@
     ]
   },
   "max_photons_reachable": 3,
-  "tolerance": 0.1343,
-  "three_star_tolerance": 0.02,
+  "tolerance": 0.06,
+  "three_star_tolerance": 0.0171,
   "bypass_solutions": 0,
   "star_profile": {
     "rays": 2920,
-    "valid_rays": 454,
-    "distinct_paths": 454,
+    "valid_rays": 184,
+    "distinct_paths": 184,
     "shares": {
-      "1": 0.8568,
-      "2": 0.5639,
-      "3": 0.1806
+      "1": 0.837,
+      "2": 0.4239,
+      "3": 0.2554
     },
     "target_shares": {
       "1": 0.8226,

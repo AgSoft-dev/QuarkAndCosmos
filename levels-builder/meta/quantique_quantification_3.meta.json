@@ -1,29 +1,35 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "id": "quantique-quantification-3",
   "must_contact": [
     [
-      "b1",
+      "l1",
       "pass"
     ],
     [
-      "b2",
+      "quarky",
+      "emit"
+    ],
+    [
+      "l2",
       "pass"
     ],
     [
-      "m",
-      "bounce"
+      "quarky",
+      "emit"
     ],
     [
-      "b3",
+      "l3",
       "pass"
     ]
   ],
   "solvable": true,
   "reference_solution": {
     "params": {
-      "angle_deg": -4,
-      "power": 0.45
+      "angle_deg": -1,
+      "rung": 3,
+      "tap_time": 0.25,
+      "tap_time_2": 1.15
     },
     "photons_collected": 3,
     "photon_ids": [
@@ -33,17 +39,17 @@
     ]
   },
   "max_photons_reachable": 3,
-  "tolerance": 0.056,
-  "three_star_tolerance": 0.016,
+  "tolerance": 0.0514,
+  "three_star_tolerance": 0.0019,
   "bypass_solutions": 0,
   "star_profile": {
-    "rays": 365,
-    "valid_rays": 20,
-    "distinct_paths": 20,
+    "rays": 10900,
+    "valid_rays": 560,
+    "distinct_paths": 560,
     "shares": {
-      "1": 0.7,
-      "2": 0.3,
-      "3": 0.3
+      "1": 0.7125,
+      "2": 0.2232,
+      "3": 0.0429
     },
     "target_shares": {
       "1": 0.7066,

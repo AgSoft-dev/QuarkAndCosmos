@@ -111,6 +111,11 @@ def cmd_golden(args):
         print(f"golden -> {os.path.relpath(path)}")
 
 
+def cmd_build_pack(args):
+    from .export.pack import write_pack
+    print(f"pack -> {os.path.relpath(write_pack(args.levels_dir, args.world))}")
+
+
 def cmd_check_codex(args):
     missing = missing_codex_lines(ALL_CONCEPTS)
     for lang, concept in missing:
@@ -155,6 +160,11 @@ def main():
     p_gold.add_argument("--levels-dir", type=str, default=None)
     p_gold.add_argument("--out-dir", type=str, default=None)
     p_gold.set_defaults(func=cmd_golden)
+
+    p_pack = sub.add_parser("build-pack", help="beta pack manifest (content/levels/<world>/pack.json)")
+    p_pack.add_argument("--world", default="quantique")
+    p_pack.add_argument("--levels-dir", type=str, default=None)
+    p_pack.set_defaults(func=cmd_build_pack)
 
     sub.add_parser("check-codex", help="check the Codex lines exist in every language").set_defaults(
         func=cmd_check_codex)

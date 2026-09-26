@@ -11,17 +11,17 @@ The closed-test build covers the **first world only (Quantum scale)**, ~1 level 
 
 Introduction order (numbers = play order, not the order of physical discovery). The world opens on the most immediate concept to read (a threshold you clear or not) so the player gets used to launching in a closed box without gravity before being asked to understand a choice of path.
 
-**Mechanics status**: the fixed mechanics below were **approved by the user on 2026-09-26** ([ADR-0008](../../../docs/decisions/ADR-0008-quantum-concept-fixes.md), `todo.md` §2.2) and are **implemented in S5**. Where they differ, "Current" describes what the level builder and the shipped levels do today. Pedagogy (one-liners, feedback, Codex, "In real physics…") lives in `physics-pedagogy`.
+**Mechanics status**: the fixed mechanics below were **approved by the user on 2026-09-26** ([ADR-0008](../../../docs/decisions/ADR-0008-quantum-concept-fixes.md) and its follow-up decisions) and are **implemented** in the level builder since S5 (engine contract: `docs/physics-spec.md`). Pedagogy (one-liners, feedback, Codex, "In real physics…") lives in `physics-pedagogy`.
 
-| # | Concept id | Concept | Mechanic (approved; S5 unless marked implemented) | Current (until S5), where different |
-|---|---|---|---|---|
-| 1 | `tunnel` | Tunnel effect | a barrier with a **visible thickness**: thinner than a threshold → crossed although Quarky's energy is below its height; thick → never crossed. The player picks among 2–3 barriers of different thickness; the oscillating element is a barrier whose thickness **breathes** | a window crossed when the speed at contact reaches an oscillating energy threshold (reads as classical passage, to be replaced) |
-| 2 | `superposition` | Superposition of states | *implemented* ([ADR-0002](../../../docs/decisions/ADR-0002-two-ghost-superposition.md)): a splitter turns Quarky into two ghost copies flying at the same time; the tap "measures" and Quarky becomes the copy closest to the detector — the target only accepts a measured Quarky, so the interaction is never optional | — |
-| 3 | `intrication` | Quantum entanglement | a linked pair at a distance: the tap acts on the **near crystal** and the **far gate** reacts at the same instant (anti-correlated pair from difficulty 2) | the tap flips the witness and the gate, without being tied to the near crystal |
-| 4 | `incertitude` | Heisenberg uncertainty principle | the precision dial shown as **two linked bars** (position cone ↔ speed spread) with a **trajectory cone** preview instead of one line; oscillating target | aiming precision vs launch speed (a precise aim is slower), single-line preview |
-| 5 | `quantification` | Energy quantisation | **rung-lock**: launcher rungs E1…E4 (no continuous power); locks accept **one exact rung** (too little and too much both bounce); Photons colour-matched to rungs | a notched launcher against oscillating energy-threshold barriers |
-| 6 | `spin` | Quantum spin | **Stern–Gerlach** magnet: spin up deflected one way, spin down the other; pre-launch spin + one flip in flight; **widened** parameter space | +/− poles that attract or repel by a fixed kick angle depending on the spin |
-| 7 | `dualite` | Wave–particle duality | particle = **bounces** off the grating; wave = **diffracts through a slit narrower than Quarky** and spreads; the tap matters because the slit lies past the first obstacle. The wave-mode behaviour foreshadows — without duplicating — the classical optics taught at the Macro scale | wave mode = a bounce with an interference angle offset, or a straight crossing of a window |
+| # | Concept id | Concept | Mechanic (implemented) |
+|---|---|---|---|
+| 1 | `tunnel` | Tunnel effect | barriers with a **visible thickness**, all taller than any launch energy (never a classical climb): Quarky tunnels through when its energy reaches `E_t(d) = V − (K/d)²` — thin → low threshold, thick → never. The player picks the barrier; the oscillating element is a barrier whose thickness **breathes** |
+| 2 | `superposition` | Superposition of states | a splitter turns Quarky into two ghost copies flying at the same time; the tap "measures" and Quarky becomes the copy closest to the detector — the target only accepts a measured Quarky, so the interaction is never optional ([ADR-0002](../../../docs/decisions/ADR-0002-two-ghost-superposition.md)) |
+| 3 | `intrication` | Quantum entanglement | the tap measures the **near crystal**; the **far gates** entangled with it (`pair`) react at the same instant (an anti-correlated pair from difficulty 2) |
+| 4 | `incertitude` | Heisenberg uncertainty principle | a **cone of probability**: the precision dial narrows the direction cone and widens the speed spread; the shot is a seeded draw inside both, and a level is proven on the **whole cone** — only a middle precision threads the slit AND arrives predictably at the moving portal |
+| 5 | `quantification` | Energy quantisation | **rung-lock**: launcher rungs E1…E4 only; a lock accepts **one exact rung** (too little and too much both bounce); the tap makes Quarky **jump down one rung** (like an atom giving out light); Photons are colour-matched to a rung |
+| 6 | `spin` | Quantum spin | **Stern–Gerlach** magnets: spin up is deflected towards the strong side, spin down away; pre-launch spin + one flip in flight; a magnet can be mounted upside down |
+| 7 | `dualite` | Wave–particle duality | a grating with a **slit narrower than Quarky**: a particle bounces off it; a wave (after the tap) **diffracts** through and leaves along a fan whose direction depends on where it went through the slit. The wave-mode behaviour foreshadows — without duplicating — the classical optics taught at the Macro scale |
 
 `TAP_MIN_TIME` (0.1 s) applies to every tap (implemented).
 
@@ -33,7 +33,7 @@ Decoherence was removed from the beta scope (design feedback: redundant with sup
 
 Slingshot drag-and-release: the player pulls Quarky back then lets go; physics (gravity where the scale has it, plus any fields) does the rest until the target or a failure. See the mockup [`design/mockups/index.html`](../../../design/mockups/index.html).
 
-**Touch mapping (Android, user decision 2026-09-26): linear slingshot.** The drag starts anywhere in the play area and its two axes are independent: the horizontal pull away from the shot sets the energy (by length), the vertical slide turns the aim at a fixed rate (≈ 6 px per degree, down aims up) from its current value. Release launches; a release without a pull only keeps the new angle. Replaces the angle-from-drag-direction mapping, too twitchy on short pulls and pinned at the edges of narrow angle ranges.
+**Touch mapping (Android, user decision 2026-09-26): linear slingshot.** The drag starts anywhere in the play area and its two axes are independent: the horizontal pull away from the shot sets the energy (by length), the vertical slide turns the aim at a fixed rate (≈ 6 px per degree, down aims up) from its current value. Release launches; a release without a pull only keeps the new angle. Replaces the angle-from-drag-direction mapping, too twitchy on short pulls and pinned at the edges of narrow angle ranges. **Room to drag (user concern):** the full-energy pull shortens when the drag starts near the left edge (never closer than 20 dp to it), the aim rate shrinks for wide angle ranges so half the range fits in 150 dp of slide, and a faint rail shows the full-energy point during the drag.
 
 ## Object control — the "lab experiment" paradigm
 
@@ -52,7 +52,7 @@ Finding (design feedback): a launch where everything is set before the shot (ang
 1. **Oscillating element** — the position of an obstacle (or the target) varies over time (e.g. a sinusoidal back and forth). The player must then aim correctly AND make the flight time match the right moment of the oscillation, not just aim at a fixed point.
 2. **Action triggered in flight ("tap")** — a single player gesture during the flight (not a continuous control) that flips a state at the chosen instant: open a linked gate, switch wave/particle, flip a polarity. It is the equivalent of cutting the rope at the right time in Cut the Rope — one gesture, whose *timing* is the whole difficulty. The Stage 3 solver treats the tap instant as one more parameter (searched on a grid), so solvability stays guaranteed and checkable like the angle/power. A tap before `TAP_MIN_TIME` (0.1 s) is ignored by the game and stays available (a tap at launch would be a disguised pre-launch setting).
 
-Pre-launch settings (lab-style dials, see the previous section) stay valid and stack with these mechanics — the goal is to add variables, not replace existing ones. Every beta concept has an oscillating element, an in-flight trigger, or both: see the level templates in `levels-builder/src/quarkcosmos_levels/concepts/generator.py`.
+Pre-launch settings (lab-style dials, see the previous section) stay valid and stack with these mechanics — the goal is to add variables, not replace existing ones. Every beta concept has an oscillating element, an in-flight trigger, or both: see the level templates in `levels-builder/src/quarkcosmos_levels/concepts/<concept>.py`.
 
 ## Progression structure per world
 
@@ -70,29 +70,17 @@ Design feedback: moving Photons on an identical layout doesn't make a level rich
 2. **Sequence** — the mechanic used **twice, both ways** during the same flight. This is where the tap becomes real timing (a window *between* two contacts), like cutting the rope in Cut the Rope.
 3. **Chain** — three instances, or two plus a moving element: aim, power and timing interact.
 
-Quantum world — **current** layouts (`levels-builder/src/quarkcosmos_levels/concepts/generator.py`, one function per concept and difficulty). Superposition is final; the other rows are rebuilt in S5 on the approved mechanics (next table).
+Quantum world layouts (`levels-builder/src/quarkcosmos_levels/concepts/<concept>.py`, one function per difficulty; implemented in S5 on the approved mechanics). Exact geometry, ranges and Photon placement are validated by the generator/validator, never hand-placed Photons:
 
-| Concept | 1 — discover | 2 — sequence | 3 — chain |
+| Concept | 1 — discover (beta) | 2 — sequence | 3 — chain |
 |---|---|---|---|
-| Tunnel effect | one barrier (a window in a wall), oscillating threshold | two barriers in series: a speed that hits a trough at both ("resonance") | barrier → mirror → barrier |
-| Superposition | one splitter: two ghost copies (transmitted / reflected), tap = measure, Quarky becomes the copy closest to the detector; measure before the other copy crashes | two-mirror loop, the copies cross: keep one **or** the other (two routes); the detector sweeps, so the tap instant chooses | two splitters, **two measurements** in the same flight, each in its window |
-| Entanglement | a gate opened by the tap | **anti-correlated** pair: cross A (open before the tap), tap, cross B | gate M acts as a **mirror** while closed, then the same tap opens B |
-| Uncertainty | precision vs speed, moving target | a narrow slit (precision → slowness) in front of a drifting target | two aligned slits, faster target |
-| Quantisation | energy notches, one barrier | two barriers: only 2 notches pass | three barriers + mirror: only one notch passes |
-| Spin | one pole | two + poles: attracted at A, flip the spin **between** A and B | poles +, −, +: read each pole's sign to know where to flip |
-| Duality | a surface crossed as a wave | **particle** bounce on s1, then **wave** crossing of s2 | two particle bounces then a wave crossing, moving target |
-
-Quantum world — **target layouts for S5**, built on the approved mechanics ([ADR-0008](../../../docs/decisions/ADR-0008-quantum-concept-fixes.md)). The mechanics are approved; these layouts are a starting proposal that S5 may adjust (the rows are validated with the rebuilt levels). Same discover → sequence → chain logic; exact geometry, thresholds and Photon placement are decided by the generator/validator, never by hand:
-
-| Concept | 1 — discover | 2 — sequence | 3 — chain |
-|---|---|---|---|
-| Tunnel effect | 2–3 barriers of different thickness: aim at a thin one (optionally one breathing barrier) | a breathing barrier: arrive while it is thin, then a second thin/thick choice | barrier → mirror → breathing barrier |
-| Superposition | unchanged (implemented) | unchanged | unchanged |
-| Entanglement | tap the near crystal to open the far gate | anti-correlated pair, tap on the near crystal between the two crossings | the far gate acts as a mirror while closed, then the near-crystal tap opens it |
-| Uncertainty | cone preview, moving target | narrow slit (a tight position cone → wide speed spread) in front of a drifting target | two aligned slits, faster target |
-| Quantisation | one lock tuned to one rung | two locks on different rungs: the one path/rung that fits both, colour-matched Photons | three locks + mirror: one rung only, Photons of several colours |
-| Spin | one Stern–Gerlach magnet: choose spin up/down | two magnets: flip the spin **between** them | three magnets, one oscillating: read each field to know where to flip |
-| Duality | wave through a slit narrower than Quarky | particle bounce, then wave through the slit | two particle bounces, then the slit as a wave, moving target |
+| Tunnel effect | one window split between a **thick** barrier (never crossed) and a **thin, breathing** one: aim at the thin one, arrive while it is thin enough | two breathing barriers in series: a speed that arrives while both are thin ("resonance") | barrier → mirror → breathing barrier |
+| Superposition | one splitter: two ghost copies, tap = measure; measure before the other copy crashes | two-mirror loop, the copies cross: keep one **or** the other; the detector sweeps | two splitters, **two measurements** in the same flight |
+| Entanglement | tap to measure the near crystal: the far gate opens | **anti-correlated** pair: cross A (open before the tap), tap, cross B | gate M is a **mirror** while closed, then the tap opens B |
+| Uncertainty | a slit then a drifting portal: only a middle precision works for the whole cone | narrower slit, faster portal | two aligned slits and a drifting portal |
+| Quantisation | one lock tuned to E3 and a drifting portal (each rung flies at its own speed) | locks E4 then E3: launch on E4, **jump down between them** | locks E4 → E3 → E2 around a mirror: two jumps |
+| Spin | one magnet, portal on the spin-down branch: start down, or start up and flip before the magnet | two magnets: flip the spin **between** them | three magnets, the middle one upside down, the last oscillating |
+| Duality | a grating with a slit: particle bounces; tap, then diffract through the slit's lower half towards an off-axis portal | particle bounce on s1, then diffract through the ceiling slit | two particle bounces, then diffract through the wall slit, moving portal |
 
 **Two-ghost superposition (user decision, replaces the splitter-deflector; [ADR-0002](../../../docs/decisions/ADR-0002-two-ghost-superposition.md))**: Photons collected by a copy only count if it survives the measurement; the target only accepts a measured Quarky; a copy crashing before the measurement breaks the superposition (decoherence, the launch fails). The "In real physics…" Codex page states that the outcome of a real measurement is random.
 
@@ -100,7 +88,7 @@ Each level declares `must_contact` (the expected sequence of interactions). The 
 
 Flat surfaces (mirrors, gates, windows) rather than discs for any intended bounce: "angle of incidence = angle of reflection" is predictable for the player (and it is high-school optics), whereas a bounce on a disc amplifies the smallest aiming error.
 
-**Beta vs full release scope**: phase 3 (cross-concept mix) and the full phase 2 difficulty progression are reserved for the **full release**. The **beta/closed test** is a lighter version: fewer levels per concept (possibly one per concept), little or no intra-concept difficulty ramp, and **no mix level**. How many of the 21 generated levels ship in the closed test is an open `[GATE]` in `todo.md` §0.
+**Beta vs full release scope**: phase 3 (cross-concept mix) and the full phase 2 difficulty progression are reserved for the **full release**. The **beta/closed test** ships **7 levels — difficulty 1 ("discover") of each concept**, in play order (user decision 2026-09-26), each with 3 Photons; `content/levels/quantique/pack.json` lists them with their hashes (`python3 -m quarkcosmos_levels build-pack`). Difficulties 2–3 stay generated and validated for the full release.
 
 ## Scoring — 3 stars by collection (Cut the Rope model)
 
@@ -117,10 +105,12 @@ Current decision (replaces the earlier "efficiency/attempts" version): 3 collect
 
 ## Status
 
-Direction validated for the mechanics above (launch loop, lab-style object settings, Photon scoring, in-flight action, difficulty by layout, two-ghost superposition). Implemented in the level builder for the 7 concepts × 3 difficulties with the current mechanics; the Android POC plays Tunnel 1. The §2.2 fixed mechanics are approved (ADR-0008) and implemented in S5 — Tunnel 1 changes then.
+Direction validated for the mechanics above (launch loop, lab-style object settings, Photon scoring, in-flight action, difficulty by layout, two-ghost superposition). The approved §2.2 mechanics (ADR-0008) are implemented in the level builder for the 7 concepts × 3 difficulties (S5); the beta pack is difficulty 1 of each. The Android POC plays the new Tunnel 1; the other 6 concepts still need their Kotlin port and in-flight controls.
 
 ## Changelog
 
+- 2026-09-26 — S5: approved mechanics implemented (thickness tunnel, rung-lock + jump-down tap + colour-matched Photons, cone of probability, Stern–Gerlach magnets, near crystal + far gates, slit diffraction); layout table rewritten; beta = difficulty 1 of each concept (`pack.json`).
+- 2026-09-26 — Slingshot room: edge-aware pull range, aim rate fitted to the angle range, drag rail.
 - 2026-09-26 — Touch mapping: linear slingshot (energy = horizontal pull, aim = vertical slide).
 - 2026-09-26 — §2.2 Quantum concept fixes approved by the user ([ADR-0008](../../../docs/decisions/ADR-0008-quantum-concept-fixes.md)): the concept table states the approved mechanics (to implement in S5) next to the current ones, and a proposed S5 target-layout table is added; pedagogy now lives in the new `physics-pedagogy` skill (S4).
 - 2026-09-26 — Translated to English; the beta concept list moved here from `CLAUDE.md` (single source); paths updated to the `levels-builder/` layout (S1).

@@ -1,17 +1,17 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "id": "quantique-tunnel-1",
   "must_contact": [
     [
-      "barrier",
+      "thin",
       "pass"
     ]
   ],
   "solvable": true,
   "reference_solution": {
     "params": {
-      "angle_deg": -4,
-      "power": 0.45
+      "angle_deg": 4,
+      "power": 0.55
     },
     "photons_collected": 3,
     "photon_ids": [
@@ -21,17 +21,17 @@
     ]
   },
   "max_photons_reachable": 3,
-  "tolerance": 0.2829,
-  "three_star_tolerance": 0.1229,
+  "tolerance": 0.1514,
+  "three_star_tolerance": 0.0629,
   "bypass_solutions": 0,
   "star_profile": {
     "rays": 2920,
-    "valid_rays": 825,
-    "distinct_paths": 825,
+    "valid_rays": 450,
+    "distinct_paths": 450,
     "shares": {
-      "1": 0.9236,
-      "2": 0.6703,
-      "3": 0.3879
+      "1": 0.9111,
+      "2": 0.6467,
+      "3": 0.3956
     },
     "target_shares": {
       "1": 0.9019,

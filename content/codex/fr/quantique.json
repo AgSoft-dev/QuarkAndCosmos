@@ -6,10 +6,10 @@
   "lines": {
     "tunnel": "« Tu n'avais pas l'énergie de passer par-dessus ce mur, et pourtant te voilà de l'autre côté. Les toutes petites particules le font parfois, d'autant plus souvent que le mur est fin. Mon microscope à effet tunnel s'en sert pour voir les atomes un par un. »",
     "superposition": "« Tant que je ne regardais pas, tu suivais les deux chemins à la fois. La mesure a rendu l'un des deux réel. Les ordinateurs quantiques jouent au même jeu : leurs qubits valent 0 et 1 en même temps, jusqu'à la lecture. »",
-    "intrication": "« Mesure l'une de deux particules intriquées et tu connais l'autre aussitôt, même très loin, sans qu'aucun message ne voyage entre elles. Aspect, Clauser et Zeilinger ont reçu le Nobel 2022 pour l'avoir testé. »",
+    "intrication": "« Le cristal ici et la porte là-bas se sont comportés comme un seul objet. Mesure l'une de deux particules intriquées et tu connais l'autre aussitôt, même très loin, sans qu'aucun message ne voyage. Aspect, Clauser et Zeilinger ont eu le Nobel 2022 pour l'avoir testé. »",
     "incertitude": "« Plus tu fixais précisément où aller, plus ta vitesse devenait floue. Pour un électron, c'est une loi de la nature, pas un instrument maladroit. C'est même pour ça qu'un électron ne peut pas rester parfaitement immobile dans un atome. »",
-    "quantification": "« Seules quelques énergies étaient permises, rien entre les deux. Les atomes fonctionnent pareil : chaque saut entre deux niveaux émet une lumière d'une couleur précise. Voilà pourquoi une enseigne au néon brille rouge-orangé, et pas de toutes les couleurs. »",
+    "quantification": "« Seules quelques énergies étaient permises : E1, E2, E3, E4, rien entre les deux. Les atomes fonctionnent pareil, et chaque saut entre deux niveaux émet une lumière d'une couleur précise. Voilà pourquoi une enseigne au néon brille rouge-orangé, et pas de toutes les couleurs. »",
     "spin": "« Mesuré selon une direction, ton spin n'a que deux réponses : haut ou bas, jamais entre les deux. Stern et Gerlach ont vu cette séparation avec des atomes d'argent en 1922. Aujourd'hui, l'IRM bascule le spin des protons du corps pour voir à l'intérieur. »",
-    "dualite": "« En particule tu as rebondi ; en onde tu t'es faufilée et tu t'es étalée. Les électrons le font aussi : en 1927, Davisson et Germer les ont vus diffracter sur un cristal de nickel, comme des ondes lumineuses. »"
+    "dualite": "« En particule tu as rebondi ; en onde tu es passée par une fente plus étroite que toi, et tu t'es étalée. Les électrons le font aussi : en 1927, Davisson et Germer les ont vus diffracter sur un cristal de nickel, comme la lumière. »"
   }
 }

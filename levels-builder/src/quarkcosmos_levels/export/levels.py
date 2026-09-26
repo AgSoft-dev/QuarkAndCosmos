@@ -28,13 +28,16 @@ from ..solver.validator import validate
 # v2: shipped level / dev meta split, `hint` replaces `reference_solution` in
 # the shipped file, `max_wall_bounces` always explicit.
 # v3: `codex_text` removed (player-facing text moved to content/codex/<lang>/).
-SCHEMA_VERSION = 3
+# v4: approved concept fixes (ADR-0008): barrier `thickness`/`thickness_motion`
+# (no energy_threshold), `rungs` + `lock` + Photon `rung`, `cone` + precision,
+# `magnet` (Stern–Gerlach), `crystal` + gate `pair`, `slit` grating; polygon shapes.
+SCHEMA_VERSION = 4
 
 # Fields of the shipped level, in this order (readable diffs). A level field
 # unknown here is appended at the end rather than silently dropped.
 SHIPPED_KEYS = (
     "id", "scale", "concept", "difficulty",
-    "launcher", "target", "obstacles", "photons",
+    "launcher", "target", "rungs", "cone", "obstacles", "photons",
     "max_wall_bounces", "param_space",
 )
 # Level fields used only by the validator: never shipped to the game.

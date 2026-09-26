@@ -280,14 +280,17 @@ function mapFigure(e) {
 
 function obstacleInfo(o) {
   const bits = [`${o.id} · ${o.type}`];
-  if (o.pole) bits.push(`pole ${o.pole}, deflection ${Math.abs(o.kick_deg)}°`);
-  if (o.energy_threshold !== undefined) {
-    const m = o.threshold_motion;
-    bits.push(m ? `threshold ${o.energy_threshold} ± ${m.amplitude} (period ${m.period}s)` : `threshold ${o.energy_threshold}`);
+  if (o.type === "magnet") bits.push(`Stern–Gerlach magnet, strong side ${o.up_deg}°, deflection ${Math.abs(o.kick_deg)}°`);
+  if (o.thickness !== undefined) {
+    const m = o.thickness_motion;
+    bits.push(m ? `thickness ${o.thickness} ± ${m.amplitude} (period ${m.period}s)` : `thickness ${o.thickness}`);
   }
+  if (o.type === "lock") bits.push(`lock: only rung E${o.rung + 1} passes`);
+  if (o.type === "crystal") bits.push("near crystal: measured by the tap");
+  if (o.type === "slit") bits.push(`grating, slit ${o.aperture} wide: particle bounces · wave diffracts`);
   if (o.type === "splitter") bits.push("splitter: one transmitted copy + one reflected copy");
   if (o.type === "detector") bits.push("detector: on tap, Quarky becomes the closest copy");
-  if (o.type === "mirror") bits.push("miroir");
+  if (o.type === "mirror") bits.push("mirror");
   if (o.type === "gate") bits.push("closed before the tap, open after");
   if (o.type === "gate_anti") bits.push("open before the tap, closed after");
   if (o.type === "surface") bits.push("particle: bounces · wave: crosses");

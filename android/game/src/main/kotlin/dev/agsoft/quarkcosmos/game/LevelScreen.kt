@@ -32,6 +32,7 @@ import dev.agsoft.quarkcosmos.physics.SEGMENT_HALF_THICKNESS
 import dev.agsoft.quarkcosmos.physics.SimListener
 import dev.agsoft.quarkcosmos.physics.Simulation
 import dev.agsoft.quarkcosmos.physics.Status
+import dev.agsoft.quarkcosmos.physics.TUNNEL_HEIGHT
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -112,6 +113,12 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
     private var armed = false
     private val dragStart = Vector2()
     private var dragAngle0 = 0.0
+    /** Pull length for full energy on this drag: shorter when the drag starts
+     *  close to the left edge, so full energy is always reachable on screen. */
+    private var pullRange = PULL_RANGE
+    /** Vertical slide per degree of aim: the level's whole angle range fits in
+     *  [MAX_AIM_TRAVEL] each way (6 units/° for Tunnel's ±12°, less for wider ranges). */
+    private val unitsPerDeg = min(DEG_PER_UNIT, MAX_AIM_TRAVEL / max(1f, ((angleMax - angleMin) / 2).toFloat()))
     private var pull = 0f
     private var sim: Simulation? = null
     private var acc = 0f
@@ -204,6 +211,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
             armed = false
             dragStart.set(x, y)
             dragAngle0 = aimAngle
+            pullRange = (x - EDGE_MARGIN - DEAD_ZONE).coerceIn(MIN_PULL_RANGE, PULL_RANGE)
         }
     }
 
@@ -215,9 +223,9 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         val dy = dragStart.y - y
         pull = max(dx, 0f)
         armed = pull > DEAD_ZONE
-        val deg = (dragAngle0 - dy / DEG_PER_UNIT).coerceIn(angleMin, angleMax)
+        val deg = (dragAngle0 - dy / unitsPerDeg).coerceIn(angleMin, angleMax)
         val a = ParamGrid.snap(angleSpec, deg)
-        val p = if (armed) ParamGrid.snap(powerSpec, powerMin + ((pull - DEAD_ZONE) / PULL_RANGE).coerceIn(0f, 1f) * (powerMax - powerMin)) else aimPower
+        val p = if (armed) ParamGrid.snap(powerSpec, powerMin + ((pull - DEAD_ZONE) / pullRange).coerceIn(0f, 1f) * (powerMax - powerMin)) else aimPower
         if (a != aimAngle || p != aimPower) host.haptic(Haptic.TICK)
         aimAngle = a
         aimPower = p
@@ -396,6 +404,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         quarky.draw(pose, time)
         drawBursts()
         drawForeground()
+        drawDragRail()
         drawTour()
         buttons.clear()
         drawTopBar()
@@ -421,7 +430,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         val dirY = -sin(aimRad)
         when (phase) {
             Phase.AIM -> {
-                val f = if (armed) ((pull - DEAD_ZONE) / PULL_RANGE).coerceIn(0f, 1f) else 0f
+                val f = if (armed) ((pull - DEAD_ZONE) / pullRange).coerceIn(0f, 1f) else 0f
                 pose.x = lx - dirX * f * r * 1.1f
                 pose.y = ly - dirY * f * r * 1.1f
                 pose.ang = atan2(dirY, dirX)
@@ -669,7 +678,9 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         val open = energy() >= thr
         val hit = max(0f, 1 - (time - barrierHitT) / .5f)
         val col = if (open) Pal.accent else Pal.mix(Pal.key, Pal.danger, .55f + .45f * hit)
-        val t = 7f
+        // half-thickness on screen: the barrier's real (breathing) thickness, so
+        // "thin enough to tunnel through" is read directly (ADR-0008)
+        val t = if (o.thickness != null) max(2.5f, (Simulation.thicknessAt(o, clock.toDouble()) * boxS / 2).toFloat()) else 7f
         val (nx, ny) = normal(ax, ay, bx, by)
         // barrier field: flat fill + shaded half + sharp edges
         cv.slab(ax, ay, bx, by, t, col, if (open) .16f else .26f + .2f * hit)
@@ -883,6 +894,70 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         b.draw(cv.grain, 0f, 0f, w, h, o / 128f, 0f, o / 128f + w / 128f, h / 128f)
     }
 
+    // --- tunnel readings ----------------------------------------------------------
+
+    /** The barrier the shot is heading for: first hit along the aim line (or
+     *  Quarky's velocity in flight), else the first barrier of the level. */
+    private fun aimedBarrier(): Obstacle? {
+        val barriers = level.obstacles.filter { it.type == "barrier" }
+        if (barriers.size <= 1) return barriers.firstOrNull()
+        val s = sim
+        val (x0, y0, dx, dy) = if (s != null && phase == Phase.FLIGHT) {
+            doubleArrayOf(s.x, s.y, s.vx, s.vy).toList()
+        } else {
+            val a = Math.toRadians(aimAngle)
+            doubleArrayOf(level.launcher.x, level.launcher.y, Math.cos(a), Math.sin(a)).toList()
+        }
+        var best: Obstacle? = null
+        var bestT = Double.MAX_VALUE
+        for (o in barriers) {
+            val len = o.length ?: continue
+            val a = Math.toRadians(o.angleDeg)
+            val ux = Math.cos(a) * len / 2
+            val uy = Math.sin(a) * len / 2
+            // ray (x0,y0)+t(dx,dy) against segment centre ± u
+            val det = dx * (-2 * uy) - dy * (-2 * ux)
+            if (Math.abs(det) < 1e-12) continue
+            val rx = (o.x - ux) - x0
+            val ry = (o.y - uy) - y0
+            val t = (rx * (-2 * uy) - ry * (-2 * ux)) / det
+            val u = (dx * ry - dy * rx) / det
+            if (t > 0 && u in -0.05..1.05 && t < bestT) { bestT = t; best = o }
+        }
+        return best ?: barriers.first()
+    }
+
+    /** Range the threshold sweeps over (a breathing barrier, or a legacy oscillating threshold). */
+    private fun thresholdBand(o: Obstacle): Pair<Double, Double>? {
+        val tm = o.thicknessMotion
+        val th = o.thickness
+        if (th != null) {
+            if (tm == null) return null
+            val h = o.height ?: TUNNEL_HEIGHT
+            return Simulation.tunnelThreshold(th - abs(tm.amplitude), h) to Simulation.tunnelThreshold(th + abs(tm.amplitude), h)
+        }
+        val m = o.thresholdMotion ?: return null
+        val base = o.energyThreshold ?: 0.6
+        return (base - abs(m.amplitude)) to (base + abs(m.amplitude))
+    }
+
+    // --- drag rail: how far the pull can go --------------------------------------
+
+    /** While dragging: a faint rail from the drag start to the full-energy point,
+     *  a notch at the finger, so the player sees the room left to pull. */
+    private fun drawDragRail() {
+        if (!dragging || phase != Phase.AIM) return
+        val x0 = dragStart.x
+        val y0 = dragStart.y
+        val full = x0 - DEAD_ZONE - pullRange
+        cv.line(full, y0, x0, y0, 1f, Pal.hudMuted, .35f)
+        cv.line(full, y0 - 6, full, y0 + 6, 1.4f, Pal.key, .6f)
+        if (armed) {
+            val fx = max(full, x0 - pull)
+            cv.line(fx, y0 - 4, fx, y0 + 4, 1.4f, Pal.hud, .7f)
+        }
+    }
+
     // --- guided tour (first slingshot level) ------------------------------------
 
     private fun stopTour() {
@@ -903,7 +978,7 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         val pullF = ease((tourT - T_PULL) / (T_AIM - T_PULL - .2f)) * TOUR_PULL_F
         val swing = if (tourT in T_AIM..T_LAUNCH) sin((tourT - T_AIM) / (T_LAUNCH - T_AIM) * TAU) else 0f
         aimPower = ParamGrid.snap(powerSpec, powerMin + pullF * (powerMax - powerMin))
-        aimAngle = ParamGrid.snap(angleSpec, (restAngle - swing * TOUR_SWING / DEG_PER_UNIT).coerceIn(angleMin, angleMax))
+        aimAngle = ParamGrid.snap(angleSpec, (restAngle - swing * TOUR_SWING / unitsPerDeg).coerceIn(angleMin, angleMax))
         if (tourT < T_PULL || tourT > T_END) { aimAngle = restAngle; aimPower = restPower }
     }
 
@@ -1064,12 +1139,10 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         val en = energy()
         meter(f, left, right, y, txt.energy, fmt(en), en, null, Pal.key)
         y -= 44
-        val barrier = level.obstacles.firstOrNull { it.type == "barrier" }
+        val barrier = aimedBarrier()
         if (barrier != null) {
             val thr = Simulation.effectiveThreshold(barrier, clock.toDouble())
-            val m = barrier.thresholdMotion
-            val base = barrier.energyThreshold ?: 0.6
-            val band = if (m != null) (base - abs(m.amplitude)) to (base + abs(m.amplitude)) else null
+            val band = thresholdBand(barrier)
             meter(f, left, right, y, txt.threshold, fmt(thr), thr, band, Pal.danger, en)
             val open = en >= thr
             text(f.monoSmall, if (open) txt.passes else txt.blocked, right, y + 17, if (open) Pal.accent else Pal.danger, Align.right)
@@ -1182,8 +1255,14 @@ class LevelScreen(private val info: LevelInfo, private val host: GameHost) : Scr
         const val LAUNCHER_R = 24f
         const val DEAD_ZONE = 14f
         const val PULL_RANGE = 150f
-        /** Vertical drag (virtual units) per degree of aim. */
+        /** Vertical drag (virtual units) per degree of aim, at most. */
         const val DEG_PER_UNIT = 6f
+        /** Vertical slide needed for half the angle range, at most (keeps wide ranges on screen). */
+        const val MAX_AIM_TRAVEL = 150f
+        /** Room kept between the full-energy point and the screen's left edge. */
+        const val EDGE_MARGIN = 20f
+        /** Shortest full-energy pull, for a drag started close to the left edge. */
+        const val MIN_PULL_RANGE = 40f
         // guided tour timeline (s): press, pull, aim, let go, pause
         const val TOUR_PERIOD = 7f
         const val T_PULL = .5f

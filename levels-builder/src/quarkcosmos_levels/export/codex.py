@@ -18,9 +18,11 @@ def load_codex(lang: str, scale: str = "quantique", codex_dir=None) -> dict:
 
 
 def missing_codex_lines(concepts, scale: str = "quantique", codex_dir=None) -> list:
-    """(lang, concept) pairs with no (or an empty) Codex line."""
+    """(lang, concept) pairs with no (or an empty) Codex line (looked up by
+    the concept module's CODEX_KEY)."""
+    from ..concepts import concept
     missing = []
     for lang in LANGUAGES:
         lines = load_codex(lang, scale, codex_dir)
-        missing += [(lang, c) for c in concepts if not lines.get(c, "").strip()]
+        missing += [(lang, c) for c in concepts if not lines.get(concept(c).CODEX_KEY, "").strip()]
     return missing

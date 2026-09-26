@@ -129,7 +129,7 @@ def test_read_level_restores_validation_input(concept, difficulty):
 
 def test_no_stale_level_files():
     expected = {f"quantique_{c}_{d}" for c, d in CASES}
-    shipped = {os.path.basename(p)[:-len(".json")] for p in glob.glob(os.path.join(LEVELS_DIR, "*.json"))}
+    shipped = {os.path.basename(p)[:-len(".json")] for p in glob.glob(os.path.join(LEVELS_DIR, "quantique_*.json"))}
     meta = {os.path.basename(p)[:-len(".meta.json")] for p in glob.glob(os.path.join(META_DIR, "*.json"))}
     assert shipped == expected
     assert meta == expected
@@ -142,10 +142,22 @@ def test_meta_lives_in_the_builder():
 
 def test_shipped_levels_carry_no_player_text():
     # Player-facing text is localised in content/codex/<lang>/ (FR + EN).
-    for path in glob.glob(os.path.join(LEVELS_DIR, "*.json")):
+    for path in glob.glob(os.path.join(LEVELS_DIR, "quantique_*.json")):
         with open(path, encoding="utf-8") as f:
             assert "codex_text" not in json.load(f)
 
 
 def test_every_concept_has_a_codex_line_in_every_language():
     assert missing_codex_lines(ALL_CONCEPTS) == []
+
+
+def test_beta_pack_manifest_is_fresh_and_lists_seven_levels():
+    """content/levels/quantique/pack.json = the 7 beta levels (one per concept,
+    difficulty 1, play order) with their current hashes. Regenerate:
+    `python3 -m quarkcosmos_levels build-pack`."""
+    from quarkcosmos_levels.export.pack import PACK_FILE, pack_manifest
+    with open(os.path.join(LEVELS_DIR, PACK_FILE), encoding="utf-8") as f:
+        committed = json.load(f)
+    assert committed == pack_manifest(LEVELS_DIR)
+    assert [lv["concept"] for lv in committed["levels"]] == ALL_CONCEPTS
+    assert all(lv["file"].endswith("_1.json") for lv in committed["levels"])

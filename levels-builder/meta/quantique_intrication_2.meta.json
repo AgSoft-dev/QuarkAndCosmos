@@ -1,10 +1,14 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "id": "quantique-intrication-2",
   "must_contact": [
     [
       "A",
       "pass"
+    ],
+    [
+      "crystal",
+      "measure"
     ],
     [
       "B",
@@ -26,17 +30,17 @@
     ]
   },
   "max_photons_reachable": 3,
-  "tolerance": 0.1272,
-  "three_star_tolerance": 0.0267,
+  "tolerance": 0.1257,
+  "three_star_tolerance": 0.0262,
   "bypass_solutions": 0,
   "star_profile": {
     "rays": 4050,
-    "valid_rays": 515,
+    "valid_rays": 509,
     "distinct_paths": 72,
     "shares": {
-      "1": 0.8602,
-      "2": 0.5631,
-      "3": 0.2097
+      "1": 0.8585,
+      "2": 0.5599,
+      "3": 0.2083
     },
     "target_shares": {
       "1": 0.8226,

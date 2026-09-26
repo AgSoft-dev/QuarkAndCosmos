@@ -16,3 +16,6 @@ const val DEFAULT_DISC_RADIUS = 0.03
 const val DEFAULT_TARGET_RADIUS = 0.045
 const val DEFAULT_PHOTON_RADIUS = 0.02
 const val DEFAULT_ENERGY_THRESHOLD = 0.6
+/** Tunnel model (concepts/tunnel.py, ADR-0008): E_t(d) = TUNNEL_HEIGHT − (TUNNEL_K / d)². */
+const val TUNNEL_HEIGHT = 1.2
+const val TUNNEL_K = 0.019

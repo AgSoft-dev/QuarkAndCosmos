@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "id": "quantique-dualite-2",
   "scale": "quantique",
   "concept": "dualite",
@@ -25,47 +25,32 @@
     },
     {
       "id": "s2",
-      "type": "surface",
-      "x": 0.45,
+      "type": "slit",
+      "x": 0.5,
       "y": 0.42,
-      "length": 0.2,
+      "length": 1.1,
       "angle_deg": 0.0,
-      "interference_offset_deg": 180
-    },
-    {
-      "id": "ceilL",
-      "type": "wall",
-      "x": 0.15,
-      "y": 0.42,
-      "length": 0.4,
-      "angle_deg": 0.0
-    },
-    {
-      "id": "ceilR",
-      "type": "wall",
-      "x": 0.8,
-      "y": 0.42,
-      "length": 0.5,
-      "angle_deg": 0.0
+      "aperture": 0.06,
+      "aperture_at": -0.05
     }
   ],
   "photons": [
     {
       "id": "p1",
-      "x": 0.459,
-      "y": 0.646,
+      "x": 0.434,
+      "y": 0.721,
       "r": 0.03,
       "motion": {
         "axis": "x",
-        "amplitude": 0.08,
+        "amplitude": 0.04,
         "period": 0.5,
-        "phase": 4.9009
+        "phase": 5.2779
       }
     },
     {
       "id": "p2",
-      "x": 0.466,
-      "y": 0.502,
+      "x": 0.437,
+      "y": 0.574,
       "r": 0.03,
       "motion": {
         "axis": "x",
@@ -76,14 +61,14 @@
     },
     {
       "id": "p3",
-      "x": 0.48,
-      "y": 0.238,
+      "x": 0.448,
+      "y": 0.906,
       "r": 0.03,
       "motion": {
         "axis": "x",
-        "amplitude": 0.08,
+        "amplitude": 0.04,
         "period": 0.5,
-        "phase": 4.7752
+        "phase": 4.2726
       }
     }
   ],
@@ -91,8 +76,8 @@
   "param_space": {
     "angle_deg": {
       "type": "range",
-      "min": -15,
-      "max": 15,
+      "min": -6,
+      "max": 2,
       "step": 1
     },
     "power": {
@@ -110,9 +95,9 @@
   },
   "hint": {
     "params": {
-      "angle_deg": -4,
-      "power": 0.8,
-      "tap_time": 0.5
+      "angle_deg": -1,
+      "power": 0.7,
+      "tap_time": 1.0
     }
   }
 }

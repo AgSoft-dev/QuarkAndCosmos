@@ -1,17 +1,17 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "id": "quantique-spin-1",
   "must_contact": [
     [
-      "pole",
+      "magnet",
       "deflect"
     ]
   ],
   "solvable": true,
   "reference_solution": {
     "params": {
-      "angle_deg": -17,
-      "power": 0.5,
+      "angle_deg": -15,
+      "power": 0.7,
       "spin_up": true,
       "tap_time": 0.1
     },

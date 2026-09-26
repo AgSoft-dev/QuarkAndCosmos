@@ -1,4 +1,4 @@
-# Level schema (shipped pack v3)
+# Level schema (shipped pack v4)
 
 The contract between the level builder (`levels-builder/`) and the game (`android/`). The app never imports Python code: it only reads `content/`.
 
@@ -15,20 +15,38 @@ levels-builder/meta/<name>.meta.json   dev-only data (never shipped)
 
 | Field | Type | Meaning |
 |---|---|---|
-| `schema_version` | int | `3`. The game refuses a version it doesn't know. |
+| `schema_version` | int | `4`. The game refuses a version it doesn't know. |
 | `id` | string | `quantique-<concept>-<difficulty>`, the save key. |
 | `scale` | string | `quantique` (beta scope). |
 | `concept` | string | concept id: `tunnel`, `superposition`, `intrication`, `incertitude`, `quantification`, `spin`, `dualite`. Also the key of the Codex line. |
 | `difficulty` | int | 1 discover, 2 sequence, 3 chain. |
 | `launcher` | `{x, y}` | start point in the unit box (`y` pointing down). |
 | `target` | `{x, y, r, motion?}` | the portal. |
-| `obstacles` | array | `{id, type, x, y, r?, length?, angle_deg?, …}`; types and per-type fields in [`physics-spec.md`](physics-spec.md) §5–§7. `id`s are data keys (some are French words, e.g. `cloison`, `couvercle`: kept as is). |
-| `photons` | array | 3 Photons `{id, x, y, r, motion?}`, numbered in order of passage. |
+| `rungs` | number[] | quantisation only: the launcher's energy rungs E1…E4 (speeds); the `rung` parameter indexes it. |
+| `cone` | `{speed, angle: [at p=1, at p=0], speed_spread}` | uncertainty only: the cone of probability (physics-spec §3). |
+| `obstacles` | array | `{id, type, x, y, r?, length?, angle_deg?, points?, …}` (shape: circle by default, capsule with `length`, polygon outline with `points` = vertex offsets from `(x, y)`); types and per-type fields in [`physics-spec.md`](physics-spec.md) §5–§7. `id`s are data keys (some are French words, e.g. `cloison`, `couvercle`: kept as is). |
+| `photons` | array | 3 Photons `{id, x, y, r, motion?, rung?}`, numbered in order of passage; `rung` (quantisation) = the rung they are colour-matched to. |
 | `max_wall_bounces` | int | "suffered" bounces allowed (always explicit). |
-| `param_space` | object | public setting ranges for the UI dials: `{"type": "range", "min", "max", "step"}` or `{"type": "choice", "values"}` per parameter (`angle_deg`, `power`, `precision`, `spin_up`, `tap_time`, `tap_time_2`). |
+| `param_space` | object | public setting ranges for the UI dials: `{"type": "range", "min", "max", "step"}` or `{"type": "choice", "values"}` per parameter (`angle_deg`, `power`, `rung`, `precision`, `spin_up`, `tap_time`, `tap_time_2`). |
 | `hint` | `{params}` or null | parameters of the reference solution, for the "first segment" hint after 5 failures. |
 
-`motion` = `{axis, amplitude, period, phase?}`; a barrier's `threshold_motion` = `{amplitude, period, phase?}` (physics-spec §6).
+`motion` = `{axis, amplitude, period, phase?}`; a barrier's `thickness_motion` = `{amplitude, period, phase?}` (physics-spec §6).
+
+Obstacle fields per type (v4, [ADR-0008](decisions/ADR-0008-quantum-concept-fixes.md)):
+
+| `type` | Fields |
+|---|---|
+| `barrier` | `thickness` (its contact band), `thickness_motion?`, `height?` (default 1.2) |
+| `lock` | `rung` (the one rung it lets through) |
+| `magnet` | `up_deg` (strong side), `kick_deg` |
+| `crystal` | none (near crystal, never touched; measured by the tap) |
+| `gate`, `gate_anti` | `pair` (the crystal they are entangled with) |
+| `slit` | `aperture`, `aperture_at?`, `fan_deg?` (a grating with one slit) |
+| `splitter`, `detector`, `surface`, `mirror`, `wall` | as in v3 |
+
+## Beta pack — `content/levels/quantique/pack.json`
+
+`{world, scope: "beta", schema_version, levels: [{id, concept, file, sha256}]}`: the 7 levels the closed test ships (difficulty 1 of each concept, in play order). Written by `python3 -m quarkcosmos_levels build-pack`; a test checks it is fresh.
 
 ## Codex lines — `content/codex/<lang>/quantique.json`
 
@@ -49,3 +67,4 @@ One file per language, same keys. The app loads the file of its current language
 | 1 | single file with the reference solution and `must_contact`. |
 | 2 | shipped level / dev meta split; `hint` replaces `reference_solution` in the shipped file; `max_wall_bounces` always explicit. |
 | 3 | `codex_text` removed: player-facing text moved to `content/codex/<lang>/` (English + French). |
+| 4 | approved concept fixes (ADR-0008): barrier `thickness`/`thickness_motion` instead of `energy_threshold`/`threshold_motion`; `rungs` + `lock` + Photon `rung`; `cone` (uncertainty); `magnet` replaces `pole`; `crystal` + gate `pair`; `slit`; polygon `points`; `pack.json`. |

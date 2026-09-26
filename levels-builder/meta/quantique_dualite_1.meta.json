@@ -1,17 +1,17 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "id": "quantique-dualite-1",
   "must_contact": [
     [
-      "surface",
-      "wave"
+      "slit",
+      "diffract"
     ]
   ],
   "solvable": true,
   "reference_solution": {
     "params": {
-      "angle_deg": -3,
-      "power": 0.5,
+      "angle_deg": 3,
+      "power": 0.7,
       "tap_time": 0.1
     },
     "photons_collected": 3,
@@ -22,17 +22,17 @@
     ]
   },
   "max_photons_reachable": 3,
-  "tolerance": 0.5385,
-  "three_star_tolerance": 0.1978,
+  "tolerance": 0.0769,
+  "three_star_tolerance": 0.0317,
   "bypass_solutions": 0,
   "star_profile": {
-    "rays": 1406,
-    "valid_rays": 690,
-    "distinct_paths": 40,
+    "rays": 3626,
+    "valid_rays": 384,
+    "distinct_paths": 16,
     "shares": {
-      "1": 0.9029,
-      "2": 0.6362,
-      "3": 0.4
+      "1": 0.9245,
+      "2": 0.6979,
+      "3": 0.3958
     },
     "target_shares": {
       "1": 0.9019,
