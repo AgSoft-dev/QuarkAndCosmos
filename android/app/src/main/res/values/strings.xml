@@ -82,4 +82,9 @@
     <string name="game_tour_energy">Pull left: energy</string>
     <string name="game_tour_aim">Slide up/down: aim</string>
     <string name="game_tour_launch">Let go: launch</string>
+
+    <!-- AgSoft studio splash (ADR-0009) -->
+    <string name="splash_element_name">Silver</string>
+    <string name="splash_tagline">argentum · soft silver</string>
+    <string name="splash_description">AgSoft, silver element 47</string>
 </resources>

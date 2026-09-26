@@ -32,8 +32,8 @@ object QC {
 
 /** OFL fonts of the art direction (same files as the libGDX view, in assets/fonts/). */
 class QcType(assets: AssetManager) {
-    private val mono = FontFamily(Font(path = "fonts/JetBrainsMono-Medium.ttf", assetManager = assets))
-    private val ui = FontFamily(
+    val mono = FontFamily(Font(path = "fonts/JetBrainsMono-Medium.ttf", assetManager = assets))
+    val ui = FontFamily(
         Font(path = "fonts/FiraSans-Regular.ttf", assetManager = assets, weight = FontWeight.Normal),
         Font(path = "fonts/FiraSans-SemiBold.ttf", assetManager = assets, weight = FontWeight.SemiBold),
     )

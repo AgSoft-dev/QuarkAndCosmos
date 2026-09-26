@@ -37,6 +37,7 @@ The physics knows neither libGDX nor Android; the game view knows neither activi
 
 - **Welcome**: Quarky v2 idling in the instrument's eyepiece, "Play".
 - **Scales**: the 5 scales in journey order; only Quantum is open (stars / 21 and levels done / 7), the others show "Soon".
+- **AgSoft splash** (cold start, [ADR-0009](../docs/decisions/ADR-0009-agsoft-splash.md)): a silver element tile 47 · Ag is traced, struck and becomes [Ag]Soft, then fades to the welcome screen; tap to skip.
 - **Quantum map**: 7 nodes (order of the `gameplay-mechanics` skill), Quarky on the current node, stars per level; only Tunnel effect is playable, the 6 others are locked.
 - **Tunnel effect 1**:
   - linear slingshot from anywhere in the box: pull left to set the energy, slide up/down to aim (6 units per degree, from the current angle), release to shoot; angle and energy snap to the `param_space` grid validated by the Python engine;

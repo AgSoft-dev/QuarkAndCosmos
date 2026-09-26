@@ -76,4 +76,9 @@
     <string name="game_tour_energy">Tire à gauche\u00A0: énergie</string>
     <string name="game_tour_aim">Glisse haut/bas\u00A0: visée</string>
     <string name="game_tour_launch">Relâche\u00A0: lancer</string>
+
+    <!-- AgSoft studio splash (ADR-0009) -->
+    <string name="splash_element_name">Argent</string>
+    <string name="splash_tagline">argentum · métal malléable</string>
+    <string name="splash_description">AgSoft, élément argent 47</string>
 </resources>
